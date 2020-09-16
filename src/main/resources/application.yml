@@ -1,0 +1,43 @@
+spring:
+  datasource:
+    password: andrimbavy123
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/smartmenu
+    driverClassName: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+server:
+  port: 8000
+
+sftp:
+  host: 34.72.159.36
+  port: 2222
+  user: smartmenu
+  password: smartmenu
+  remote:
+    directory:
+      upload: cdn/
+      download: ~/
+  local:
+    directory:
+      download: ~/Downloads/
+      upload: /home/ilyasziyaoglu/cdn/
+
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        SQL: DEBUG
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: TRACE

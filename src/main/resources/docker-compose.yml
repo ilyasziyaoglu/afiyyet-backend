@@ -1,0 +1,25 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: 0ZBZuRt4
+
+  sftp:
+    image: atmoz/sftp
+    volumes:
+    - /Users/ilyas/Desktop/projects/smartmenu/cdn:/home/smartmenu/cdn
+    ports:
+      - "2222:22"
+    command: smartmenu:smartmenu:1001
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
