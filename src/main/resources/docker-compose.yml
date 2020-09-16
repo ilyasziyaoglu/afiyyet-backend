@@ -13,13 +13,13 @@ services:
   sftp:
     image: atmoz/sftp
     volumes:
-    - /Users/ilyas/Desktop/projects/smartmenu/cdn:/home/smartmenu/cdn
+    - /smartmenu/cdn:/home/smartmenu/cdn
     ports:
       - "2222:22"
     command: smartmenu:smartmenu:1001
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
+#  adminer:
+#    image: adminer
+#    restart: always
+#    ports:
+#      - 8080:8080
