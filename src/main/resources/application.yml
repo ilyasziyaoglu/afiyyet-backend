@@ -1,8 +1,8 @@
 spring:
   datasource:
-    password: andrimbavy123
-    username: postgres
-    url: jdbc:postgresql://localhost:5432/smartmenu
+    password: jw8s0F4
+    username: smartmenu
+    url: jdbc:postgresql://31.220.55.12:5432/smartmenu
     driverClassName: org.postgresql.Driver
   jpa:
     hibernate:
@@ -19,7 +19,7 @@ server:
   port: 8000
 
 sftp:
-  host: 34.72.159.36
+  host: 31.220.55.12
   port: 2222
   user: smartmenu
   password: smartmenu
