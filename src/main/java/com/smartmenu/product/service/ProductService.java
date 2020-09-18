@@ -1,5 +1,6 @@
 package com.smartmenu.product.service;
 
+import com.smartmenu.client.product.ArrangeProductRequest;
 import com.smartmenu.client.product.ProductRequest;
 import com.smartmenu.client.product.ProductResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -47,6 +49,25 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		try {
 			Optional<List<Product>> entityList = Optional.of(getRepository().findAllByCategoryId(categoryId));
 			serviceResult.setValue(entityList.get());
+			serviceResult.setHttpStatus(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			serviceResult.setMessage(e.getMessage());
+		}
+		return serviceResult;
+	}
+
+	public ServiceResult<Boolean> arrangeProducts(String token, ArrangeProductRequest dto) {
+		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
+		Set<Long> ids = dto.getArrangement().keySet();
+		try {
+			Optional<List<Product>> entityList = Optional.of(getRepository().findAllById(ids));
+			entityList.get().forEach(product -> {
+				product.setOrder(dto.getArrangement().get(product.getId()));
+				getRepository().save(product);
+			});
+			serviceResult.setValue(true);
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();

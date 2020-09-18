@@ -1,5 +1,6 @@
 package com.smartmenu.product.controller;
 
+import com.smartmenu.client.product.ArrangeProductRequest;
 import com.smartmenu.client.product.ProductRequest;
 import com.smartmenu.client.product.ProductResponse;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;
@@ -42,5 +43,11 @@ public class ProductController extends AbstractBaseController<ProductRequest, Pr
 	public ResponseEntity<List<ProductResponse>> getProductsByCategory(@RequestHeader(HEADER_TOKEN) String token, @Valid @PathVariable Long categoryId) {
 		ServiceResult<List<Product>> serviceResult = getService().getProductsByCategory(token, categoryId);
 		return new ResponseEntity<>(getMapper().toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
+	}
+
+	@PostMapping("/arrange-products")
+	public ResponseEntity<Boolean> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody ArrangeProductRequest dto) {
+		ServiceResult<Boolean> serviceResult = getService().arrangeProducts(token, dto);
+		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
 }
