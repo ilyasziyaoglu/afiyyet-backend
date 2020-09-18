@@ -46,7 +46,7 @@ public class ProductController extends AbstractBaseController<ProductRequest, Pr
 	}
 
 	@PostMapping("/arrange-products")
-	public ResponseEntity<Boolean> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody ArrangeProductRequest dto) {
+	public ResponseEntity<Boolean> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody List<ArrangeProductRequest> dto) {
 		ServiceResult<Boolean> serviceResult = getService().arrangeProducts(token, dto);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}

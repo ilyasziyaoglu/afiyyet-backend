@@ -1,5 +1,6 @@
 package com.smartmenu.client.user;
 
+import com.smartmenu.client.brand.BrandRequest;
 import com.smartmenu.common.basemodel.request.BaseRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,6 +18,7 @@ public class UserRequest extends BaseRequest {
 
 	private String username;
 	private String password;
+	private BrandRequest brand;
 	private String fullName;
 	private String imageUrl;
 	private String email;

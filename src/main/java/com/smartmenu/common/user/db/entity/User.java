@@ -1,6 +1,7 @@
 package com.smartmenu.common.user.db.entity;
 
 
+import com.smartmenu.brand.db.entity.Brand;
 import com.smartmenu.client.user.Gender;
 import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
 import com.smartmenu.common.enums.Status;
@@ -40,6 +41,10 @@ public class User extends AbstractBaseEntity implements UserDetails {
 
 	@Column(name = "username")
 	private String username;
+
+	@ManyToOne
+	@JoinColumn(name = "brand_id")
+	private Brand brand;
 
 	@Column(name = "password")
 	private String password;

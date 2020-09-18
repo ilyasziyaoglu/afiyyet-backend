@@ -6,11 +6,12 @@ import com.smartmenu.category.service.CategoryService;
 import com.smartmenu.client.category.ArrangeCategoryRequest;
 import com.smartmenu.client.category.CategoryRequest;
 import com.smartmenu.client.category.CategoryResponse;
-import com.smartmenu.client.product.ArrangeProductRequest;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;
 import com.smartmenu.common.basemodel.service.ServiceResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -37,8 +38,14 @@ public class CategoryController extends AbstractBaseController<CategoryRequest, 
 	}
 
 	@PostMapping("/arrange-categories")
-	public ResponseEntity<Boolean> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody ArrangeCategoryRequest dto) {
+	public ResponseEntity<Boolean> arrangeCategories(@RequestHeader(HEADER_TOKEN) String token, @RequestBody List<ArrangeCategoryRequest> dto) {
 		ServiceResult<Boolean> serviceResult = getService().arrangeCategories(token, dto);
+		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	}
+
+	@GetMapping("/get-categories-by-brand")
+	public ResponseEntity<List<Category>> getCategoriesByBrand(@RequestHeader(HEADER_TOKEN) String token) {
+		ServiceResult<List<Category>> serviceResult = getService().getCategoriesByBrand(token);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
 }

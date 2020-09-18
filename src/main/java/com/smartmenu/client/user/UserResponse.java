@@ -1,5 +1,6 @@
 package com.smartmenu.client.user;
 
+import com.smartmenu.client.brand.BrandResponse;
 import com.smartmenu.common.basemodel.response.BaseResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,6 +18,7 @@ public class UserResponse extends BaseResponse {
 
 	private String username;
 	private String fullName;
+	private BrandResponse brand;
 	private String imageUrl;
 	private String email;
 	private String phone;

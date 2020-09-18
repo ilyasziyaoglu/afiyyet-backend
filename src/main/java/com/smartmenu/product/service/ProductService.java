@@ -1,10 +1,13 @@
 package com.smartmenu.product.service;
 
+import com.smartmenu.category.db.entity.Category;
+import com.smartmenu.category.db.repository.CategoryRepository;
 import com.smartmenu.client.product.ArrangeProductRequest;
 import com.smartmenu.client.product.ProductRequest;
 import com.smartmenu.client.product.ProductResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
+import com.smartmenu.common.user.db.entity.User;
 import com.smartmenu.product.db.entity.Product;
 import com.smartmenu.product.db.repository.ProductRepository;
 import com.smartmenu.product.mapper.ProductMapper;
@@ -13,9 +16,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -28,6 +33,7 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 	final private ProductRepository repository;
 	final private ProductMapper mapper;
 	final private ProductUpdateMapper updateMapper;
+	final private CategoryRepository categoryRepository;
 
 	@Override
 	public ProductRepository getRepository() {
@@ -44,11 +50,30 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		return updateMapper;
 	}
 
+	@Override
+	public ServiceResult<Product> save(String token, ProductRequest request) {
+		ServiceResult<Product> serviceResult = new ServiceResult<>();
+		try {
+			Category category =  categoryRepository.getOne(request.getCategory().getId());
+			Product entityToSave = getMapper().toEntity(request);
+			entityToSave.setCategory(category);
+			Product entity = getRepository().save(entityToSave);
+			serviceResult.setValue(entity);
+			serviceResult.setHttpStatus(HttpStatus.CREATED);
+		} catch (Exception e) {
+			e.printStackTrace();
+			serviceResult.setMessage("Entity can not save. Error message: " + e.getMessage());
+			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return serviceResult;
+	}
+
 	public ServiceResult<List<Product>> getProductsByCategory(String token, Long categoryId) {
 		ServiceResult<List<Product>> serviceResult = new ServiceResult<>();
 		try {
-			Optional<List<Product>> entityList = Optional.of(getRepository().findAllByCategoryId(categoryId));
-			serviceResult.setValue(entityList.get());
+			List<Product> entityList = getRepository().findAllByCategoryId(categoryId);
+			entityList = entityList.stream().sorted(Comparator.comparing(Product::getOrder)).collect(Collectors.toList());
+			serviceResult.setValue(entityList);
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -58,15 +83,21 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		return serviceResult;
 	}
 
-	public ServiceResult<Boolean> arrangeProducts(String token, ArrangeProductRequest dto) {
+	public ServiceResult<Boolean> arrangeProducts(String token, List<ArrangeProductRequest> dto) {
 		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
-		Set<Long> ids = dto.getArrangement().keySet();
+
+		User user = getUser(token);
+
+		Set<Long> ids = dto.stream().map(ArrangeProductRequest::getId).collect(Collectors.toSet());
 		try {
 			Optional<List<Product>> entityList = Optional.of(getRepository().findAllById(ids));
-			entityList.get().forEach(product -> {
-				product.setOrder(dto.getArrangement().get(product.getId()));
-				getRepository().save(product);
-			});
+			int index = 0;
+			for (Product category : entityList.get()) {
+				if (user.getBrand().equals(category.getCategory().getBrand())) {
+					category.setOrder(dto.get(index++).getOrder());
+					getRepository().save(category);
+				}
+			}
 			serviceResult.setValue(true);
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {
