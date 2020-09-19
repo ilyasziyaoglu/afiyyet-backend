@@ -97,7 +97,7 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 		ServiceResult<List<Category>> serviceResult = new ServiceResult<>();
 		try {
 			List<Category> entityList = getRepository().findAllByBrand(getUser(token).getBrand());
-			entityList = entityList.stream().sorted(Comparator.comparing(Category::getOrder)).collect(Collectors.toList());
+			entityList = entityList.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
 			serviceResult.setValue(entityList);
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {

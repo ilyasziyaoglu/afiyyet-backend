@@ -72,7 +72,7 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		ServiceResult<List<Product>> serviceResult = new ServiceResult<>();
 		try {
 			List<Product> entityList = getRepository().findAllByCategoryId(categoryId);
-			entityList = entityList.stream().sorted(Comparator.comparing(Product::getOrder)).collect(Collectors.toList());
+			entityList = entityList.stream().sorted(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
 			serviceResult.setValue(entityList);
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {
