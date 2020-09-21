@@ -30,7 +30,7 @@ sftp:
   local:
     directory:
       download: /Downloads/
-      upload: /smartmenu/cdn
+      upload: /smartmenu/cdn/
 
 
 #logging:
