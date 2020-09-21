@@ -23,7 +23,7 @@ public class FileController {
 
 	@PostMapping(value = "/upload")
 	public ResponseEntity<FileResponse> uploadFile(@RequestParam("file0") MultipartFile file) {
-		ServiceResult<String> serviceResult = service.uploadFileLocal(file);
+		ServiceResult<String> serviceResult = service.uploadFile(file);
 		return new ResponseEntity<>(new FileResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
 	}
 
@@ -35,7 +35,7 @@ public class FileController {
 
 	@DeleteMapping(value = "/delete/{fileName}")
 	public ResponseEntity<Boolean> deleteFile(@PathVariable String fileName) {
-		ServiceResult<Boolean> serviceResult = service.deleteFileLocal(fileName);
+		ServiceResult<Boolean> serviceResult = service.deleteFile(fileName);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
 

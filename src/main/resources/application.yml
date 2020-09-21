@@ -29,8 +29,9 @@ sftp:
       download: ~/
   local:
     directory:
-      download: ~/Downloads/
-      upload: /home/ilyasziyaoglu/cdn/
+      download: /Downloads/
+      upload: /smartmenu/cdn
+
 
 #logging:
 #  level:
