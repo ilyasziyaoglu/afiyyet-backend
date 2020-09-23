@@ -8,7 +8,6 @@ server:
 ---
 
 spring:
-  profiles: prod
   datasource:
     password: jw8s0F4
     username: smartmenu
