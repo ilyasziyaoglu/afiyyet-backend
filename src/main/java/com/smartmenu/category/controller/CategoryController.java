@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -38,7 +39,7 @@ public class CategoryController extends AbstractBaseController<CategoryRequest, 
 	}
 
 	@PostMapping("/arrange-categories")
-	public ResponseEntity<Boolean> arrangeCategories(@RequestHeader(HEADER_TOKEN) String token, @RequestBody List<ArrangeCategoryRequest> dto) {
+	public ResponseEntity<Boolean> arrangeCategories(@RequestHeader(HEADER_TOKEN) String token, @RequestBody Map<Long, Integer> dto) {
 		ServiceResult<Boolean> serviceResult = getService().arrangeCategories(token, dto);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}

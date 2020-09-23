@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -46,7 +47,7 @@ public class ProductController extends AbstractBaseController<ProductRequest, Pr
 	}
 
 	@PostMapping("/arrange-products")
-	public ResponseEntity<Boolean> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody List<ArrangeProductRequest> dto) {
+	public ResponseEntity<Boolean> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody Map<Long, Integer> dto) {
 		ServiceResult<Boolean> serviceResult = getService().arrangeProducts(token, dto);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}

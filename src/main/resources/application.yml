@@ -1,4 +1,14 @@
+server:
+  port: 8000
+
+#logging.level.org.hibernate:
+#    SQL: DEBUG
+#    type.descriptor.sql.BasicBinder: TRACE
+
+---
+
 spring:
+  profiles: prod
   datasource:
     password: jw8s0F4
     username: smartmenu
@@ -15,9 +25,6 @@ spring:
     serialization:
       fail-on-empty-beans: false
 
-server:
-  port: 8000
-
 sftp:
   host: 31.220.55.12
   port: 2222
@@ -32,13 +39,37 @@ sftp:
       download: /Downloads/
       upload: /smartmenu/cdn/
 
+---
 
-#logging:
-#  level:
-#    org:
-#      hibernate:
-#        SQL: DEBUG
-#        type:
-#          descriptor:
-#            sql:
-#              BasicBinder: TRACE
+spring:
+  profiles: ilyas
+  datasource:
+    password: andrimbavy123
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/smartmenu
+    driverClassName: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+sftp:
+  host: localhost
+  port: 2222
+  user: smartmenu
+  password: smartmenu
+  remote:
+    directory:
+      upload: cdn/
+      download: ~/
+  local:
+    directory:
+      download: ~/Downloads/
+      upload: /Users/ilyas/Desktop/projects/smartmenu/cd
+

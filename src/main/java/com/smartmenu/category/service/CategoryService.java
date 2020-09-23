@@ -16,10 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -68,18 +65,16 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 		return serviceResult;
 	}
 
-	public ServiceResult<Boolean> arrangeCategories(String token, List<ArrangeCategoryRequest> dto) {
+	public ServiceResult<Boolean> arrangeCategories(String token, Map<Long, Integer> dto) {
 		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
 
 		User user = getUser(token);
 
-		Set<Long> ids = dto.stream().map(ArrangeCategoryRequest::getId).collect(Collectors.toSet());
 		try {
-			Optional<List<Category>> entityList = Optional.of(getRepository().findAllById(ids));
-			int index = 0;
+			Optional<List<Category>> entityList = Optional.of(getRepository().findAllById(dto.keySet()));
 			for (Category category : entityList.get()) {
 				if (user.getBrand().equals(category.getBrand())) {
-					category.setOrder(dto.get(index++).getOrder());
+					category.setOrder(dto.get(category.getId()));
 					getRepository().save(category);
 				}
 			}
@@ -97,7 +92,7 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 		ServiceResult<List<Category>> serviceResult = new ServiceResult<>();
 		try {
 			List<Category> entityList = getRepository().findAllByBrand(getUser(token).getBrand());
-			entityList = entityList.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
+			entityList = entityList.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			serviceResult.setValue(entityList);
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {

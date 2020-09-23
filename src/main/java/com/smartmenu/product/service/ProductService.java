@@ -16,10 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -72,7 +69,7 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		ServiceResult<List<Product>> serviceResult = new ServiceResult<>();
 		try {
 			List<Product> entityList = getRepository().findAllByCategoryId(categoryId);
-			entityList = entityList.stream().sorted(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
+			entityList = entityList.stream().sorted(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			serviceResult.setValue(entityList);
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {
@@ -83,19 +80,17 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		return serviceResult;
 	}
 
-	public ServiceResult<Boolean> arrangeProducts(String token, List<ArrangeProductRequest> dto) {
+	public ServiceResult<Boolean> arrangeProducts(String token, Map<Long, Integer> dto) {
 		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
 
 		User user = getUser(token);
 
-		Set<Long> ids = dto.stream().map(ArrangeProductRequest::getId).collect(Collectors.toSet());
 		try {
-			Optional<List<Product>> entityList = Optional.of(getRepository().findAllById(ids));
-			int index = 0;
-			for (Product category : entityList.get()) {
-				if (user.getBrand().equals(category.getCategory().getBrand())) {
-					category.setOrder(dto.get(index++).getOrder());
-					getRepository().save(category);
+			Optional<List<Product>> entityList = Optional.of(getRepository().findAllById(dto.keySet()));
+			for (Product prodduct : entityList.get()) {
+				if (user.getBrand().equals(prodduct.getCategory().getBrand())) {
+					prodduct.setOrder(dto.get(prodduct.getId()));
+					getRepository().save(prodduct);
 				}
 			}
 			serviceResult.setValue(true);
