@@ -2,7 +2,6 @@ package com.smartmenu.product.service;
 
 import com.smartmenu.category.db.entity.Category;
 import com.smartmenu.category.db.repository.CategoryRepository;
-import com.smartmenu.client.product.ArrangeProductRequest;
 import com.smartmenu.client.product.ProductRequest;
 import com.smartmenu.client.product.ProductResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;

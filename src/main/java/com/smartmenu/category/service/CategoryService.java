@@ -6,7 +6,6 @@ import com.smartmenu.category.db.entity.Category;
 import com.smartmenu.category.db.repository.CategoryRepository;
 import com.smartmenu.category.mapper.CategoryMapper;
 import com.smartmenu.category.mapper.CategoryUpdateMapper;
-import com.smartmenu.client.category.ArrangeCategoryRequest;
 import com.smartmenu.client.category.CategoryRequest;
 import com.smartmenu.client.category.CategoryResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;

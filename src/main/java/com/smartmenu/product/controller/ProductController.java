@@ -1,6 +1,5 @@
 package com.smartmenu.product.controller;
 
-import com.smartmenu.client.product.ArrangeProductRequest;
 import com.smartmenu.client.product.ProductRequest;
 import com.smartmenu.client.product.ProductResponse;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;
