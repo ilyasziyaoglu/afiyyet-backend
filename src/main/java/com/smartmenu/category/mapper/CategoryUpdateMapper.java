@@ -1,5 +1,6 @@
 package com.smartmenu.category.mapper;
 
+import com.smartmenu.brand.mapper.BrandMapper;
 import com.smartmenu.category.db.entity.Category;
 import com.smartmenu.client.category.CategoryRequest;
 import com.smartmenu.common.basemodel.mapper.BaseUpdateMapper;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CategoryUpdateMapper implements BaseUpdateMapper<CategoryRequest, Category> {
 
-	final private CategoryMapper mapper;
+	final private BrandMapper brandMapper;
 
 	@Override
 	public Category toEntityForUpdate(CategoryRequest request, Category entity) {
@@ -26,11 +27,14 @@ public class CategoryUpdateMapper implements BaseUpdateMapper<CategoryRequest, C
 		if (request.getName() != null) {
 			entity.setName(request.getName());
 		}
-		if (request.getOrder() != null) {
-			entity.setOrder(request.getOrder());
-		}
 		if (request.getImgUrl() != null) {
 			entity.setImgUrl(request.getImgUrl());
+		}
+		if (request.getBrand() != null) {
+			entity.setBrand(brandMapper.toEntity(request.getBrand()));
+		}
+		if (request.getOrder() != null) {
+			entity.setOrder(request.getOrder());
 		}
 		if (request.getStatus() != null) {
 			entity.setStatus(request.getStatus());

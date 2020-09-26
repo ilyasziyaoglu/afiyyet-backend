@@ -25,6 +25,7 @@ public class UserResponse extends BaseResponse {
 	private String addresses;
 	private String roles;
 	private Gender gender;
+	private Date birthdate;
 	private String country;
 	private Date date;
 }

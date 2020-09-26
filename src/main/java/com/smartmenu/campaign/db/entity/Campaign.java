@@ -1,7 +1,7 @@
 package com.smartmenu.campaign.db.entity;
 
 
-import com.smartmenu.category.db.entity.Category;
+import com.smartmenu.brand.db.entity.Brand;
 import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
 import com.smartmenu.common.enums.Status;
 import lombok.Data;
@@ -40,18 +40,18 @@ public class Campaign extends AbstractBaseEntity {
 	@Column(name = "price")
 	private BigDecimal price;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "category_id")
-	private Category category;
+	@ManyToOne
+	@JoinColumn(name = "brand_id")
+	private Brand brand;
+
+	@Column(name = "order_value")
+	private Integer order;
 
 	@Column(name = "description", length = 2000)
 	private String description;
 
 	@Column(name = "likes")
 	private Integer likes;
-
-	@Column(name = "order_value")
-	private Integer order;
 
 	@Column(name = "status")
 	private Status status;

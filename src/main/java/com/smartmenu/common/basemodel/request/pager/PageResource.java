@@ -81,7 +81,6 @@ public class PageResource<T> extends BaseResponse {
     }
 
     public int hashCode() {
-        int result = super.hashCode();
-        return result;
+        return super.hashCode();
     }
 }

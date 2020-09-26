@@ -1,8 +1,6 @@
 package com.smartmenu.category.db.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smartmenu.brand.db.entity.Brand;
 import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
 import com.smartmenu.common.enums.Status;
@@ -10,8 +8,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -36,15 +32,15 @@ public class Category extends AbstractBaseEntity {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "order_value")
-	private Integer order;
-
 	@Column(name = "image")
 	private String imgUrl;
 
 	@ManyToOne
 	@JoinColumn(name = "brand_id")
 	private Brand brand;
+
+	@Column(name = "order_value")
+	private Integer order;
 
 	@Column(name = "status")
 	private Status status = Status.ACTIVE;

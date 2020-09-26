@@ -1,10 +1,11 @@
-package com.smartmenu.campaign.db.repository;
+package com.smartmenu.comment.db.repository;
 
 import com.smartmenu.brand.db.entity.Brand;
-import com.smartmenu.campaign.db.entity.Campaign;
+import com.smartmenu.comment.db.entity.Comment;
 import com.smartmenu.common.basemodel.db.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -13,6 +14,6 @@ import java.util.List;
  */
 
 @Repository
-public interface CampaignRepository extends BaseRepository<Campaign> {
-	List<Campaign> findAllByBrand(Brand brand);
+public interface CommentRepository extends BaseRepository<Comment> {
+	List<Comment> findAllByBrand(Brand brand);
 }

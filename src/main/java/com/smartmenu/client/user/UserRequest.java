@@ -24,6 +24,7 @@ public class UserRequest extends BaseRequest {
 	private String email;
 	private String phone;
 	private Gender gender;
+	private Date birthdate;
 	private String country;
 	private Date date;
 	private String addresses;

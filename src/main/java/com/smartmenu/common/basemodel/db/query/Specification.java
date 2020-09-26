@@ -5,10 +5,10 @@
 
 package com.smartmenu.common.basemodel.db.query;
 
-import com.google.common.base.Predicate;
-import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
+import java.util.List;
+import java.util.function.Predicate;
 
 public interface Specification<AbstractEntity> {
     Predicate toPredicate(Root<AbstractEntity> var1, CriteriaBuilder var2) throws Exception;

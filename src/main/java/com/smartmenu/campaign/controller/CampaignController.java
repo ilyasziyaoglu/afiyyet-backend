@@ -3,11 +3,16 @@ package com.smartmenu.campaign.controller;
 import com.smartmenu.campaign.db.entity.Campaign;
 import com.smartmenu.campaign.mapper.CampaignMapper;
 import com.smartmenu.campaign.service.CampaignService;
+import com.smartmenu.client.brand.BrandRequest;
 import com.smartmenu.client.campaign.CampaignRequest;
 import com.smartmenu.client.campaign.CampaignResponse;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.smartmenu.common.basemodel.service.ServiceResult;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -32,5 +37,17 @@ public class CampaignController extends AbstractBaseController<CampaignRequest, 
 
 	public CampaignMapper getMapper() {
 		return mapper;
+	}
+
+	@PostMapping("/arrange-campaigns")
+	public ResponseEntity<Boolean> arrangeCampaigns(@RequestHeader(HEADER_TOKEN) String token, @RequestBody Map<Long, Integer> dto) {
+		ServiceResult<Boolean> serviceResult = getService().arrangeCampaigns(token, dto);
+		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	}
+
+	@PostMapping("/get-campaigns-by-brand}")
+	public ResponseEntity<List<Campaign>> getCampaignsByBrand(@RequestHeader(HEADER_TOKEN) String token, @RequestBody BrandRequest dto) {
+		ServiceResult<List<Campaign>> serviceResult = getService().getCampaignsByBrand(token, dto);
+		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
 }

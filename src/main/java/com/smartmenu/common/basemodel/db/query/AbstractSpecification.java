@@ -5,11 +5,11 @@
 
 package com.smartmenu.common.basemodel.db.query;
 
-import com.google.common.base.Predicate;
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
+import java.util.function.Predicate;
 
 public abstract class AbstractSpecification<AbstractEntity, FilterDto> implements Specification<AbstractEntity> {
     public AbstractSpecification() {
@@ -29,14 +29,10 @@ public abstract class AbstractSpecification<AbstractEntity, FilterDto> implement
     }
 
     public org.springframework.data.jpa.domain.Specification<AbstractEntity> idEqual(Long id) {
-        return (root, criteria, cb) -> {
-            return cb.equal(root.get("identifier"), id);
-        };
+        return (root, criteria, cb) -> cb.equal(root.get("identifier"), id);
     }
 
     public org.springframework.data.jpa.domain.Specification<AbstractEntity> idsEqual(List<Long> ids) {
-        return (root, criteria, cb) -> {
-            return root.get("identifier").in(ids);
-        };
+        return (root, criteria, cb) -> root.get("identifier").in(ids);
     }
 }

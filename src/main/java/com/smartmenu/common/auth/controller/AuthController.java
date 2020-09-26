@@ -62,7 +62,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<?> register(@RequestBody RegisterRequest request) throws Exception {
+	public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
 
 		User user = new User();
 		user.setUsername(request.getEmail());

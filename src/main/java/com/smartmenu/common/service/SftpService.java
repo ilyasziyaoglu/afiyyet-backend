@@ -5,6 +5,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.configs.sftp.SftpConfig;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +18,10 @@ import java.io.IOException;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class SftpService {
 
-    @Autowired
-    private SftpConfig sftpConfig;
+    private final SftpConfig sftpConfig;
 
     @Value("${sftp.remote.directory.upload}")
     private String sftpRemoteUploadDirectory;

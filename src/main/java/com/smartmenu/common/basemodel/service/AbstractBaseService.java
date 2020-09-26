@@ -76,9 +76,7 @@ public abstract class AbstractBaseService<
 	public ServiceResult<Boolean> deleteAll(String token, Set<Long> ids) {
 		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
 		try {
-			ids.forEach(id -> {
-				getRepository().deleteById(id);
-			});
+			ids.forEach(id -> getRepository().deleteById(id));
 			serviceResult.setValue(true);
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {

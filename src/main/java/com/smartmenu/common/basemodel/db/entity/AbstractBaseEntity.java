@@ -1,6 +1,7 @@
 package com.smartmenu.common.basemodel.db.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -15,6 +16,7 @@ import java.time.ZonedDateTime;
  * @date 2020-04-18
  */
 
+@Data
 public abstract class AbstractBaseEntity implements Serializable {
     private static final long serialVersionUID = 6204877037070575919L;
 

@@ -1,6 +1,7 @@
 package com.smartmenu.client.campaign;
 
 import com.smartmenu.category.db.entity.Category;
+import com.smartmenu.client.brand.BrandResponse;
 import com.smartmenu.common.basemodel.response.BaseResponse;
 import com.smartmenu.common.enums.Status;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class CampaignResponse extends BaseResponse {
 	private String description;
 	private Integer likes;
 	private Integer order;
+	private BrandResponse brand;
 	private Status status;
 	private ZonedDateTime expireDate;
 	private ZonedDateTime startDate;

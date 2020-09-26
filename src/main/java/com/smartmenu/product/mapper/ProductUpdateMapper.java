@@ -1,5 +1,6 @@
 package com.smartmenu.product.mapper;
 
+import com.smartmenu.category.mapper.CategoryMapper;
 import com.smartmenu.client.product.ProductRequest;
 import com.smartmenu.common.basemodel.mapper.BaseUpdateMapper;
 import com.smartmenu.product.db.entity.Product;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ProductUpdateMapper implements BaseUpdateMapper<ProductRequest, Product> {
 
+	final private CategoryMapper categoryMapper;
+
 	@Override
 	public Product toEntityForUpdate(ProductRequest request, Product entity) {
 		if (!request.getName().isEmpty()) {
@@ -25,6 +28,15 @@ public class ProductUpdateMapper implements BaseUpdateMapper<ProductRequest, Pro
 		}
 		if (request.getPrice() != null) {
 			entity.setPrice(request.getPrice());
+		}
+//		if (request.getCategory() != null) {
+//			entity.setCategory(categoryMapper.toEntity(request.getCategory()));
+//		}
+		if (request.getLikes() != null) {
+			entity.setLikes(request.getLikes());
+		}
+		if (request.getOrder() != null) {
+			entity.setOrder(request.getOrder());
 		}
 		if (request.getDescription() != null) {
 			entity.setDescription(request.getDescription());
