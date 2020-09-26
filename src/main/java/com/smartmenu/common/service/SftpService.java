@@ -23,6 +23,9 @@ public class SftpService {
 
     private final SftpConfig sftpConfig;
 
+    @Value("${app.baseCdnUrl}")
+    private String baseCdnUrl;
+
     @Value("${sftp.remote.directory.upload}")
     private String sftpRemoteUploadDirectory;
 
@@ -44,7 +47,7 @@ public class SftpService {
             return serviceResult;
         }
 
-        serviceResult.setValue(randomFileName);
+        serviceResult.setValue(baseCdnUrl + randomFileName);
         serviceResult.setHttpStatus(HttpStatus.OK);
 
         return serviceResult;
@@ -90,7 +93,7 @@ public class SftpService {
         }
 
         channelSftp.exit();
-        serviceResult.setValue(randomFileName);
+        serviceResult.setValue(baseCdnUrl + randomFileName);
         serviceResult.setHttpStatus(HttpStatus.OK);
 
         return serviceResult;
@@ -121,7 +124,7 @@ public class SftpService {
                 String randomFileName = RandomStringUtils.random(32, true, true) + "." + contentType.split("/")[1];
                 channelSftp.put(file.getInputStream(), sftpRemoteUploadDirectory + randomFileName);
 
-                uploadedFileNames.add(randomFileName);
+                uploadedFileNames.add(baseCdnUrl + randomFileName);
             } catch (Exception e) {
                 System.out.println("File can not upload to remote repository. Filename is : " + file.getOriginalFilename());
 //                logger.error("File can not upload to remote repository. Filename is : " + file.getOriginalFilename());
@@ -187,7 +190,7 @@ public class SftpService {
         for (String fileName : fileNames) {
             try {
                 channelSftp.rm(sftpRemoteUploadDirectory + fileName);
-                deletedFileNames.add(fileName);
+                deletedFileNames.add(baseCdnUrl + fileName);
             } catch (Exception e) {
                 System.out.println("File cant delete from remote repository. Filename is : " + fileName);
 //                logger.error("File cant delete from remote repository. Filename is : " + fileName);

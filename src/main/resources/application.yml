@@ -5,7 +5,8 @@ server:
 #    SQL: DEBUG
 #    type.descriptor.sql.BasicBinder: TRACE
 
----
+app:
+  baseCdnUrl: 31.220.55.12:5000/
 
 spring:
   datasource:
@@ -72,3 +73,5 @@ sftp:
       download: ~/Downloads/
       upload: /Users/ilyas/Desktop/projects/smartmenu/cd
 
+app:
+  baseCdnUrl: localhost:5000/
