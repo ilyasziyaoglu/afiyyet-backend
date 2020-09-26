@@ -6,7 +6,7 @@ server:
 #    type.descriptor.sql.BasicBinder: TRACE
 
 app:
-  baseCdnUrl: 31.220.55.12:5000/
+  baseCdnUrl: http://31.220.55.12:5000/
 
 spring:
   datasource:
@@ -74,4 +74,4 @@ sftp:
       upload: /Users/ilyas/Desktop/projects/smartmenu/cd
 
 app:
-  baseCdnUrl: localhost:5000/
+  baseCdnUrl: http://localhost:5000/
