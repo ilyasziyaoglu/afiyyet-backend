@@ -1,6 +1,5 @@
 package com.smartmenu.client.campaign;
 
-import com.smartmenu.category.db.entity.Category;
 import com.smartmenu.client.brand.BrandResponse;
 import com.smartmenu.common.basemodel.response.BaseResponse;
 import com.smartmenu.common.enums.Status;
@@ -21,7 +20,6 @@ public class CampaignResponse extends BaseResponse {
 	private String name;
 	private String imgUrl;
 	private BigDecimal price;
-	private Category category;
 	private String description;
 	private Integer likes;
 	private Integer order;

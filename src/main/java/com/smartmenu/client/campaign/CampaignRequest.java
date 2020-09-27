@@ -1,6 +1,5 @@
 package com.smartmenu.client.campaign;
 
-import com.smartmenu.category.db.entity.Category;
 import com.smartmenu.client.brand.BrandRequest;
 import com.smartmenu.common.basemodel.request.BaseRequest;
 import com.smartmenu.common.enums.Status;
@@ -21,7 +20,6 @@ public class CampaignRequest extends BaseRequest {
 	private String name;
 	private String imgUrl;
 	private BigDecimal price;
-	private Category category;
 	private String description;
 	private Integer likes;
 	private Integer order;

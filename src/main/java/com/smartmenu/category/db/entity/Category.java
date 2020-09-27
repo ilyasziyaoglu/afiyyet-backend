@@ -4,10 +4,12 @@ package com.smartmenu.category.db.entity;
 import com.smartmenu.brand.db.entity.Brand;
 import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
 import com.smartmenu.common.enums.Status;
+import com.smartmenu.product.db.entity.Product;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -41,6 +43,9 @@ public class Category extends AbstractBaseEntity {
 
 	@Column(name = "order_value")
 	private Integer order;
+
+	@Transient
+	private List<Product> products;
 
 	@Column(name = "status")
 	private Status status = Status.ACTIVE;

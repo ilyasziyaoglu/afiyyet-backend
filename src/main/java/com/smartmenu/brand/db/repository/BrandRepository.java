@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BrandRepository extends BaseRepository<Brand> {
+	Brand findByName(String name);
 }

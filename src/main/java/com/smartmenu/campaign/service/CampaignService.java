@@ -93,10 +93,10 @@ public class CampaignService extends AbstractBaseService<CampaignRequest, Campai
 		return serviceResult;
 	}
 
-	public ServiceResult<List<Campaign>> getCampaignsByBrand(String token, BrandRequest dto) {
+	public ServiceResult<List<Campaign>> getCampaigns(String token) {
 		ServiceResult<List<Campaign>> serviceResult = new ServiceResult<>();
 		try {
-			List<Campaign> entityList = getRepository().findAllByBrand(brandMapper.toEntity(dto));
+			List<Campaign> entityList = getRepository().findAllByBrand(getUser(token).getBrand());
 			entityList = entityList.stream().sorted(Comparator.comparing(Campaign::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			serviceResult.setValue(entityList);
 			serviceResult.setHttpStatus(HttpStatus.OK);

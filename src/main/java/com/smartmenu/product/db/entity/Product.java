@@ -47,7 +47,7 @@ public class Product extends AbstractBaseEntity {
 	private String description;
 
 	@Column(name = "likes")
-	private Integer likes;
+	private Integer likes = 0;
 
 	@Column(name = "order_value")
 	private Integer order;
