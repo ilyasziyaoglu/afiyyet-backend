@@ -6,18 +6,17 @@ import com.smartmenu.campaign.db.entity.Campaign;
 import com.smartmenu.campaign.db.repository.CampaignRepository;
 import com.smartmenu.category.db.entity.Category;
 import com.smartmenu.category.db.repository.CategoryRepository;
-import com.smartmenu.category.service.CategoryService;
-import com.smartmenu.client.brand.BrandRequest;
 import com.smartmenu.client.menu.LikeRequest;
 import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.product.db.entity.Product;
 import com.smartmenu.product.db.repository.ProductRepository;
-import com.smartmenu.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -38,13 +37,15 @@ public class MenuService {
 
 		try {
 			Brand brand = brandRepository.findByName(brandName);
-			List<Category> categoryList = categoryRepository.findAllByBrand(brand);
-			for (Category category : categoryList) {
+			List<Category> categories = categoryRepository.findAllByBrand(brand);
+			categories = categories.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
+			for (Category category : categories) {
 				List<Product> products = productRepository.findAllByCategoryId(category.getId());
+				products = products.stream().sorted(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 				products.forEach(product -> product.setCategory(null));
 				category.setProducts(products);
 			}
-			serviceResult.setValue(categoryList);
+			serviceResult.setValue(categories);
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -82,7 +83,9 @@ public class MenuService {
 
 		try {
 			Brand brand = brandRepository.findByName(brandName);
-			serviceResult.setValue(campaignRepository.findAllByBrand(brand));
+			List<Campaign> campaigns = campaignRepository.findAllByBrand(brand);
+			campaigns = campaigns.stream().sorted(Comparator.comparing(Campaign::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
+			serviceResult.setValue(campaigns);
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
