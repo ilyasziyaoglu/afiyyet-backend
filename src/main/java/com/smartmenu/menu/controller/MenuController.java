@@ -29,7 +29,7 @@ public class MenuController {
 	final private CampaignMapper campaignMapper;
 
 	@GetMapping("/{brandName}")
-	public ResponseEntity<List<CategoryResponse>> getMenusByCategory(@PathVariable(name = "brandName") String brandName) {
+	public ResponseEntity<List<CategoryResponse>> getMenu(@PathVariable(name = "brandName") String brandName) {
 		ServiceResult<List<Category>> serviceResult = service.getMenu(brandName);
 		return new ResponseEntity<>(categoryMapper.toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
 	}
@@ -41,7 +41,7 @@ public class MenuController {
 	}
 
 	@PostMapping("/like")
-	public ResponseEntity<Boolean> getMenusByCategory(@RequestBody LikeRequest dto) {
+	public ResponseEntity<Boolean> like(@RequestBody LikeRequest dto) {
 		ServiceResult<Boolean> serviceResult = service.like(dto);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
