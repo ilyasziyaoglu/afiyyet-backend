@@ -45,7 +45,7 @@ public class CampaignController extends AbstractBaseController<CampaignRequest, 
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
 
-	@GetMapping("/get-campaigns-by-brand}")
+	@GetMapping("/get-campaigns-by-brand")
 	public ResponseEntity<List<Campaign>> getCampaigns(@RequestHeader(HEADER_TOKEN) String token) {
 		ServiceResult<List<Campaign>> serviceResult = getService().getCampaigns(token);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());

@@ -1,6 +1,5 @@
 package com.smartmenu.client.campaign;
 
-import com.smartmenu.client.brand.BrandRequest;
 import com.smartmenu.common.basemodel.request.BaseRequest;
 import com.smartmenu.common.enums.Status;
 import lombok.Data;
@@ -23,7 +22,6 @@ public class CampaignRequest extends BaseRequest {
 	private String description;
 	private Integer likes;
 	private Integer order;
-	private BrandRequest brand;
 	private Status status;
 	private ZonedDateTime expireDate;
 	private ZonedDateTime startDate;
