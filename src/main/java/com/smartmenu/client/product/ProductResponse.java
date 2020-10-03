@@ -20,6 +20,7 @@ public class ProductResponse extends BaseResponse {
 	private String imgUrl;
 	private BigDecimal price;
 	private Category category;
+	private String categoryName;
 	private String description;
 	private Integer likes;
 	private Integer order;

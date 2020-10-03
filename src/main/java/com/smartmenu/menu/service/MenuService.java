@@ -8,6 +8,7 @@ import com.smartmenu.category.db.entity.Category;
 import com.smartmenu.category.db.repository.CategoryRepository;
 import com.smartmenu.client.menu.LikeRequest;
 import com.smartmenu.common.basemodel.service.ServiceResult;
+import com.smartmenu.menu.model.Menu;
 import com.smartmenu.product.db.entity.Product;
 import com.smartmenu.product.db.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,8 @@ public class MenuService {
 	final private ProductRepository productRepository;
 	final private CampaignRepository campaignRepository;
 
-	public ServiceResult<List<Category>> getMenu(String brandName) {
-		ServiceResult<List<Category>> serviceResult = new ServiceResult<>();
+	public ServiceResult<Menu> getMenu(String brandName) {
+		ServiceResult<Menu> serviceResult = new ServiceResult<>();
 
 		try {
 			Brand brand = brandRepository.findByName(brandName);
@@ -42,10 +43,15 @@ public class MenuService {
 			for (Category category : categories) {
 				List<Product> products = productRepository.findAllByCategoryId(category.getId());
 				products = products.stream().sorted(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
-				products.forEach(product -> product.setCategory(null));
+				products.forEach(product -> {
+					product.setCategory(null);
+					product.setCategoryName(category.getName());
+				});
 				category.setProducts(products);
 			}
-			serviceResult.setValue(categories);
+			List<Campaign> campaigns = campaignRepository.findAllByBrand(brand);
+			campaigns = campaigns.stream().sorted(Comparator.comparing(Campaign::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
+			serviceResult.setValue(new Menu(categories, campaigns, brand));
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();

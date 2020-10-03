@@ -2,12 +2,12 @@ package com.smartmenu.menu.controller;
 
 import com.smartmenu.campaign.db.entity.Campaign;
 import com.smartmenu.campaign.mapper.CampaignMapper;
-import com.smartmenu.category.db.entity.Category;
-import com.smartmenu.category.mapper.CategoryMapper;
 import com.smartmenu.client.campaign.CampaignResponse;
-import com.smartmenu.client.category.CategoryResponse;
 import com.smartmenu.client.menu.LikeRequest;
+import com.smartmenu.client.menu.MenuResponse;
 import com.smartmenu.common.basemodel.service.ServiceResult;
+import com.smartmenu.menu.mapper.MenuMapper;
+import com.smartmenu.menu.model.Menu;
 import com.smartmenu.menu.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +25,13 @@ import java.util.List;
 @RequestMapping(value = "/menu")
 public class MenuController {
 	final private MenuService service;
-	final private CategoryMapper categoryMapper;
+	final private MenuMapper menuMapper;
 	final private CampaignMapper campaignMapper;
 
 	@GetMapping("/{brandName}")
-	public ResponseEntity<List<CategoryResponse>> getMenu(@PathVariable(name = "brandName") String brandName) {
-		ServiceResult<List<Category>> serviceResult = service.getMenu(brandName);
-		return new ResponseEntity<>(categoryMapper.toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
+	public ResponseEntity<MenuResponse> getMenu(@PathVariable(name = "brandName") String brandName) {
+		ServiceResult<Menu> serviceResult = service.getMenu(brandName);
+		return new ResponseEntity<>(menuMapper.toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
 	}
 
 	@GetMapping("/get-campaigns/{brandName}}")

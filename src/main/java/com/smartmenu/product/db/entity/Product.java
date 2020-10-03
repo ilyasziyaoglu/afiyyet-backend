@@ -43,6 +43,9 @@ public class Product extends AbstractBaseEntity {
 	@JoinColumn(name = "category_id")
 	private Category category;
 
+	@Transient
+	private String categoryName;
+
 	@Column(name = "description", length = 2000)
 	private String description;
 
