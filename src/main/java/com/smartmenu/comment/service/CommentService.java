@@ -46,18 +46,18 @@ public class CommentService extends AbstractBaseService<CommentRequest, Comment,
 		return updateMapper;
 	}
 
-	@Override
-	public ServiceResult<Comment> save(String token, CommentRequest request) {
-		ServiceResult<Comment> serviceResult = new ServiceResult<>();
+	public ServiceResult<Boolean> inserComment(CommentRequest request) {
+		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
 		try {
 			Comment entityToSave = getMapper().toEntity(request);
 			Brand brand = brandRepository.getOne(request.getBrand().getId());
 			entityToSave.setBrand(brand);
 			Comment entity = getRepository().save(entityToSave);
-			serviceResult.setValue(entity);
+			serviceResult.setValue(true);
 			serviceResult.setHttpStatus(HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
+			serviceResult.setValue(false);
 			serviceResult.setMessage("Entity can not save. Error message: " + e.getMessage());
 			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		}

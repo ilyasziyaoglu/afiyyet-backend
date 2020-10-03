@@ -42,4 +42,10 @@ public class CommentController extends AbstractBaseController<CommentRequest, Co
 		ServiceResult<List<Comment>> serviceResult = getService().getCommentsByBrand(token);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
+
+	@PostMapping("/insert-comment")
+	public ResponseEntity<Boolean> getCommentsByBrand(@RequestBody CommentRequest dto) {
+		ServiceResult<Boolean> serviceResult = getService().inserComment(dto);
+		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	}
 }
