@@ -51,7 +51,7 @@ public class Campaign extends AbstractBaseEntity {
 	private String description;
 
 	@Column(name = "likes")
-	private Integer likes;
+	private Integer likes = 0;
 
 	@Column(name = "status")
 	private Status status;
