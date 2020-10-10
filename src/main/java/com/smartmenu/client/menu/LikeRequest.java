@@ -12,6 +12,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class LikeRequest extends BaseRequest {
-	private Long productId;
+	private Long itemId;
 	private Boolean like;
 }

@@ -72,7 +72,7 @@ public class MenuService {
 		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
 
 		try {
-			Product product = productRepository.getOne(dto.getProductId());
+			Product product = productRepository.getOne(dto.getItemId());
 			Brand brand = product.getCategory().getBrand();
 			if (!brand.getFeatures().contains(FeatureType.LIKE)) {
 				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
@@ -101,7 +101,7 @@ public class MenuService {
 		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
 
 		try {
-			Campaign campaign = campaignRepository.getOne(dto.getProductId());
+			Campaign campaign = campaignRepository.getOne(dto.getItemId());
 			Brand brand = campaign.getBrand();
 			if (!brand.getFeatures().contains(FeatureType.LIKE)) {
 				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
