@@ -40,9 +40,15 @@ public class MenuController {
 		return new ResponseEntity<>(campaignMapper.toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
 	}
 
-	@PostMapping("/like")
-	public ResponseEntity<Boolean> like(@RequestBody LikeRequest dto) {
-		ServiceResult<Boolean> serviceResult = service.like(dto);
+	@PostMapping("/product-like")
+	public ResponseEntity<Boolean> productLike(@RequestBody LikeRequest dto) {
+		ServiceResult<Boolean> serviceResult = service.productLike(dto);
+		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	}
+
+	@PostMapping("/campaign-like")
+	public ResponseEntity<Boolean> campaignLike(@RequestBody LikeRequest dto) {
+		ServiceResult<Boolean> serviceResult = service.campaignLike(dto);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
 }

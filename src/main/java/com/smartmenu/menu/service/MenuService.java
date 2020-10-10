@@ -68,7 +68,7 @@ public class MenuService {
 		return serviceResult;
 	}
 
-	public ServiceResult<Boolean> like(LikeRequest dto) {
+	public ServiceResult<Boolean> productLike(LikeRequest dto) {
 		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
 
 		try {
@@ -86,6 +86,35 @@ public class MenuService {
 				product.setLikes(product.getLikes() - 1);
 			}
 			productRepository.save(product);
+			serviceResult.setValue(true);
+			serviceResult.setHttpStatus(HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			serviceResult.setValue(false);
+			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			serviceResult.setMessage(e.getMessage());
+		}
+		return serviceResult;
+	}
+
+	public ServiceResult<Boolean> campaignLike(LikeRequest dto) {
+		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
+
+		try {
+			Campaign campaign = campaignRepository.getOne(dto.getProductId());
+			Brand brand = campaign.getBrand();
+			if (!brand.getFeatures().contains(FeatureType.LIKE)) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
+
+			if (dto.getLike()) {
+				campaign.setLikes(campaign.getLikes() + 1);
+			} else if (campaign.getLikes() > 0) {
+				campaign.setLikes(campaign.getLikes() - 1);
+			}
+			campaignRepository.save(campaign);
 			serviceResult.setValue(true);
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {

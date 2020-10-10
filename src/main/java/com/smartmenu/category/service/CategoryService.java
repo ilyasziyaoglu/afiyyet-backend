@@ -12,6 +12,7 @@ import com.smartmenu.client.category.CategoryResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
+import com.smartmenu.product.db.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -80,7 +81,7 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 		try {
 			if (!getUser(token).getBrand()
 					.getFeatures()
-					.contains(FeatureType.CRUD_OPERATIONS)) {
+					.contains(FeatureType.ORDERING)) {
 				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
 				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
 				return serviceResult;
@@ -105,13 +106,6 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 	public ServiceResult<List<Category>> getCategoriesByBrand(String token) {
 		ServiceResult<List<Category>> serviceResult = new ServiceResult<>();
 		try {
-			if (!getUser(token).getBrand()
-					.getFeatures()
-					.contains(FeatureType.CRUD_OPERATIONS)) {
-				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
-				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
-				return serviceResult;
-			}
 			List<Category> entityList = getRepository().findAllByBrand(getUser(token).getBrand());
 			entityList = entityList.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			serviceResult.setValue(entityList);

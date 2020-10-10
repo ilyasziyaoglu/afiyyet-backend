@@ -21,7 +21,6 @@ public enum FeatureType {
 	MOST_POPULAR(6, "En çok beğenilenler"),
 	FAVORITE(7, "Favorilere ekleme"),
 	CAMPAIGN(8, "Kampanya oluşturma"),
-	UPDATES(9, "Güncellemeler"),
 	FEEDBACKS(10, "Kolay geri bildirim"),
 	COUPONS(11, "İndirim Kuponu Oluşturma"),
 	RESERVATIONS(12, "Rezervasyon Alma"),
@@ -58,12 +57,12 @@ public enum FeatureType {
 	}
 
 	public static List<FeatureType> getStd() {
-		return Arrays.asList(FeatureType.LIKE, FeatureType.MOST_POPULAR, FeatureType.FAVORITE, FeatureType.CAMPAIGN, FeatureType.UPDATES, FeatureType.FEEDBACKS);
+		return Arrays.asList(FeatureType.LIKE, FeatureType.MOST_POPULAR, FeatureType.FAVORITE, FeatureType.CAMPAIGN, FeatureType.FEEDBACKS);
 	}
 
 	public static List<FeatureType> getPro() {
 		List<FeatureType> featureTypeList = getStd();
-		featureTypeList.addAll(Arrays.asList(FeatureType.LIKE, FeatureType.MOST_POPULAR, FeatureType.FAVORITE, FeatureType.CAMPAIGN, FeatureType.UPDATES, FeatureType.FEEDBACKS));
+		featureTypeList.addAll(Arrays.asList(FeatureType.LIKE, FeatureType.MOST_POPULAR, FeatureType.FAVORITE, FeatureType.CAMPAIGN, FeatureType.FEEDBACKS));
 		return featureTypeList;
 	}
 
