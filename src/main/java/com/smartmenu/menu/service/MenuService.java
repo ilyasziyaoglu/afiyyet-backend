@@ -1,6 +1,7 @@
 package com.smartmenu.menu.service;
 
 import com.smartmenu.brand.db.entity.Brand;
+import com.smartmenu.brand.db.model.FeatureType;
 import com.smartmenu.brand.db.repository.BrandRepository;
 import com.smartmenu.campaign.db.entity.Campaign;
 import com.smartmenu.campaign.db.repository.CampaignRepository;
@@ -38,6 +39,12 @@ public class MenuService {
 
 		try {
 			Brand brand = brandRepository.findByName(brandName);
+
+			if (!brand.getFeatures().contains(FeatureType.QR_MENU)) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
 			List<Category> categories = categoryRepository.findAllByBrand(brand);
 			categories = categories.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			for (Category category : categories) {
@@ -66,6 +73,12 @@ public class MenuService {
 
 		try {
 			Product product = productRepository.getOne(dto.getProductId());
+			Brand brand = product.getCategory().getBrand();
+			if (!brand.getFeatures().contains(FeatureType.LIKE)) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
 
 			if (dto.getLike()) {
 				product.setLikes(product.getLikes() + 1);
@@ -89,6 +102,11 @@ public class MenuService {
 
 		try {
 			Brand brand = brandRepository.findByName(brandName);
+			if (!brand.getFeatures().contains(FeatureType.CAMPAIGN)) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
 			List<Campaign> campaigns = campaignRepository.findAllByBrand(brand);
 			campaigns = campaigns.stream().sorted(Comparator.comparing(Campaign::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			serviceResult.setValue(campaigns);

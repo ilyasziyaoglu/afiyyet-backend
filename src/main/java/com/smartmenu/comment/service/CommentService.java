@@ -1,6 +1,7 @@
 package com.smartmenu.comment.service;
 
 import com.smartmenu.brand.db.entity.Brand;
+import com.smartmenu.brand.db.model.FeatureType;
 import com.smartmenu.brand.db.repository.BrandRepository;
 import com.smartmenu.comment.db.entity.Comment;
 import com.smartmenu.comment.db.repository.CommentRepository;
@@ -49,8 +50,13 @@ public class CommentService extends AbstractBaseService<CommentRequest, Comment,
 	public ServiceResult<Boolean> inserComment(CommentRequest request) {
 		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
 		try {
-			Comment entityToSave = getMapper().toEntity(request);
 			Brand brand = brandRepository.getOne(request.getBrand().getId());
+			if (!brand.getFeatures().contains(FeatureType.FEEDBACKS)) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
+			Comment entityToSave = getMapper().toEntity(request);
 			entityToSave.setBrand(brand);
 			Comment entity = getRepository().save(entityToSave);
 			serviceResult.setValue(true);
@@ -67,6 +73,11 @@ public class CommentService extends AbstractBaseService<CommentRequest, Comment,
 	public ServiceResult<List<Comment>> getCommentsByBrand(String token) {
 		ServiceResult<List<Comment>> serviceResult = new ServiceResult<>();
 		try {
+			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.FEEDBACKS)) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
 			List<Comment> entityList = getRepository().findAllByBrand(getUser(token).getBrand());
 			entityList = entityList.stream().sorted(Comparator.comparing(Comment::getCreatedDate, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			serviceResult.setValue(entityList);

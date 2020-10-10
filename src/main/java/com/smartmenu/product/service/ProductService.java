@@ -1,5 +1,6 @@
 package com.smartmenu.product.service;
 
+import com.smartmenu.brand.db.model.FeatureType;
 import com.smartmenu.category.db.entity.Category;
 import com.smartmenu.category.db.repository.CategoryRepository;
 import com.smartmenu.client.product.ProductRequest;
@@ -50,7 +51,17 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 	public ServiceResult<Product> save(String token, ProductRequest request) {
 		ServiceResult<Product> serviceResult = new ServiceResult<>();
 		try {
+			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS)) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
 			Category category =  categoryRepository.getOne(request.getCategory().getId());
+			if (!getUser(token).getBrand().equals(category.getBrand())) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
 			Product entityToSave = getMapper().toEntity(request);
 			entityToSave.setCategory(category);
 			Product entity = getRepository().save(entityToSave);
@@ -85,6 +96,11 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		User user = getUser(token);
 
 		try {
+			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.ORDERING)) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
 			Optional<List<Product>> entityList = Optional.of(getRepository().findAllById(dto.keySet()));
 			for (Product prodduct : entityList.get()) {
 				if (user.getBrand().equals(prodduct.getCategory().getBrand())) {

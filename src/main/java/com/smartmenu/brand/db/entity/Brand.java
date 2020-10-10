@@ -1,12 +1,15 @@
 package com.smartmenu.brand.db.entity;
 
 
+import com.smartmenu.brand.db.model.FeatureType;
 import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
 import com.smartmenu.common.enums.Status;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -37,7 +40,10 @@ public class Brand extends AbstractBaseEntity {
 	@Column(name = "status")
 	private Status status;
 
-	@ManyToOne
+	@ElementCollection
+	@CollectionTable(name = "brand_features", joinColumns = @JoinColumn(name = "brand_id"))
+	@Column(name = "feature")
+	private Set<FeatureType> features = new HashSet<>();
 
 	@Override
 	public Long getId() {

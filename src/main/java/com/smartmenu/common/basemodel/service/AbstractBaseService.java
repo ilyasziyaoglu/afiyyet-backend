@@ -36,7 +36,8 @@ public abstract class AbstractBaseService<
 		Request extends BaseRequest,
 		Entity extends AbstractBaseEntity,
 		Response extends BaseResponse,
-		Mapper extends BaseMapper<Request, Entity, Response>> extends BaseService<Request, Entity, BaseRepository<Entity>, BaseUpdateMapper<Request, Entity>> {
+		Mapper extends BaseMapper<Request, Entity, Response>> extends BaseService<Request, Entity, BaseRepository<Entity>, BaseUpdateMapper<Request,
+		Entity>> {
 
 	private JwtUtil jwtUtil;
 
@@ -47,7 +48,7 @@ public abstract class AbstractBaseService<
 
 	public ServiceResult<Entity> get(String token, Long id) {
 		ServiceResult<Entity> serviceResult = new ServiceResult<>();
-		Optional<Entity>      entity        = getRepository().findById(id);
+		Optional<Entity> entity = getRepository().findById(id);
 		if (entity.isPresent()) {
 			serviceResult.setValue(entity.get());
 			serviceResult.setHttpStatus(HttpStatus.OK);
@@ -90,7 +91,7 @@ public abstract class AbstractBaseService<
 
 	public ServiceResult<Entity> update(String token, @NotNull Request request) {
 		ServiceResult<Entity> serviceResult = new ServiceResult<>();
-		Optional<Entity>      entity        = getRepository().findById(request.getId());
+		Optional<Entity> entity = getRepository().findById(request.getId());
 		if (entity.isPresent()) {
 			try {
 				Entity newEntity = getUpdateMapper().toEntityForUpdate(request, entity.get());
@@ -177,13 +178,15 @@ public abstract class AbstractBaseService<
 	}
 
 	public User getUser(String token) {
-		if (token != null && token.startsWith("Bearer ")) {
-			String username = getJwtUtil().extractUsername(token.substring(7));
-			Optional<User> user = userRepository.findByUsername(username);
-			if (user.isPresent()) {
-				return user.get();
+		try {
+			if (!token.isEmpty() &&  !token.contains("null")) {
+				String username = getJwtUtil().extractUsername(token);
+				Optional<User> user = userRepository.findByUsername(username);
+				if (user.isPresent()) {
+					return user.get();
+				}
 			}
-		}
+		} catch (Exception ignored) { }
 		return null;
 	}
 

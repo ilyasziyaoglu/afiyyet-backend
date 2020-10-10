@@ -1,6 +1,7 @@
 package com.smartmenu.campaign.service;
 
 import com.smartmenu.brand.db.entity.Brand;
+import com.smartmenu.brand.db.model.FeatureType;
 import com.smartmenu.brand.db.repository.BrandRepository;
 import com.smartmenu.brand.mapper.BrandMapper;
 import com.smartmenu.campaign.db.entity.Campaign;
@@ -13,6 +14,7 @@ import com.smartmenu.client.campaign.CampaignResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
+import jdk.nashorn.internal.ir.IfNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -56,8 +58,15 @@ public class CampaignService extends AbstractBaseService<CampaignRequest, Campai
 	public ServiceResult<Campaign> save(String token, CampaignRequest request) {
 		ServiceResult<Campaign> serviceResult = new ServiceResult<>();
 		try {
+			Brand brand = brandRepository.getOne(getUser(token).getBrand()
+					.getId());
+			if (!brand.getFeatures()
+					.contains(FeatureType.CAMPAIGN)) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
 			Campaign entityToSave = getMapper().toEntity(request);
-			Brand brand = brandRepository.getOne(getUser(token).getBrand().getId());
 			entityToSave.setBrand(brand);
 			Campaign entity = getRepository().save(entityToSave);
 			serviceResult.setValue(entity);
@@ -74,11 +83,19 @@ public class CampaignService extends AbstractBaseService<CampaignRequest, Campai
 		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
 
 		User user = getUser(token);
+		if (user.getBrand()
+				.getFeatures()
+				.contains(FeatureType.CAMPAIGN)) {
+			serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+			serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+			return serviceResult;
+		}
 
 		try {
 			Optional<List<Campaign>> entityList = Optional.of(getRepository().findAllById(dto.keySet()));
 			for (Campaign entity : entityList.get()) {
-				if (user.getBrand().equals(entity.getBrand())) {
+				if (user.getBrand()
+						.equals(entity.getBrand())) {
 					entity.setOrder(dto.get(entity.getId()));
 					getRepository().save(entity);
 				}
@@ -96,8 +113,17 @@ public class CampaignService extends AbstractBaseService<CampaignRequest, Campai
 	public ServiceResult<List<Campaign>> getCampaigns(String token) {
 		ServiceResult<List<Campaign>> serviceResult = new ServiceResult<>();
 		try {
+			if (!getUser(token).getBrand()
+					.getFeatures()
+					.contains(FeatureType.CAMPAIGN)) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
 			List<Campaign> entityList = getRepository().findAllByBrand(getUser(token).getBrand());
-			entityList = entityList.stream().sorted(Comparator.comparing(Campaign::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
+			entityList = entityList.stream()
+					.sorted(Comparator.comparing(Campaign::getOrder, Comparator.nullsLast(Comparator.naturalOrder())))
+					.collect(Collectors.toList());
 			serviceResult.setValue(entityList);
 			serviceResult.setHttpStatus(HttpStatus.OK);
 		} catch (Exception e) {

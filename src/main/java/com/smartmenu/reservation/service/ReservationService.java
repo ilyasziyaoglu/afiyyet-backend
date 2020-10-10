@@ -1,6 +1,7 @@
 package com.smartmenu.reservation.service;
 
 import com.smartmenu.brand.db.entity.Brand;
+import com.smartmenu.brand.db.model.FeatureType;
 import com.smartmenu.brand.db.repository.BrandRepository;
 import com.smartmenu.reservation.db.entity.Reservation;
 import com.smartmenu.reservation.db.repository.ReservationRepository;
@@ -51,6 +52,11 @@ public class ReservationService extends AbstractBaseService<ReservationRequest, 
 	public ServiceResult<Reservation> save(String token, ReservationRequest request) {
 		ServiceResult<Reservation> serviceResult = new ServiceResult<>();
 		try {
+			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.RESERVATIONS)) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
 			Reservation entityToSave = getMapper().toEntity(request);
 			Brand brand = brandRepository.getOne(request.getBrand().getId());
 			entityToSave.setBrand(brand);
@@ -68,6 +74,11 @@ public class ReservationService extends AbstractBaseService<ReservationRequest, 
 	public ServiceResult<List<Reservation>> getReservationsByBrand(String token) {
 		ServiceResult<List<Reservation>> serviceResult = new ServiceResult<>();
 		try {
+			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.ORDERING)) {
+				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
+				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
+				return serviceResult;
+			}
 			List<Reservation> entityList = getRepository().findAllByBrandAndReservationDateAfter(getUser(token).getBrand(), ZonedDateTime.now());
 			entityList = entityList.stream().sorted(Comparator.comparing(Reservation::getReservationDate, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			serviceResult.setValue(entityList);
