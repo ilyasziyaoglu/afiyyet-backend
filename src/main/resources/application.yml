@@ -6,7 +6,7 @@ server:
 #    type.descriptor.sql.BasicBinder: TRACE
 
 app:
-  baseCdnUrl: http://31.220.55.12:5000/
+  baseCdnUrl: http://31.220.55.12:5002/
 
 spring:
   datasource:
