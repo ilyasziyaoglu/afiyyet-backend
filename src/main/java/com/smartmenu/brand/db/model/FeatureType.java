@@ -27,7 +27,7 @@ public enum FeatureType {
 	SOCIAL_MEDIA_SHARE(13, "Sosyal medya paylaşımı"),
 	REPORTS(14, "Kullanıcı ve Menü raporları"),
 	ANALYSIS(15, "Kullanıcı ve Menü analizleri"),
-	HAPPINNESS(16, "Mutluluk seviyesi");
+	HAPPINESS(16, "Mutluluk seviyesi");
 
 
 	FeatureType(Integer value, String desc) {
@@ -68,7 +68,7 @@ public enum FeatureType {
 
 	public static List<FeatureType> getVip() {
 		List<FeatureType> featureTypeList = getStd();
-		featureTypeList.addAll(Arrays.asList(FeatureType.COUPONS, FeatureType.RESERVATIONS, FeatureType.SOCIAL_MEDIA_SHARE, FeatureType.REPORTS, FeatureType.ANALYSIS, FeatureType.HAPPINNESS));
+		featureTypeList.addAll(Arrays.asList(FeatureType.COUPONS, FeatureType.RESERVATIONS, FeatureType.SOCIAL_MEDIA_SHARE, FeatureType.REPORTS, FeatureType.ANALYSIS, FeatureType.HAPPINESS));
 		return featureTypeList;
 	}
 }

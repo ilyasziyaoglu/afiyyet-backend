@@ -70,8 +70,8 @@ sftp:
       download: ~/
   local:
     directory:
-      download: ~/Downloads/
-      upload: /Users/ilyas/Desktop/projects/smartmenu/cd
+      download: /Users/ilyas/Downloads/
+      upload: /Users/ilyas/Desktop/projects/smartmenu/cdn/
 
 app:
   baseCdnUrl: http://localhost:5000/

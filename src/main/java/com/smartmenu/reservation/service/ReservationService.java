@@ -48,20 +48,19 @@ public class ReservationService extends AbstractBaseService<ReservationRequest, 
 		return updateMapper;
 	}
 
-	@Override
-	public ServiceResult<Reservation> save(String token, ReservationRequest request) {
-		ServiceResult<Reservation> serviceResult = new ServiceResult<>();
+	public ServiceResult<Boolean> save(ReservationRequest dto) {
+		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
+		Brand brand = brandRepository.getOne(dto.getBrand().getId());
 		try {
-			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.RESERVATIONS)) {
+			if (!brand.getFeatures().contains(FeatureType.RESERVATIONS)) {
 				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
 				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
 				return serviceResult;
 			}
-			Reservation entityToSave = getMapper().toEntity(request);
-			Brand brand = brandRepository.getOne(request.getBrand().getId());
+			Reservation entityToSave = getMapper().toEntity(dto);
 			entityToSave.setBrand(brand);
-			Reservation entity = getRepository().save(entityToSave);
-			serviceResult.setValue(entity);
+			getRepository().save(entityToSave);
+			serviceResult.setValue(true);
 			serviceResult.setHttpStatus(HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();

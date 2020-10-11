@@ -42,4 +42,10 @@ public class ReservationController extends AbstractBaseController<ReservationReq
 		ServiceResult<List<Reservation>> serviceResult = getService().getReservationsByBrand(token);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
+
+	@PostMapping("/reserve")
+	public ResponseEntity<Boolean> insert(@RequestBody ReservationRequest request) {
+		ServiceResult<Boolean> serviceResult = getService().save(request);
+		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	}
 }

@@ -40,7 +40,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 		String username = null;
 
-		if (token != null && !token.contains("null")) {
+		if (token != null) {
 			username = jwtUtil.extractUsername(token);
 		}
 
