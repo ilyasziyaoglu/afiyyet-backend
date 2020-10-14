@@ -1,6 +1,7 @@
 package com.smartmenu.product.db.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.smartmenu.category.db.entity.Category;
 import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
 import com.smartmenu.common.enums.Status;
@@ -39,8 +40,9 @@ public class Product extends AbstractBaseEntity {
 	@Column(name = "price")
 	private BigDecimal price;
 
+	@JsonBackReference
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "category_id")
+	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
 
 	@Transient

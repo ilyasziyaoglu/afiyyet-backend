@@ -6,7 +6,7 @@ server:
 #    type.descriptor.sql.BasicBinder: TRACE
 
 app:
-  baseCdnUrl: http://31.220.55.12:5002/
+  baseCdnUrl: http://141.136.36.175:5002/
 
 spring:
   datasource:
@@ -26,7 +26,7 @@ spring:
       fail-on-empty-beans: false
 
 sftp:
-  host: 31.220.55.12
+  host: 141.136.36.175
   port: 2222
   user: smartmenu
   password: smartmenu

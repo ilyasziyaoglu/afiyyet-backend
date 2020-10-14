@@ -40,21 +40,10 @@ public class MenuService {
 		try {
 			Brand brand = brandRepository.findByName(brandName);
 
-			if (!brand.getFeatures().contains(FeatureType.QR_MENU)) {
-				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
-				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
-				return serviceResult;
-			}
 			List<Category> categories = categoryRepository.findAllByBrand(brand);
 			categories = categories.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			for (Category category : categories) {
-				List<Product> products = productRepository.findAllByCategoryId(category.getId());
-				products = products.stream().sorted(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
-				products.forEach(product -> {
-					product.setCategory(null);
-					product.setCategoryName(category.getName());
-				});
-				category.setProducts(products);
+				category.getProducts().sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
 			}
 			List<Campaign> campaigns = campaignRepository.findAllByBrand(brand);
 			campaigns = campaigns.stream().sorted(Comparator.comparing(Campaign::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());

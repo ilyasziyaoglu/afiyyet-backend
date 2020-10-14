@@ -1,6 +1,7 @@
 package com.smartmenu.category.db.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smartmenu.brand.db.entity.Brand;
 import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
 import com.smartmenu.common.enums.Status;
@@ -37,14 +38,15 @@ public class Category extends AbstractBaseEntity {
 	@Column(name = "image")
 	private String imgUrl;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "brand_id")
 	private Brand brand;
 
 	@Column(name = "order_value")
 	private Integer order;
 
-	@Transient
+	@JsonManagedReference
+	@OneToMany(mappedBy="category", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<Product> products;
 
 	@Column(name = "status")
