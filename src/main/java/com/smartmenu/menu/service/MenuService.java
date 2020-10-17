@@ -35,38 +35,29 @@ public class MenuService {
 	final private CampaignRepository campaignRepository;
 
 	public ServiceResult<Menu> getMenu(String brandName) {
-		ServiceResult<Menu> serviceResult = new ServiceResult<>();
-
 		try {
 			Brand brand = brandRepository.findByName(brandName);
 
-			List<Category> categories = categoryRepository.findAllByBrand(brand);
+			List<Category> categories = categoryRepository.findAllByBrandId(brand.getId());
 			categories = categories.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			for (Category category : categories) {
 				category.getProducts().sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
 			}
-			List<Campaign> campaigns = campaignRepository.findAllByBrand(brand);
+			List<Campaign> campaigns = campaignRepository.findAllByBrandId(brand.getId());
 			campaigns = campaigns.stream().sorted(Comparator.comparing(Campaign::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
-			serviceResult.setValue(new Menu(categories, campaigns, brand));
-			serviceResult.setHttpStatus(HttpStatus.OK);
+			return new ServiceResult<>(new Menu(categories, campaigns, brand), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-			serviceResult.setMessage(e.getMessage());
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
-		return serviceResult;
 	}
 
 	public ServiceResult<Boolean> productLike(LikeRequest dto) {
-		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
-
 		try {
 			Product product = productRepository.getOne(dto.getItemId());
-			Brand brand = product.getCategory().getBrand();
+			Brand brand = brandRepository.getOne(product.getCategory().getBrandId());
 			if (!brand.getFeatures().contains(FeatureType.LIKE)) {
-				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
-				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
-				return serviceResult;
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 
 			if (dto.getLike()) {
@@ -75,27 +66,19 @@ public class MenuService {
 				product.setLikes(product.getLikes() - 1);
 			}
 			productRepository.save(product);
-			serviceResult.setValue(true);
-			serviceResult.setHttpStatus(HttpStatus.OK);
+			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setValue(false);
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-			serviceResult.setMessage(e.getMessage());
+			return new ServiceResult<>(false, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
-		return serviceResult;
 	}
 
 	public ServiceResult<Boolean> campaignLike(LikeRequest dto) {
-		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
-
 		try {
 			Campaign campaign = campaignRepository.getOne(dto.getItemId());
-			Brand brand = campaign.getBrand();
+			Brand brand = brandRepository.getOne(campaign.getBrandId());
 			if (!brand.getFeatures().contains(FeatureType.LIKE)) {
-				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
-				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
-				return serviceResult;
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 
 			if (dto.getLike()) {
@@ -104,36 +87,27 @@ public class MenuService {
 				campaign.setLikes(campaign.getLikes() - 1);
 			}
 			campaignRepository.save(campaign);
-			serviceResult.setValue(true);
-			serviceResult.setHttpStatus(HttpStatus.OK);
+			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setValue(false);
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-			serviceResult.setMessage(e.getMessage());
+			return new ServiceResult<>(false, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
-		return serviceResult;
 	}
 
 	public ServiceResult<List<Campaign>> getCampaigns(String brandName) {
-		ServiceResult<List<Campaign>> serviceResult = new ServiceResult<>();
 
 		try {
 			Brand brand = brandRepository.findByName(brandName);
 			if (!brand.getFeatures().contains(FeatureType.CAMPAIGN)) {
-				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
-				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
-				return serviceResult;
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
-			List<Campaign> campaigns = campaignRepository.findAllByBrand(brand);
+			List<Campaign> campaigns = campaignRepository.findAllByBrandId(brand.getId());
 			campaigns = campaigns.stream().sorted(Comparator.comparing(Campaign::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
-			serviceResult.setValue(campaigns);
-			serviceResult.setHttpStatus(HttpStatus.OK);
+
+			return new ServiceResult<>(campaigns, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-			serviceResult.setMessage(e.getMessage());
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
-		return serviceResult;
 	}
 }

@@ -1,17 +1,16 @@
 package com.smartmenu.reservation.controller;
 
-import com.smartmenu.reservation.db.entity.Reservation;
-import com.smartmenu.reservation.mapper.ReservationMapper;
-import com.smartmenu.reservation.service.ReservationService;
 import com.smartmenu.client.reservation.ReservationRequest;
 import com.smartmenu.client.reservation.ReservationResponse;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;
 import com.smartmenu.common.basemodel.service.ServiceResult;
+import com.smartmenu.reservation.db.entity.Reservation;
+import com.smartmenu.reservation.mapper.ReservationMapper;
+import com.smartmenu.reservation.service.ReservationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Ilyas Ziyaoglu

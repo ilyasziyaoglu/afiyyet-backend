@@ -1,6 +1,5 @@
 package com.smartmenu.campaign.db.repository;
 
-import com.smartmenu.brand.db.entity.Brand;
 import com.smartmenu.campaign.db.entity.Campaign;
 import com.smartmenu.common.basemodel.db.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
@@ -14,5 +13,5 @@ import java.util.List;
 
 @Repository
 public interface CampaignRepository extends BaseRepository<Campaign> {
-	List<Campaign> findAllByBrand(Brand brand);
+	List<Campaign> findAllByBrandId(Long brandId);
 }

@@ -3,7 +3,6 @@ package com.smartmenu.campaign.controller;
 import com.smartmenu.campaign.db.entity.Campaign;
 import com.smartmenu.campaign.mapper.CampaignMapper;
 import com.smartmenu.campaign.service.CampaignService;
-import com.smartmenu.client.brand.BrandRequest;
 import com.smartmenu.client.campaign.CampaignRequest;
 import com.smartmenu.client.campaign.CampaignResponse;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;

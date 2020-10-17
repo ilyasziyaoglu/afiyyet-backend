@@ -47,101 +47,68 @@ public abstract class AbstractBaseService<
 	public abstract Mapper getMapper();
 
 	public ServiceResult<Entity> get(String token, Long id) {
-		ServiceResult<Entity> serviceResult = new ServiceResult<>();
 		Optional<Entity> entity = getRepository().findById(id);
-		if (entity.isPresent()) {
-			serviceResult.setValue(entity.get());
-			serviceResult.setHttpStatus(HttpStatus.OK);
-		} else {
-			serviceResult.setMessage("Entity can not found by the given id: " + id);
-			serviceResult.setHttpStatus(HttpStatus.NOT_FOUND);
-		}
-		return serviceResult;
+		return entity.map(value -> new ServiceResult<>(value, HttpStatus.OK))
+				.orElseGet(() -> new ServiceResult<>(HttpStatus.NOT_FOUND, "Entity can not found by the given id: " + id));
 	}
 
 	public ServiceResult<Boolean> delete(String token, Long id) {
-		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
 		try {
 			getRepository().deleteById(id);
-			serviceResult.setValue(true);
-			serviceResult.setHttpStatus(HttpStatus.OK);
+			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setMessage("Entity can not delete by the given id: " + id + ". Error message: " + e.getMessage());
-			serviceResult.setValue(false);
-			serviceResult.setHttpStatus(HttpStatus.NOT_MODIFIED);
+			return new ServiceResult<>(false, HttpStatus.NOT_MODIFIED, "Entity can not delete by the given id: " + id + ". Error message: " + e.getMessage());
 		}
-		return serviceResult;
 	}
 
 	public ServiceResult<Boolean> deleteAll(String token, Set<Long> ids) {
-		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
 		try {
 			ids.forEach(id -> getRepository().deleteById(id));
-			serviceResult.setValue(true);
-			serviceResult.setHttpStatus(HttpStatus.OK);
+			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setMessage("Entity can not delete by the given id: " + ids + ". Error message: " + e.getMessage());
-			serviceResult.setValue(false);
-			serviceResult.setHttpStatus(HttpStatus.NOT_MODIFIED);
+			return new ServiceResult<>(false, HttpStatus.NOT_MODIFIED, "Entities can not delete by the given ids: " + ids + ". Error message: " + e.getMessage());
 		}
-		return serviceResult;
 	}
 
 	public ServiceResult<Entity> update(String token, @NotNull Request request) {
-		ServiceResult<Entity> serviceResult = new ServiceResult<>();
 		Optional<Entity> entity = getRepository().findById(request.getId());
 		if (entity.isPresent()) {
 			try {
 				Entity newEntity = getUpdateMapper().toEntityForUpdate(request, entity.get());
 				getRepository().save(newEntity);
-				serviceResult.setValue(newEntity);
-				serviceResult.setHttpStatus(HttpStatus.OK);
+				return new ServiceResult<>(newEntity, HttpStatus.OK);
 			} catch (Exception e) {
 				e.printStackTrace();
-				serviceResult.setMessage("Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
-				serviceResult.setHttpStatus(HttpStatus.NOT_MODIFIED);
+				return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
 			}
 		} else {
-			serviceResult.setMessage("Entity not found to update update with the given id: " + request.getId());
-			serviceResult.setHttpStatus(HttpStatus.NOT_FOUND);
+			return new ServiceResult<>(HttpStatus.NOT_FOUND, "Entity not found to update update with the given id: " + request.getId());
 		}
-		return serviceResult;
 	}
 
 	public ServiceResult<Entity> save(String token, Request request) {
-		ServiceResult<Entity> serviceResult = new ServiceResult<>();
 		try {
 			Entity entity = getRepository().save(getMapper().toEntity(request));
-			serviceResult.setValue(entity);
-			serviceResult.setHttpStatus(HttpStatus.CREATED);
+			return new ServiceResult<>(entity, HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setMessage("Entity can not save. Error message: " + e.getMessage());
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
 		}
-		return serviceResult;
 	}
 
 	public ServiceResult<List<Entity>> getAll(String token) {
-		ServiceResult<List<Entity>> serviceResult = new ServiceResult<>();
 		try {
 			Optional<List<Entity>> entityList = Optional.of(getRepository().findAll());
-			serviceResult.setValue(entityList.get());
-			serviceResult.setHttpStatus(HttpStatus.OK);
+			return new ServiceResult<>(entityList.get(), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-			serviceResult.setMessage(e.getMessage());
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
-		return serviceResult;
 	}
 
 	protected <T> ServiceResult<Page<Entity>> filter(Specification<Entity> specifications, PageDto<T> page) {
-
-		ServiceResult<Page<Entity>> serviceResult = new ServiceResult<>();
-
 		try {
 			PageRequest pageRequest = PageRequest.of(page.getPage(), page.getSize(), Sort.Direction.DESC, "id");
 			if (!CollectionUtils.isEmpty(page.getOrder()) && !CollectionUtils.isEmpty(page.getColumns())) {
@@ -165,16 +132,13 @@ public abstract class AbstractBaseService<
 			}
 
 			Page<Entity> pageEntity = getRepository().findAll(specifications, pageRequest);
-			serviceResult.setValue(pageEntity);
+			return new ServiceResult<>(pageEntity, HttpStatus.OK);
 		} catch (Exception var9) {
-			serviceResult.setHttpStatus(HttpStatus.BAD_REQUEST);
-			serviceResult.setMessage(var9.getMessage());
 			System.out.println("filter got exception. Message = " + var9.getMessage());
 			var9.printStackTrace();
+			return new ServiceResult<>(HttpStatus.BAD_REQUEST, var9.getMessage());
 //			logger.error("filter got exception. Message = " + var9.getMessage(), var9);
 		}
-
-		return serviceResult;
 	}
 
 	public User getUser(String token) {

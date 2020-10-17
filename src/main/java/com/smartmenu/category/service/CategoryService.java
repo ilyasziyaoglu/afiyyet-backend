@@ -1,8 +1,6 @@
 package com.smartmenu.category.service;
 
-import com.smartmenu.brand.db.entity.Brand;
 import com.smartmenu.brand.db.model.FeatureType;
-import com.smartmenu.brand.db.repository.BrandRepository;
 import com.smartmenu.category.db.entity.Category;
 import com.smartmenu.category.db.repository.CategoryRepository;
 import com.smartmenu.category.mapper.CategoryMapper;
@@ -12,12 +10,14 @@ import com.smartmenu.client.category.CategoryResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
-import com.smartmenu.product.db.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -31,7 +31,6 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 	final private CategoryRepository repository;
 	final private CategoryMapper mapper;
 	final private CategoryUpdateMapper updateMapper;
-	final private BrandRepository brandRepository;
 
 	@Override
 	public CategoryRepository getRepository() {
@@ -50,71 +49,49 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 
 	@Override
 	public ServiceResult<Category> save(String token, CategoryRequest request) {
-		ServiceResult<Category> serviceResult = new ServiceResult<>();
+		User user = getUser(token);
 		try {
-			if (!getUser(token).getBrand()
-					.getFeatures()
-					.contains(FeatureType.CRUD_OPERATIONS)) {
-				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
-				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
-				return serviceResult;
+			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS)) {
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			Category entityToSave = getMapper().toEntity(request);
-			Brand brand = brandRepository.getOne(getUser(token).getBrand().getId());
-			entityToSave.setBrand(brand);
+			entityToSave.setBrandId(user.getBrand().getId());
 			Category entity = getRepository().save(entityToSave);
-			serviceResult.setValue(entity);
-			serviceResult.setHttpStatus(HttpStatus.CREATED);
+			return new ServiceResult<>(entity, HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setMessage("Entity can not save. Error message: " + e.getMessage());
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
 		}
-		return serviceResult;
 	}
 
 	public ServiceResult<Boolean> arrangeCategories(String token, Map<Long, Integer> dto) {
-		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
-
 		User user = getUser(token);
 
 		try {
-			if (!getUser(token).getBrand()
-					.getFeatures()
-					.contains(FeatureType.ORDERING)) {
-				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
-				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
-				return serviceResult;
+			if (!user.getBrand().getFeatures().contains(FeatureType.ORDERING)) {
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			Optional<List<Category>> entityList = Optional.of(getRepository().findAllById(dto.keySet()));
 			for (Category category : entityList.get()) {
-				if (user.getBrand().equals(category.getBrand())) {
+				if (user.getBrand().getId().equals(category.getBrandId())) {
 					category.setOrder(dto.get(category.getId()));
 					getRepository().save(category);
 				}
-			}
-			serviceResult.setValue(true);
-			serviceResult.setHttpStatus(HttpStatus.OK);
+			}return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-			serviceResult.setMessage(e.getMessage());
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
-		return serviceResult;
 	}
 
 	public ServiceResult<List<Category>> getCategoriesByBrand(String token) {
-		ServiceResult<List<Category>> serviceResult = new ServiceResult<>();
 		try {
-			List<Category> entityList = getRepository().findAllByBrand(getUser(token).getBrand());
+			List<Category> entityList = getRepository().findAllByBrandId(getUser(token).getBrand().getId());
 			entityList = entityList.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
-			serviceResult.setValue(entityList);
-			serviceResult.setHttpStatus(HttpStatus.OK);
+			return new ServiceResult<>(entityList, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-			serviceResult.setMessage(e.getMessage());
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
-		return serviceResult;
 	}
 }

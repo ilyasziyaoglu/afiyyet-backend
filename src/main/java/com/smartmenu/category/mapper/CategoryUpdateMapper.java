@@ -30,9 +30,6 @@ public class CategoryUpdateMapper implements BaseUpdateMapper<CategoryRequest, C
 		if (request.getImgUrl() != null) {
 			entity.setImgUrl(request.getImgUrl());
 		}
-		if (request.getBrand() != null) {
-			entity.setBrand(brandMapper.toEntity(request.getBrand()));
-		}
 		if (request.getOrder() != null) {
 			entity.setOrder(request.getOrder());
 		}

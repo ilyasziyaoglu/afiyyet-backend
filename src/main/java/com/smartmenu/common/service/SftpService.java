@@ -7,7 +7,6 @@ import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.configs.sftp.SftpConfig;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +33,6 @@ public class SftpService {
     private String sftpLocaleUploadDirectory;
 
     public ServiceResult<String> uploadFileLocal(MultipartFile file) {
-        ServiceResult<String> serviceResult = new ServiceResult<>();
-
         String randomFileName;
         try {
             randomFileName = RandomStringUtils.random(32, true, true) + "." + file.getContentType().split("/")[1];
@@ -42,40 +40,23 @@ public class SftpService {
             file.transferTo(new File(sftpLocaleUploadDirectory + randomFileName));
         } catch (IOException e) {
             e.printStackTrace();
-            serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            serviceResult.setMessage(e.getMessage());
-            return serviceResult;
+            return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-
-        serviceResult.setValue(baseCdnUrl + randomFileName);
-        serviceResult.setHttpStatus(HttpStatus.OK);
-
-        return serviceResult;
+        return new ServiceResult<>(baseCdnUrl + randomFileName, HttpStatus.OK);
     }
 
     public ServiceResult<Boolean> deleteFileLocal(String fileName) {
-        ServiceResult<Boolean> serviceResult = new ServiceResult<>();
-
         File file = new File(sftpLocaleUploadDirectory + fileName);
         if (!file.delete()) {
-            serviceResult.setValue(false);
-            serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            serviceResult.setMessage("File can not delete form file server!");
+            return new ServiceResult<>(false, HttpStatus.INTERNAL_SERVER_ERROR, "File can not delete form file server!");
         }
-
-        serviceResult.setValue(true);
-        serviceResult.setHttpStatus(HttpStatus.OK);
-        return serviceResult;
+        return new ServiceResult<>(true, HttpStatus.OK);
     }
 
     public ServiceResult<String> uploadFile(MultipartFile file) {
-        ServiceResult<String> serviceResult = new ServiceResult<>();
-
         ChannelSftp channelSftp = sftpConfig.getSftpConnection();
         if (channelSftp == null) {
-            serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            serviceResult.setMessage("File server connection failed!");
-            return serviceResult;
+            return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "File server connection failed!");
         }
 
         String randomFileName;
@@ -87,36 +68,20 @@ public class SftpService {
             channelSftp.put(file.getInputStream(), sftpRemoteUploadDirectory + randomFileName);
         } catch (SftpException | IOException | JSchException e) {
             e.printStackTrace();
-            serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            serviceResult.setMessage(e.getMessage());
-            return serviceResult;
+            return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
         channelSftp.exit();
-        serviceResult.setValue(baseCdnUrl + randomFileName);
-        serviceResult.setHttpStatus(HttpStatus.OK);
-
-        return serviceResult;
+        return new ServiceResult<>(baseCdnUrl + randomFileName, HttpStatus.OK);
     }
 
     public ServiceResult<Set<String>> uploadAllFiles(Set<MultipartFile> files) {
-        ServiceResult<Set<String>> serviceResult = new ServiceResult<>();
-
-        System.out.println("Conecting to SFTP server");
-//        logger.info("Conecting to SFTP server");
         ChannelSftp channelSftp = sftpConfig.getSftpConnection();
         if (channelSftp == null) {
-            System.out.println("Can not connect to SFTP server");
-//            logger.error("Can not connect to SFTP server");
-            serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            serviceResult.setMessage("File server connection failed!");
-            return serviceResult;
+            return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Can not connect to SFTP server");
         }
 
         Set<String> uploadedFileNames = new HashSet<>();
-
-        System.out.println("Files will upload to remote repository");
-//        logger.info("Files will upload to remote repository");
         for (MultipartFile file : files) {
 
             try {
@@ -126,17 +91,13 @@ public class SftpService {
 
                 uploadedFileNames.add(baseCdnUrl + randomFileName);
             } catch (Exception e) {
-                System.out.println("File can not upload to remote repository. Filename is : " + file.getOriginalFilename());
 //                logger.error("File can not upload to remote repository. Filename is : " + file.getOriginalFilename());
             }
         }
 
-        System.out.println("Closing SFTP connection");
 //        logger.info("Closing SFTP connection");
         channelSftp.exit();
-        serviceResult.setHttpStatus(HttpStatus.OK);
-        serviceResult.setValue(uploadedFileNames);
-        return serviceResult;
+        return new ServiceResult<>(uploadedFileNames, HttpStatus.OK);
     }
 
     private String generateImageName(String contentType) {
@@ -146,63 +107,46 @@ public class SftpService {
     }
 
     public ServiceResult<Boolean> deleteFile(String fileName) {
-        ServiceResult<Boolean> serviceResult = new ServiceResult<>();
-
         ChannelSftp channelSftp = sftpConfig.getSftpConnection();
         if (channelSftp == null) {
-            serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            serviceResult.setMessage("File server connection failed!");
-            return serviceResult;
+            return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "File server connection failed!");
         }
 
         try {
             channelSftp.rm(sftpRemoteUploadDirectory + fileName);
         } catch (SftpException e) {
-            serviceResult.setValue(false);
-            serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            serviceResult.setMessage("File can not delete form file server!");
+            channelSftp.exit();
+            return new ServiceResult<>(false, HttpStatus.INTERNAL_SERVER_ERROR, "File can not delete form file server!");
         }
 
         channelSftp.exit();
-        serviceResult.setValue(true);
-        serviceResult.setHttpStatus(HttpStatus.OK);
-        return serviceResult;
+        return new ServiceResult<>(true, HttpStatus.OK);
     }
 
     public ServiceResult<Set<String>> deleteAllFiles(Set<String> fileNames) {
-        ServiceResult<Set<String>> serviceResult = new ServiceResult<>();
 
-        System.out.println("Connecting to SFTP server");
 //        logger.info("Connecting to SFTP server");
         ChannelSftp channelSftp = sftpConfig.getSftpConnection();
-                if (channelSftp == null) {
-                    System.out.println("Failed SFTP connection");
-//                    logger.error("Failed SFTP connection");
-                    serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-                    serviceResult.setMessage("File server connection failed!");
-                    return serviceResult;
-                }
+        if (channelSftp == null) {
+//          logger.error("Failed SFTP connection");
+            return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "File server connection failed!");
+        }
 
         Set<String> deletedFileNames = new HashSet<>();
 
-        System.out.println("Documents will be deleted from remote repository");
 //        logger.info("Documents will be deleted from remote repository");
         for (String fileName : fileNames) {
             try {
                 channelSftp.rm(sftpRemoteUploadDirectory + fileName);
                 deletedFileNames.add(baseCdnUrl + fileName);
             } catch (Exception e) {
-                System.out.println("File cant delete from remote repository. Filename is : " + fileName);
 //                logger.error("File cant delete from remote repository. Filename is : " + fileName);
             }
         }
 
-        System.out.println("Closing SFTP connection");
 //        logger.info("Closing SFTP connection");
         channelSftp.exit();
-        serviceResult.setHttpStatus(HttpStatus.OK);
-        serviceResult.setValue(deletedFileNames);
-        return serviceResult;
+        return new ServiceResult<>(deletedFileNames, HttpStatus.OK);
     }
 
 }

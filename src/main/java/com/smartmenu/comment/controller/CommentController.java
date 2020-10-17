@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -45,7 +44,7 @@ public class CommentController extends AbstractBaseController<CommentRequest, Co
 
 	@PostMapping("/insert-comment")
 	public ResponseEntity<Boolean> getCommentsByBrand(@RequestBody CommentRequest dto) {
-		ServiceResult<Boolean> serviceResult = getService().inserComment(dto);
+		ServiceResult<Boolean> serviceResult = getService().insertComment(dto);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
 }

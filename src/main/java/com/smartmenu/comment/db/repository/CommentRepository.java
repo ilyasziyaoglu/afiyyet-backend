@@ -5,7 +5,6 @@ import com.smartmenu.comment.db.entity.Comment;
 import com.smartmenu.common.basemodel.db.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 /**

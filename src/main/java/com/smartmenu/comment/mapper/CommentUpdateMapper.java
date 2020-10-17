@@ -1,9 +1,8 @@
 package com.smartmenu.comment.mapper;
 
 import com.smartmenu.brand.mapper.BrandMapper;
-import com.smartmenu.comment.db.entity.Comment;
-import com.smartmenu.comment.mapper.CommentMapper;
 import com.smartmenu.client.comment.CommentRequest;
+import com.smartmenu.comment.db.entity.Comment;
 import com.smartmenu.common.basemodel.mapper.BaseUpdateMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

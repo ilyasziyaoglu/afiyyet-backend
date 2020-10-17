@@ -49,72 +49,53 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 
 	@Override
 	public ServiceResult<Product> save(String token, ProductRequest request) {
-		ServiceResult<Product> serviceResult = new ServiceResult<>();
+		User user = getUser(token);
 		try {
-			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS)) {
-				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
-				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
-				return serviceResult;
+			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS)) {
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			Category category =  categoryRepository.getOne(request.getCategory().getId());
-			if (!getUser(token).getBrand().equals(category.getBrand())) {
-				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
-				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
-				return serviceResult;
+			if (!user.getBrand().getId().equals(category.getBrandId())) {
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			Product entityToSave = getMapper().toEntity(request);
 			entityToSave.setCategory(category);
 			Product entity = getRepository().save(entityToSave);
-			serviceResult.setValue(entity);
-			serviceResult.setHttpStatus(HttpStatus.CREATED);
+			return new ServiceResult<>(entity, HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setMessage("Entity can not save. Error message: " + e.getMessage());
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
 		}
-		return serviceResult;
 	}
 
 	public ServiceResult<List<Product>> getProductsByCategory(String token, Long categoryId) {
-		ServiceResult<List<Product>> serviceResult = new ServiceResult<>();
 		try {
 			List<Product> entityList = getRepository().findAllByCategoryId(categoryId);
 			entityList = entityList.stream().sorted(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
-			serviceResult.setValue(entityList);
-			serviceResult.setHttpStatus(HttpStatus.OK);
+			return new ServiceResult<>(entityList, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-			serviceResult.setMessage(e.getMessage());
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
-		return serviceResult;
 	}
 
 	public ServiceResult<Boolean> arrangeProducts(String token, Map<Long, Integer> dto) {
-		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
-
 		User user = getUser(token);
 
 		try {
 			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.ORDERING)) {
-				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
-				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
-				return serviceResult;
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			Optional<List<Product>> entityList = Optional.of(getRepository().findAllById(dto.keySet()));
 			for (Product prodduct : entityList.get()) {
-				if (user.getBrand().equals(prodduct.getCategory().getBrand())) {
+				if (user.getBrand().getId().equals(prodduct.getCategory().getBrandId())) {
 					prodduct.setOrder(dto.get(prodduct.getId()));
 					getRepository().save(prodduct);
 				}
-			}
-			serviceResult.setValue(true);
-			serviceResult.setHttpStatus(HttpStatus.OK);
+			}return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-			serviceResult.setMessage(e.getMessage());
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
-		return serviceResult;
 	}
 }

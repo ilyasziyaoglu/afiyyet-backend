@@ -1,6 +1,5 @@
 package com.smartmenu.client.category;
 
-import com.smartmenu.client.brand.BrandRequest;
 import com.smartmenu.common.basemodel.request.BaseRequest;
 import com.smartmenu.common.enums.Status;
 import lombok.Data;
@@ -18,5 +17,4 @@ public class CategoryRequest extends BaseRequest {
 	private Integer order;
 	private String imgUrl;
 	private Status status;
-	private BrandRequest brand;
 }

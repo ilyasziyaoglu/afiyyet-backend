@@ -1,11 +1,9 @@
 package com.smartmenu.reservation.mapper;
 
 import com.smartmenu.brand.mapper.BrandMapper;
-import com.smartmenu.brand.mapper.BrandUpdateMapper;
-import com.smartmenu.reservation.db.entity.Reservation;
-import com.smartmenu.reservation.mapper.ReservationMapper;
 import com.smartmenu.client.reservation.ReservationRequest;
 import com.smartmenu.common.basemodel.mapper.BaseUpdateMapper;
+import com.smartmenu.reservation.db.entity.Reservation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

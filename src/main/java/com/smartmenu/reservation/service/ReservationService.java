@@ -3,21 +3,21 @@ package com.smartmenu.reservation.service;
 import com.smartmenu.brand.db.entity.Brand;
 import com.smartmenu.brand.db.model.FeatureType;
 import com.smartmenu.brand.db.repository.BrandRepository;
-import com.smartmenu.reservation.db.entity.Reservation;
-import com.smartmenu.reservation.db.repository.ReservationRepository;
-import com.smartmenu.reservation.mapper.ReservationMapper;
-import com.smartmenu.reservation.mapper.ReservationUpdateMapper;
 import com.smartmenu.client.reservation.ReservationRequest;
 import com.smartmenu.client.reservation.ReservationResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
-import com.smartmenu.common.user.db.entity.User;
+import com.smartmenu.reservation.db.entity.Reservation;
+import com.smartmenu.reservation.db.repository.ReservationRepository;
+import com.smartmenu.reservation.mapper.ReservationMapper;
+import com.smartmenu.reservation.mapper.ReservationUpdateMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -49,44 +49,32 @@ public class ReservationService extends AbstractBaseService<ReservationRequest, 
 	}
 
 	public ServiceResult<Boolean> save(ReservationRequest dto) {
-		ServiceResult<Boolean> serviceResult = new ServiceResult<>();
 		Brand brand = brandRepository.getOne(dto.getBrand().getId());
 		try {
 			if (!brand.getFeatures().contains(FeatureType.RESERVATIONS)) {
-				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
-				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
-				return serviceResult;
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			Reservation entityToSave = getMapper().toEntity(dto);
 			entityToSave.setBrand(brand);
 			getRepository().save(entityToSave);
-			serviceResult.setValue(true);
-			serviceResult.setHttpStatus(HttpStatus.CREATED);
+			return new ServiceResult<>(true, HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setMessage("Entity can not save. Error message: " + e.getMessage());
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
 		}
-		return serviceResult;
 	}
 
 	public ServiceResult<List<Reservation>> getReservationsByBrand(String token) {
-		ServiceResult<List<Reservation>> serviceResult = new ServiceResult<>();
 		try {
 			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.ORDERING)) {
-				serviceResult.setHttpStatus(HttpStatus.FORBIDDEN);
-				serviceResult.setMessage("Entity can not save. Error message: Required privilege not defined!");
-				return serviceResult;
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			List<Reservation> entityList = getRepository().findAllByBrandAndReservationDateAfter(getUser(token).getBrand(), ZonedDateTime.now());
 			entityList = entityList.stream().sorted(Comparator.comparing(Reservation::getReservationDate, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
-			serviceResult.setValue(entityList);
-			serviceResult.setHttpStatus(HttpStatus.OK);
+			return new ServiceResult<>(entityList, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			serviceResult.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-			serviceResult.setMessage(e.getMessage());
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
-		return serviceResult;
 	}
 }
