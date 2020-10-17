@@ -36,8 +36,7 @@ public abstract class AbstractBaseService<
 		Request extends BaseRequest,
 		Entity extends AbstractBaseEntity,
 		Response extends BaseResponse,
-		Mapper extends BaseMapper<Request, Entity, Response>> extends BaseService<Request, Entity, BaseRepository<Entity>, BaseUpdateMapper<Request,
-		Entity>> {
+		Mapper extends BaseMapper<Request, Entity, Response>> extends BaseService<Request, Entity, BaseRepository<Entity>, BaseUpdateMapper<Request, Entity>> {
 
 	private JwtUtil jwtUtil;
 

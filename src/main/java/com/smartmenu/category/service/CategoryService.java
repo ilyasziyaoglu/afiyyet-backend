@@ -47,7 +47,6 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 		return updateMapper;
 	}
 
-	@Override
 	public ServiceResult<Category> save(String token, CategoryRequest request) {
 		User user = getUser(token);
 		try {

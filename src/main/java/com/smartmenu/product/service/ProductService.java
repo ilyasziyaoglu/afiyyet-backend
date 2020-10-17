@@ -47,7 +47,6 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		return updateMapper;
 	}
 
-	@Override
 	public ServiceResult<Product> save(String token, ProductRequest request) {
 		User user = getUser(token);
 		try {

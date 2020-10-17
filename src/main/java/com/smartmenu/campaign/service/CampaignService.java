@@ -50,7 +50,6 @@ public class CampaignService extends AbstractBaseService<CampaignRequest, Campai
 		return updateMapper;
 	}
 
-	@Override
 	public ServiceResult<Campaign> save(String token, CampaignRequest request) {
 		try {
 			Brand brand = brandRepository.getOne(getUser(token).getBrand()
