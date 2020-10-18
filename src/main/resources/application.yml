@@ -6,7 +6,7 @@ server:
 #    type.descriptor.sql.BasicBinder: TRACE
 
 app:
-  baseCdnUrl: https://141.136.36.175:5002/
+  baseCdnUrl: https://afiyyet.com:5002/
 
 spring:
   datasource:
@@ -26,7 +26,7 @@ spring:
       fail-on-empty-beans: false
 
 sftp:
-  host: 141.136.36.175
+  host: https://afiyyet.com
   port: 2222
   user: smartmenu
   password: smartmenu
@@ -37,8 +37,20 @@ sftp:
   local:
     directory:
       download: /Downloads/
-      upload: /smartmenu/cdn/
+      upload: /home/afiyyet/smartmenu/cdn/
 
+
+mail:
+  host: smtp.gmail.com
+  protocol: smtp
+  port: 587
+  username: ${MAIL_USERNAME}
+  password: ${MAIL_PASSWORD}
+  debug: true
+  smtp:
+    auth: true
+    starttls:
+      enabled: true
 ---
 
 spring:
