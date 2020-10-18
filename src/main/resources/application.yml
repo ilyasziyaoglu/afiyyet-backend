@@ -44,8 +44,8 @@ mail:
   host: smtp.gmail.com
   protocol: smtp
   port: 587
-  username: ${MAIL_USERNAME}
-  password: ${MAIL_PASSWORD}
+  username: aaaaaaa
+  password: aaaaaaa
   debug: true
   smtp:
     auth: true
