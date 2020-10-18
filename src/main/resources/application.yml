@@ -10,9 +10,9 @@ app:
 
 spring:
   datasource:
-    password: jw8s0F4
-    username: smartmenu
-    url: jdbc:postgresql://31.220.55.12:5432/smartmenu
+    password: 2vMNPU49Ep47HtYn
+    username: afiyyet
+    url: jdbc:postgresql://127.0.0.1:5432/afiyyet
     driverClassName: org.postgresql.Driver
   jpa:
     hibernate:
