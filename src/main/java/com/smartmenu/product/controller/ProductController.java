@@ -1,5 +1,6 @@
 package com.smartmenu.product.controller;
 
+import com.smartmenu.client.product.BulkPriceUpdateRequest;
 import com.smartmenu.client.product.ProductRequest;
 import com.smartmenu.client.product.ProductResponse;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;
@@ -48,6 +49,12 @@ public class ProductController extends AbstractBaseController<ProductRequest, Pr
 	@PostMapping("/arrange-products")
 	public ResponseEntity<Boolean> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody Map<Long, Integer> dto) {
 		ServiceResult<Boolean> serviceResult = getService().arrangeProducts(token, dto);
+		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	}
+
+	@PostMapping("/bulk-price-update")
+	public ResponseEntity<Boolean> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody BulkPriceUpdateRequest dto) {
+		ServiceResult<Boolean> serviceResult = getService().bulkPriceUpdate(token, dto);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
 }

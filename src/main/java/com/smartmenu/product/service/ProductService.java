@@ -3,6 +3,7 @@ package com.smartmenu.product.service;
 import com.smartmenu.brand.db.model.FeatureType;
 import com.smartmenu.category.db.entity.Category;
 import com.smartmenu.category.db.repository.CategoryRepository;
+import com.smartmenu.client.product.BulkPriceUpdateRequest;
 import com.smartmenu.client.product.ProductRequest;
 import com.smartmenu.client.product.ProductResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
@@ -16,7 +17,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -48,8 +54,8 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 	}
 
 	public ServiceResult<Product> save(String token, ProductRequest request) {
-		User user = getUser(token);
 		try {
+			User user = getUser(token);
 			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS)) {
 				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
@@ -80,9 +86,8 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 	}
 
 	public ServiceResult<Boolean> arrangeProducts(String token, Map<Long, Integer> dto) {
-		User user = getUser(token);
-
 		try {
+			User user = getUser(token);
 			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.ORDERING)) {
 				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
@@ -92,10 +97,44 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 					prodduct.setOrder(dto.get(prodduct.getId()));
 					getRepository().save(prodduct);
 				}
-			}return new ServiceResult<>(true, HttpStatus.OK);
+			}
+			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
+	}
+
+	public ServiceResult<Boolean> bulkPriceUpdate(String token, BulkPriceUpdateRequest dto) {
+		try {
+			User user = getUser(token);
+			categoryRepository.findAllByBrandId(user.getBrand().getId()).forEach(category -> {
+				category.getProducts().forEach(product -> {
+					if (dto.isPercent()) {
+						product.setPrice(updatePriceByPercent(product.getPrice(), dto.getAmount()));
+					} else {
+						product.setPrice(product.getPrice().add(BigDecimal.valueOf(dto.getAmount())));
+					}
+					repository.save(product);
+				});
+			});
+			return new ServiceResult<>(true, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+		}
+	}
+
+	private BigDecimal updatePriceByPercent(BigDecimal price, Double percent) {
+		BigDecimal newPrice = price.multiply(BigDecimal.valueOf(1 + percent/100));
+		BigDecimal diff = newPrice.remainder(BigDecimal.ONE);
+		if (diff.compareTo(BigDecimal.valueOf(0.25)) < 0) {
+			newPrice = newPrice.setScale(0, RoundingMode.FLOOR);
+		} else if (diff.compareTo(BigDecimal.valueOf(0.25)) >= 0 && diff.compareTo(BigDecimal.valueOf(0.75)) < 0) {
+			newPrice = newPrice.setScale(0, RoundingMode.FLOOR).add(BigDecimal.valueOf(0.5));
+		} else {
+			newPrice = newPrice.setScale(0, RoundingMode.CEILING);
+		}
+		return newPrice;
 	}
 }
