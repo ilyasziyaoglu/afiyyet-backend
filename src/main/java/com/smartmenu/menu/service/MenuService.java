@@ -34,9 +34,9 @@ public class MenuService {
 	final private ProductRepository productRepository;
 	final private CampaignRepository campaignRepository;
 
-	public ServiceResult<Menu> getMenu(String brandName) {
+	public ServiceResult<Menu> getMenu(String brandUniqueName) {
 		try {
-			Brand brand = brandRepository.findByName(brandName);
+			Brand brand = brandRepository.findByUniqueName(brandUniqueName);
 
 			List<Category> categories = categoryRepository.findAllByBrandId(brand.getId());
 			categories = categories.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
@@ -94,10 +94,10 @@ public class MenuService {
 		}
 	}
 
-	public ServiceResult<List<Campaign>> getCampaigns(String brandName) {
+	public ServiceResult<List<Campaign>> getCampaigns(String brandUniqueName) {
 
 		try {
-			Brand brand = brandRepository.findByName(brandName);
+			Brand brand = brandRepository.findByUniqueName(brandUniqueName);
 			if (!brand.getFeatures().contains(FeatureType.CAMPAIGN)) {
 				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}

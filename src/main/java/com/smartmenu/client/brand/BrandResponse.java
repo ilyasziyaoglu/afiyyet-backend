@@ -18,6 +18,7 @@ import java.util.Set;
 public class BrandResponse extends BaseResponse {
 
 	private String name;
+	private String uniqueName;
 	private String logoImgUrl;
 	private Status status;
 	private Set<FeatureType> features;

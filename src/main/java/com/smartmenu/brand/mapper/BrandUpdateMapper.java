@@ -23,6 +23,9 @@ public class BrandUpdateMapper implements BaseUpdateMapper<BrandRequest, Brand> 
 		if (request.getName() != null) {
 			entity.setName(request.getName());
 		}
+		if (request.getUniqueName() != null) {
+			entity.setUniqueName(request.getUniqueName());
+		}
 		if ( request.getStatus() != null ) {
 			entity.setStatus(request.getStatus());
 		}

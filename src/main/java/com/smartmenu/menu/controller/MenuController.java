@@ -28,15 +28,15 @@ public class MenuController {
 	final private MenuMapper menuMapper;
 	final private CampaignMapper campaignMapper;
 
-	@GetMapping("/{brandName}")
-	public ResponseEntity<MenuResponse> getMenu(@PathVariable(name = "brandName") String brandName) {
-		ServiceResult<Menu> serviceResult = service.getMenu(brandName);
+	@GetMapping("/{brandUniqueName}")
+	public ResponseEntity<MenuResponse> getMenu(@PathVariable(name = "brandUniqueName") String brandUniqueName) {
+		ServiceResult<Menu> serviceResult = service.getMenu(brandUniqueName);
 		return new ResponseEntity<>(menuMapper.toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
 	}
 
-	@GetMapping("/get-campaigns/{brandName}}")
-	public ResponseEntity<List<CampaignResponse>> getCampaigns(@PathVariable(name = "brandName") String brandName) {
-		ServiceResult<List<Campaign>> serviceResult = service.getCampaigns(brandName);
+	@GetMapping("/get-campaigns/{brandUniqueName}}")
+	public ResponseEntity<List<CampaignResponse>> getCampaigns(@PathVariable(name = "brandUniqueName") String brandUniqueName) {
+		ServiceResult<List<Campaign>> serviceResult = service.getCampaigns(brandUniqueName);
 		return new ResponseEntity<>(campaignMapper.toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
 	}
 

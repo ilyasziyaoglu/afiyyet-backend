@@ -34,6 +34,10 @@ public class Brand extends AbstractBaseEntity {
 	@Column(name = "name")
 	private String name;
 
+	@Column(name = "unique_name", unique = true)
+	private String uniqueName;
+
+
 	@Column(name = "logo_img_url")
 	private String logoImgUrl;
 
