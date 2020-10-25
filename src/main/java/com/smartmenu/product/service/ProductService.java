@@ -58,6 +58,7 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			Product entityToSave = getMapper().toEntity(request);
+			entityToSave.setLikes(0);
 			entityToSave.setCategory(category);
 			Product entity = getRepository().save(entityToSave);
 			return new ServiceResult<>(entity, HttpStatus.CREATED);

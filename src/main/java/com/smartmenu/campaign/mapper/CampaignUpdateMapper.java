@@ -32,9 +32,6 @@ public class CampaignUpdateMapper implements BaseUpdateMapper<CampaignRequest, C
 		if (request.getDescription() != null) {
 			entity.setDescription(request.getDescription());
 		}
-		if (request.getLikes() != null) {
-			entity.setLikes(request.getLikes());
-		}
 		if (request.getStatus() != null) {
 			entity.setStatus(request.getStatus());
 		}

@@ -32,9 +32,6 @@ public class ProductUpdateMapper implements BaseUpdateMapper<ProductRequest, Pro
 //		if (request.getCategory() != null) {
 //			entity.setCategory(categoryMapper.toEntity(request.getCategory()));
 //		}
-		if (request.getLikes() != null) {
-			entity.setLikes(request.getLikes());
-		}
 		if (request.getOrder() != null) {
 			entity.setOrder(request.getOrder());
 		}

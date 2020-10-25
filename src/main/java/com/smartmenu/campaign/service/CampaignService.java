@@ -59,6 +59,7 @@ public class CampaignService extends AbstractBaseService<CampaignRequest, Campai
 				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			Campaign entityToSave = getMapper().toEntity(request);
+			entityToSave.setLikes(0);
 			entityToSave.setBrandId(brand.getId());
 			Campaign entity = getRepository().save(entityToSave);
 			return new ServiceResult<>(entity, HttpStatus.CREATED);
