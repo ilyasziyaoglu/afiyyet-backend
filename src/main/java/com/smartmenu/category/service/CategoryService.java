@@ -10,12 +10,14 @@ import com.smartmenu.client.category.CategoryResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
-import com.smartmenu.product.db.entity.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -45,12 +47,11 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 		return updateMapper;
 	}
 
-	@Override
 	public ServiceResult<Category> save(String token, CategoryRequest request) {
 		User user = getUser(token);
 		try {
 			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS)) {
-				return forbidden();
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			Category entityToSave = getMapper().toEntity(request);
 			entityToSave.setBrandId(user.getBrand().getId());
@@ -62,50 +63,12 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 		}
 	}
 
-	@Override
-	public ServiceResult<Category> update(String token, CategoryRequest request) {
-		try {
-			User user = getUser(token);
-			Category entity = repository.getOne(request.getId());
-			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS) || !user.getBrand().getId().equals(entity.getBrandId())) {
-				return forbidden();
-			}
-			Category newEntity = updateMapper.toEntityForUpdate(request, entity);
-			return new ServiceResult<>(repository.save(newEntity), HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
-		}
-	}
-
-	@Override
-	public ServiceResult<Boolean> delete(String token, Long id) {
-		User user = getUser(token);
-		Category entity = repository.getOne(id);
-		if (!isNotAdmin(user) && !entity.getBrandId().equals(user.getBrand().getId())) {
-			return forbiddenBoolean();
-		}
-		return super.delete(token, id);
-	}
-
-	@Override
-	public ServiceResult<Boolean> deleteAll(String token, Set<Long> ids) {
-		User user = getUser(token);
-		List<Category> entityList = repository.findAllById(ids);
-		for (Category entity : entityList) {
-			if (isNotAdmin(user) && !entity.getBrandId().equals(user.getBrand().getId())) {
-				return forbiddenBoolean();
-			}
-		}
-		return super.deleteAll(token, ids);
-	}
-
 	public ServiceResult<Boolean> arrangeCategories(String token, Map<Long, Integer> dto) {
 		User user = getUser(token);
 
 		try {
 			if (!user.getBrand().getFeatures().contains(FeatureType.ORDERING)) {
-				return forbiddenBoolean();
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			Optional<List<Category>> entityList = Optional.of(getRepository().findAllById(dto.keySet()));
 			for (Category category : entityList.get()) {
@@ -123,22 +86,8 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 	public ServiceResult<List<Category>> getCategoriesByBrand(String token) {
 		try {
 			List<Category> entityList = getRepository().findAllByBrandId(getUser(token).getBrand().getId());
-			entityList = entityList.stream()
-					.filter(category -> !"KAMPANYALAR".equals(category.getName()) && !"MENÜLER".equals(category.getName()))
-					.sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder())))
-					.collect(Collectors.toList());
+			entityList = entityList.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			return new ServiceResult<>(entityList, HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-		}
-	}
-
-	public ServiceResult<List<Product>> getCategoryByBrandAndName(String token, String name) {
-		try {
-			Category campaigns = repository.findTopByBrandIdAndName(getUser(token).getBrand().getId(), name);
-			campaigns.getProducts().sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
-			return new ServiceResult<>(campaigns.getProducts(), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
