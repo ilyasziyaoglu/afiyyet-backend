@@ -54,10 +54,4 @@ public class Category extends AbstractBaseEntity {
 	public Long getId() {
 		return this.id;
 	}
-
-	public Category(String name, Integer order, Long brandId) {
-		this.name = name;
-		this.order = order;
-		this.brandId = brandId;
-	}
 }

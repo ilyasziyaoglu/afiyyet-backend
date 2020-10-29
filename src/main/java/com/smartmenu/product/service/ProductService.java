@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Comparator;
@@ -57,11 +56,13 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 	public ServiceResult<Product> save(String token, ProductRequest request) {
 		try {
 			User user = getUser(token);
-			Category category =  categoryRepository.getOne(request.getCategory().getId());
-			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS) || !user.getBrand().getId().equals(category.getBrandId())) {
+			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS)) {
 				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
-
+			Category category =  categoryRepository.getOne(request.getCategory().getId());
+			if (!user.getBrand().getId().equals(category.getBrandId())) {
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
+			}
 			Product entityToSave = getMapper().toEntity(request);
 			entityToSave.setLikes(0);
 			entityToSave.setCategory(category);
@@ -70,28 +71,6 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
-		}
-	}
-
-	@Override
-	public ServiceResult<Product> update(String token, @NotNull ProductRequest request) {
-		try {
-			User user = getUser(token);
-			Category category = categoryRepository.getOne(request.getCategory().getId());
-			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS) || !user.getBrand().getId().equals(category.getBrandId())) {
-				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
-			}
-			Optional<Product> entity = getRepository().findById(request.getId());
-			if (entity.isPresent()) {
-				Product newEntity = getUpdateMapper().toEntityForUpdate(request, entity.get());
-				repository.save(newEntity);
-				return new ServiceResult<>(newEntity, HttpStatus.OK);
-			} else {
-				return new ServiceResult<>(HttpStatus.NOT_FOUND, "Entity not found to update update with the given id: " + request.getId());
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
 		}
 	}
 
