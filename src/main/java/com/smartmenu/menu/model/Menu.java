@@ -1,8 +1,8 @@
 package com.smartmenu.menu.model;
 
 import com.smartmenu.brand.db.entity.Brand;
-import com.smartmenu.campaign.db.entity.Campaign;
 import com.smartmenu.category.db.entity.Category;
+import com.smartmenu.product.db.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -17,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Menu {
 	private List<Category> categories;
-	private List<Campaign> campaigns;
+	private List<Product> campaigns;
+	private List<Product> menus;
 	private Brand brand;
 }

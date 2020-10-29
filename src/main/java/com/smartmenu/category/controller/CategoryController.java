@@ -7,6 +7,7 @@ import com.smartmenu.client.category.CategoryRequest;
 import com.smartmenu.client.category.CategoryResponse;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;
 import com.smartmenu.common.basemodel.service.ServiceResult;
+import com.smartmenu.product.db.entity.Product;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +47,18 @@ public class CategoryController extends AbstractBaseController<CategoryRequest, 
 	@GetMapping("/get-categories-by-brand")
 	public ResponseEntity<List<Category>> getCategoriesByBrand(@RequestHeader(HEADER_TOKEN) String token) {
 		ServiceResult<List<Category>> serviceResult = getService().getCategoriesByBrand(token);
+		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	}
+
+	@GetMapping("/get-campaigns-by-brand")
+	public ResponseEntity<List<Product>> getCampaignsByBrand(@RequestHeader(HEADER_TOKEN) String token) {
+		ServiceResult<List<Product>> serviceResult = getService().getCategoryByBrandAndName(token, "KAMPANYALAR");
+		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	}
+
+	@GetMapping("/get-menus-by-brand")
+	public ResponseEntity<List<Product>> getMenusByBrand(@RequestHeader(HEADER_TOKEN) String token) {
+		ServiceResult<List<Product>> serviceResult = getService().getCategoryByBrandAndName(token, "MENÜLER");
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
 }
