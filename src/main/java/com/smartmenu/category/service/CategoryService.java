@@ -10,6 +10,7 @@ import com.smartmenu.client.category.CategoryResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
+import com.smartmenu.product.db.entity.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -88,6 +89,17 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 			List<Category> entityList = getRepository().findAllByBrandId(getUser(token).getBrand().getId());
 			entityList = entityList.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			return new ServiceResult<>(entityList, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+		}
+	}
+
+	public ServiceResult<List<Product>> getCategoryByBrandAndName(String token, String name) {
+		try {
+			Category campaigns = repository.findTopByBrandIdAndName(getUser(token).getBrand().getId(), name);
+			campaigns.getProducts().sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
+			return new ServiceResult<>(campaigns.getProducts(), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
