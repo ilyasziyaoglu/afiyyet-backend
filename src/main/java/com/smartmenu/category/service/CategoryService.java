@@ -123,7 +123,10 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 	public ServiceResult<List<Category>> getCategoriesByBrand(String token) {
 		try {
 			List<Category> entityList = getRepository().findAllByBrandId(getUser(token).getBrand().getId());
-			entityList = entityList.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
+			entityList = entityList.stream()
+					.filter(category -> !"KAMPANYALAR".equals(category.getName()) && !"MENÜLER".equals(category.getName()))
+					.sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder())))
+					.collect(Collectors.toList());
 			return new ServiceResult<>(entityList, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
