@@ -22,15 +22,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-
 /**
  * @author Ilyas Ziyaoglu
  * @date 2020-04-24
  */
 
-@RestController
 @RequiredArgsConstructor
+@RestController
 @RequestMapping(value = "/auth")
 public class AuthController {
 
@@ -72,7 +70,7 @@ public class AuthController {
 		user.setEmail(request.getEmail());
 		user.setGender(request.getGender());
 		user.setPassword(getPasswordEncoder().encode(request.getPassword()));
-		user.setRoles(Collections.singletonList("USER"));
+		user.setRoles("USER");
 
 		try {
 			User userSave = userRepository.save(user);

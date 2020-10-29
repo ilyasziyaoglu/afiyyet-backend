@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -50,7 +51,7 @@ public class CommentService extends AbstractBaseService<CommentRequest, Comment,
 		try {
 			Brand brand = brandRepository.getOne(request.getBrand().getId());
 			if (!brand.getFeatures().contains(FeatureType.FEEDBACKS)) {
-				return forbiddenBoolean();
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			Comment entityToSave = getMapper().toEntity(request);
 			entityToSave.setBrand(brand);
@@ -65,10 +66,10 @@ public class CommentService extends AbstractBaseService<CommentRequest, Comment,
 	public ServiceResult<List<Comment>> getCommentsByBrand(String token) {
 		try {
 			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.FEEDBACKS)) {
-				return forbiddenList();
+				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			List<Comment> entityList = getRepository().findAllByBrand(getUser(token).getBrand());
-			entityList.sort(Comparator.comparing(Comment::getCreatedDate, Comparator.nullsLast(Comparator.naturalOrder())));
+			entityList = entityList.stream().sorted(Comparator.comparing(Comment::getCreatedDate, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			return new ServiceResult<>(entityList, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
