@@ -29,9 +29,6 @@ public class ProductUpdateMapper implements BaseUpdateMapper<ProductRequest, Pro
 		if (request.getPrice() != null) {
 			entity.setPrice(request.getPrice());
 		}
-//		if (request.getCategory() != null) {
-//			entity.setCategory(categoryMapper.toEntity(request.getCategory()));
-//		}
 		if (request.getOrder() != null) {
 			entity.setOrder(request.getOrder());
 		}
@@ -40,6 +37,21 @@ public class ProductUpdateMapper implements BaseUpdateMapper<ProductRequest, Pro
 		}
 		if (request.getStatus() != null) {
 			entity.setStatus(request.getStatus());
+		}
+		if (request.getFakePrice() != null) {
+			entity.setFakePrice(request.getFakePrice());
+		}
+		if (request.getStartDate() != null) {
+			entity.setStartDate(request.getStartDate());
+		}
+		if (request.getExpireDate() != null) {
+			entity.setExpireDate(request.getExpireDate());
+		}
+		if (request.getType() != null) {
+			entity.setType(request.getType());
+		}
+		if (request.getHasPortionOption() != null) {
+			entity.setHasPortionOption(request.getHasPortionOption());
 		}
 		return entity;
 	}

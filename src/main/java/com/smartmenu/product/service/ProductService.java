@@ -17,12 +17,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -56,13 +54,11 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 	public ServiceResult<Product> save(String token, ProductRequest request) {
 		try {
 			User user = getUser(token);
-			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS)) {
-				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
-			}
 			Category category =  categoryRepository.getOne(request.getCategory().getId());
-			if (!user.getBrand().getId().equals(category.getBrandId())) {
-				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
+			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS) || !user.getBrand().getId().equals(category.getBrandId())) {
+				return forbidden();
 			}
+
 			Product entityToSave = getMapper().toEntity(request);
 			entityToSave.setLikes(0);
 			entityToSave.setCategory(category);
@@ -72,6 +68,49 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 			e.printStackTrace();
 			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
 		}
+	}
+
+	@Override
+	public ServiceResult<Product> update(String token, @NotNull ProductRequest request) {
+		try {
+			User user = getUser(token);
+			Category category = categoryRepository.getOne(request.getCategory().getId());
+			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS) || !user.getBrand().getId().equals(category.getBrandId())) {
+				return forbidden();
+			}
+			Optional<Product> entity = getRepository().findById(request.getId());
+			if (entity.isPresent()) {
+				Product newEntity = getUpdateMapper().toEntityForUpdate(request, entity.get());
+				return new ServiceResult<>(repository.save(newEntity), HttpStatus.OK);
+			} else {
+				return new ServiceResult<>(HttpStatus.NOT_FOUND, "Entity not found to update update with the given id: " + request.getId());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
+		}
+	}
+
+	@Override
+	public ServiceResult<Boolean> delete(String token, Long id) {
+		User user = getUser(token);
+		Product entity = repository.getOne(id);
+		if (!isNotAdmin(user) && !entity.getCategory().getBrandId().equals(user.getBrand().getId())) {
+			return forbiddenBoolean();
+		}
+		return super.delete(token, id);
+	}
+
+	@Override
+	public ServiceResult<Boolean> deleteAll(String token, Set<Long> ids) {
+		User user = getUser(token);
+		List<Product> entityList = repository.findAllById(ids);
+		for (Product entity : entityList) {
+			if (isNotAdmin(user) && !entity.getCategory().getBrandId().equals(user.getBrand().getId())) {
+				return forbiddenBoolean();
+			}
+		}
+		return super.deleteAll(token, ids);
 	}
 
 	public ServiceResult<List<Product>> getProductsByCategory(String token, Long categoryId) {
@@ -89,7 +128,7 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		try {
 			User user = getUser(token);
 			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.ORDERING)) {
-				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
+				return forbiddenBoolean();
 			}
 			Optional<List<Product>> entityList = Optional.of(getRepository().findAllById(dto.keySet()));
 			for (Product prodduct : entityList.get()) {
