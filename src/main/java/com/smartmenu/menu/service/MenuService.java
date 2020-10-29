@@ -34,11 +34,9 @@ public class MenuService {
 	public ServiceResult<Menu> getMenu(String brandUniqueName) {
 		try {
 			Brand brand = brandRepository.findByUniqueName(brandUniqueName);
+
 			List<Category> categories = categoryRepository.findAllByBrandId(brand.getId());
-			categories = categories.stream()
-					.filter(category -> !"KAMPANYALAR".equals(category.getName()) && !"MENÜLER".equals(category.getName()))
-					.sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder())))
-					.collect(Collectors.toList());
+			categories = categories.stream().sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			for (Category category : categories) {
 				category.getProducts().sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
 			}
