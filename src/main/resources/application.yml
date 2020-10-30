@@ -86,7 +86,7 @@ sftp:
   local:
     directory:
       download: /Downloads/
-      upload: /home/afiyyet/smartmenu/cdn/
+      upload: /smartmenu/cdn/
 
 
 mail:
