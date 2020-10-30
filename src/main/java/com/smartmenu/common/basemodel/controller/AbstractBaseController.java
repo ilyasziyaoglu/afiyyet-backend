@@ -1,9 +1,9 @@
 package com.smartmenu.common.basemodel.controller;
 
-import com.smartmenu.common.basemodel.request.BaseRequest;
-import com.smartmenu.common.basemodel.response.BaseResponse;
 import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
 import com.smartmenu.common.basemodel.mapper.BaseMapper;
+import com.smartmenu.common.basemodel.request.BaseRequest;
+import com.smartmenu.common.basemodel.response.BaseResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +30,9 @@ public abstract class AbstractBaseController<
 
     public final String GUEST = "/guest";
     public final String HEADER_TOKEN = "Authorization";
+
+    public String KAMPANYALAR = "KAMPANYALAR";
+    public String MENULER = "MENÜLER";
 
     protected abstract Service getService();
     protected abstract Mapper getMapper();

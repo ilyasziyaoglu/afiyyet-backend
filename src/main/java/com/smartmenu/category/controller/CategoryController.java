@@ -52,13 +52,13 @@ public class CategoryController extends AbstractBaseController<CategoryRequest, 
 
 	@GetMapping("/get-campaigns-by-brand")
 	public ResponseEntity<List<Product>> getCampaignsByBrand(@RequestHeader(HEADER_TOKEN) String token) {
-		ServiceResult<List<Product>> serviceResult = getService().getCategoryByBrandAndName(token, "KAMPANYALAR");
+		ServiceResult<List<Product>> serviceResult = getService().getCategoryByBrandAndName(token, KAMPANYALAR);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
 
 	@GetMapping("/get-menus-by-brand")
 	public ResponseEntity<List<Product>> getMenusByBrand(@RequestHeader(HEADER_TOKEN) String token) {
-		ServiceResult<List<Product>> serviceResult = getService().getCategoryByBrandAndName(token, "MENÜLER");
+		ServiceResult<List<Product>> serviceResult = getService().getCategoryByBrandAndName(token, MENULER);
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
 }

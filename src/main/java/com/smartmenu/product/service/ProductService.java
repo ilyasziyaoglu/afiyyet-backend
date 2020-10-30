@@ -55,15 +55,7 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 	public ServiceResult<Product> save(String token, ProductRequest request) {
 		try {
 			User user = getUser(token);
-			Category category = null;
-			if (ProductType.PRODUCT.equals(request.getType())) {
-				category = categoryRepository.getOne(request.getCategory().getId());
-			} else if (ProductType.CAMPAIGN.equals(request.getType())) {
-				category = categoryRepository.findTopByBrandIdAndName(user.getBrand().getId(), "KAMPANYALAR");
-			} else if (ProductType.MENU.equals(request.getType())) {
-				category = categoryRepository.findTopByBrandIdAndName(user.getBrand().getId(), "MENÜLER");
-			}
-
+			Category category = getCategoryByType(request, user);
 			if (category == null) {
 				return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: category not found or product type mismatch!");
 			}
@@ -83,11 +75,25 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		}
 	}
 
+	private Category getCategoryByType(ProductRequest request, User user) {
+		if (ProductType.PRODUCT.equals(request.getType())) {
+			return categoryRepository.getOne(request.getCategory().getId());
+		} else if (ProductType.CAMPAIGN.equals(request.getType())) {
+			return categoryRepository.findTopByBrandIdAndName(user.getBrand().getId(), KAMPANYALAR);
+		} else if (ProductType.MENU.equals(request.getType())) {
+			return categoryRepository.findTopByBrandIdAndName(user.getBrand().getId(), MENULER);
+		}
+		return null;
+	}
+
 	@Override
 	public ServiceResult<Product> update(String token, @NotNull ProductRequest request) {
 		try {
 			User user = getUser(token);
-			Category category = categoryRepository.getOne(request.getCategory().getId());
+			Category category = getCategoryByType(request, user);
+			if (category == null) {
+				return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: category not found or product type mismatch!");
+			}
 			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS) || !user.getBrand().getId().equals(category.getBrandId())) {
 				return forbidden();
 			}

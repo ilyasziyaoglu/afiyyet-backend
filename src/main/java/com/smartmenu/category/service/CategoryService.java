@@ -124,7 +124,7 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 		try {
 			List<Category> entityList = getRepository().findAllByBrandId(getUser(token).getBrand().getId());
 			entityList = entityList.stream()
-					.filter(category -> !"KAMPANYALAR".equals(category.getName()) && !"MENÜLER".equals(category.getName()))
+					.filter(category -> !KAMPANYALAR.equals(category.getName()) && !MENULER.equals(category.getName()))
 					.sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder())))
 					.collect(Collectors.toList());
 			return new ServiceResult<>(entityList, HttpStatus.OK);

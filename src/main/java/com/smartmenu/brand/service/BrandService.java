@@ -53,8 +53,8 @@ public class BrandService extends AbstractBaseService<BrandRequest, Brand, Brand
 				return forbidden();
 			}
 			Brand entity = getRepository().save(mapper.toEntity(request));
-			categoryRepository.save(new Category("MENÜLER", -1, entity.getId()));
-			categoryRepository.save(new Category("KAMPANYALAR", -2, entity.getId()));
+			categoryRepository.save(new Category(MENULER, -1, entity.getId()));
+			categoryRepository.save(new Category(KAMPANYALAR, -2, entity.getId()));
 			return new ServiceResult<>(entity, HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
