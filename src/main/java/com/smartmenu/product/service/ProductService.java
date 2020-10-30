@@ -11,6 +11,7 @@ import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
 import com.smartmenu.product.db.entity.Product;
 import com.smartmenu.product.db.repository.ProductRepository;
+import com.smartmenu.product.enums.ProductType;
 import com.smartmenu.product.mapper.ProductMapper;
 import com.smartmenu.product.mapper.ProductUpdateMapper;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +55,19 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 	public ServiceResult<Product> save(String token, ProductRequest request) {
 		try {
 			User user = getUser(token);
-			Category category =  categoryRepository.getOne(request.getCategory().getId());
+			Category category = null;
+			if (ProductType.PRODUCT.equals(request.getType())) {
+				category = categoryRepository.getOne(request.getCategory().getId());
+			} else if (ProductType.CAMPAIGN.equals(request.getType())) {
+				category = categoryRepository.findTopByBrandIdAndName(user.getBrand().getId(), "KAMPANYALAR");
+			} else if (ProductType.MENU.equals(request.getType())) {
+				category = categoryRepository.findTopByBrandIdAndName(user.getBrand().getId(), "MENÜLER");
+			}
+
+			if (category == null) {
+				return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: category not found or product type mismatch!");
+			}
+
 			if (!user.getBrand().getFeatures().contains(FeatureType.CRUD_OPERATIONS) || !user.getBrand().getId().equals(category.getBrandId())) {
 				return forbidden();
 			}
