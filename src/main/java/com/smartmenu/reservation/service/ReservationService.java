@@ -7,6 +7,7 @@ import com.smartmenu.client.reservation.ReservationRequest;
 import com.smartmenu.client.reservation.ReservationResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
+import com.smartmenu.common.user.db.entity.User;
 import com.smartmenu.reservation.db.entity.Reservation;
 import com.smartmenu.reservation.db.repository.ReservationRepository;
 import com.smartmenu.reservation.mapper.ReservationMapper;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -52,7 +54,7 @@ public class ReservationService extends AbstractBaseService<ReservationRequest, 
 		Brand brand = brandRepository.getOne(dto.getBrand().getId());
 		try {
 			if (!brand.getFeatures().contains(FeatureType.RESERVATIONS)) {
-				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
+				return forbiddenBoolean();
 			}
 			Reservation entityToSave = getMapper().toEntity(dto);
 			entityToSave.setBrand(brand);
@@ -67,7 +69,7 @@ public class ReservationService extends AbstractBaseService<ReservationRequest, 
 	public ServiceResult<List<Reservation>> getReservationsByBrand(String token) {
 		try {
 			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.ORDERING)) {
-				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
+				return forbiddenList();
 			}
 			List<Reservation> entityList = getRepository().findAllByBrandAndReservationDateAfter(getUser(token).getBrand(), ZonedDateTime.now());
 			entityList = entityList.stream().sorted(Comparator.comparing(Reservation::getReservationDate, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
@@ -76,5 +78,27 @@ public class ReservationService extends AbstractBaseService<ReservationRequest, 
 			e.printStackTrace();
 			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
+	}
+
+	@Override
+	public ServiceResult<Boolean> delete(String token, Long id) {
+		User user = getUser(token);
+		Reservation entity = repository.getOne(id);
+		if (!isNotAdmin(user) && !entity.getBrand().getId().equals(user.getBrand().getId())) {
+			return forbiddenBoolean();
+		}
+		return super.delete(token, id);
+	}
+
+	@Override
+	public ServiceResult<Boolean> deleteAll(String token, Set<Long> ids) {
+		User user = getUser(token);
+		List<Reservation> entityList = repository.findAllById(ids);
+		for (Reservation entity : entityList) {
+			if (isNotAdmin(user) && !entity.getBrand().getId().equals(user.getBrand().getId())) {
+				return forbiddenBoolean();
+			}
+		}
+		return super.deleteAll(token, ids);
 	}
 }

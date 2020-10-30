@@ -18,9 +18,9 @@ import java.util.List;
 
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "categories")
+@EqualsAndHashCode(callSuper = true)
 public class Category extends AbstractBaseEntity {
 
 	private static final long serialVersionUID = 2818358983516690819L;
@@ -53,5 +53,13 @@ public class Category extends AbstractBaseEntity {
 	@Override
 	public Long getId() {
 		return this.id;
+	}
+
+	public Category() { }
+
+	public Category(String name, Integer order, Long brandId) {
+		this.name = name;
+		this.order = order;
+		this.brandId = brandId;
 	}
 }
