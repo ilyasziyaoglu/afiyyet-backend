@@ -5,10 +5,11 @@ server:
 #    SQL: DEBUG
 #    type.descriptor.sql.BasicBinder: TRACE
 
-app:
-  baseCdnUrl: https://afiyyet.com:5002/
+
+---
 
 spring:
+  profiles: prod
   datasource:
     password: 2vMNPU49Ep47HtYn
     username: afiyyet
@@ -51,6 +52,9 @@ mail:
     auth: true
     starttls:
       enabled: true
+
+app:
+  baseCdnUrl: https://afiyyet.com:5002/
 ---
 
 spring:
@@ -133,6 +137,20 @@ sftp:
     directory:
       download: /Users/ilyas/Downloads/
       upload: /Users/ilyas/Desktop/projects/smartmenu/cdn/
+
+
+
+mail:
+  host: smtp.gmail.com
+  protocol: smtp
+  port: 587
+  username: aaaaaaa
+  password: aaaaaaa
+  debug: true
+  smtp:
+    auth: true
+    starttls:
+      enabled: true
 
 app:
   baseCdnUrl: http://localhost:5000/
