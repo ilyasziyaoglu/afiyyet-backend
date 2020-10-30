@@ -39,6 +39,8 @@ public abstract class AbstractBaseService<
 		Mapper extends BaseMapper<Request, Entity, Response>> extends BaseService<Request, Entity, BaseRepository<Entity>, BaseUpdateMapper<Request, Entity>> {
 
 	private JwtUtil jwtUtil;
+	public String KAMPANYALAR = "KAMPANYALAR";
+	public String MENULER = "MENÜLER";
 
 	@Autowired
 	private UserRepository userRepository;
