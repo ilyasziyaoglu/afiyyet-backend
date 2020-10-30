@@ -53,9 +53,6 @@ mail:
       enabled: true
 ---
 
-app:
-  baseCdnUrl: http://31.220.55.12:5000/
-
 spring:
   profiles: test
   datasource:
@@ -100,6 +97,9 @@ mail:
     auth: true
     starttls:
       enabled: true
+
+app:
+  baseCdnUrl: http://31.220.55.12:5000/
 ---
 
 spring:
