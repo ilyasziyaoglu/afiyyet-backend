@@ -53,6 +53,55 @@ mail:
       enabled: true
 ---
 
+app:
+  baseCdnUrl: http://31.220.55.12:5000/
+
+spring:
+  profiles: test
+  datasource:
+    password: jw8s0F4
+    username: smartmenu
+    url: jdbc:postgresql://31.220.55.12:5432/smartmenu
+    driverClassName: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+sftp:
+  host: 31.220.55.12
+  port: 2222
+  user: smartmenu
+  password: smartmenu
+  remote:
+    directory:
+      upload: cdn/
+      download: ~/
+  local:
+    directory:
+      download: /Downloads/
+      upload: /home/afiyyet/smartmenu/cdn/
+
+
+mail:
+  host: smtp.gmail.com
+  protocol: smtp
+  port: 587
+  username: aaaaaaa
+  password: aaaaaaa
+  debug: true
+  smtp:
+    auth: true
+    starttls:
+      enabled: true
+---
+
 spring:
   profiles: ilyas
   datasource:
