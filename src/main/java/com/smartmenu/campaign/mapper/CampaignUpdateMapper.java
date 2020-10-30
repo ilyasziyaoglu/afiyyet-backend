@@ -1,9 +1,8 @@
-package com.smartmenu.product.mapper;
+package com.smartmenu.campaign.mapper;
 
-import com.smartmenu.category.mapper.CategoryMapper;
-import com.smartmenu.client.product.ProductRequest;
+import com.smartmenu.campaign.db.entity.Campaign;
+import com.smartmenu.client.campaign.CampaignRequest;
 import com.smartmenu.common.basemodel.mapper.BaseUpdateMapper;
-import com.smartmenu.product.db.entity.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,12 +13,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ProductUpdateMapper implements BaseUpdateMapper<ProductRequest, Product> {
-
-	final private CategoryMapper categoryMapper;
+public class CampaignUpdateMapper implements BaseUpdateMapper<CampaignRequest, Campaign> {
 
 	@Override
-	public Product toEntityForUpdate(ProductRequest request, Product entity) {
+	public Campaign toEntityForUpdate(CampaignRequest request, Campaign entity) {
 		if (!request.getName().isEmpty()) {
 			entity.setName(request.getName());
 		}
@@ -29,9 +26,6 @@ public class ProductUpdateMapper implements BaseUpdateMapper<ProductRequest, Pro
 		if (request.getPrice() != null) {
 			entity.setPrice(request.getPrice());
 		}
-//		if (request.getCategory() != null) {
-//			entity.setCategory(categoryMapper.toEntity(request.getCategory()));
-//		}
 		if (request.getOrder() != null) {
 			entity.setOrder(request.getOrder());
 		}
@@ -40,6 +34,12 @@ public class ProductUpdateMapper implements BaseUpdateMapper<ProductRequest, Pro
 		}
 		if (request.getStatus() != null) {
 			entity.setStatus(request.getStatus());
+		}
+		if (request.getExpireDate() != null) {
+			entity.setExpireDate(request.getExpireDate());
+		}
+		if (request.getStartDate() != null) {
+			entity.setStartDate(request.getStartDate());
 		}
 		return entity;
 	}

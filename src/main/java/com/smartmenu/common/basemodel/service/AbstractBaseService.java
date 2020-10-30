@@ -11,7 +11,6 @@ import com.smartmenu.common.basemodel.request.pager.PageDto;
 import com.smartmenu.common.basemodel.response.BaseResponse;
 import com.smartmenu.common.user.db.entity.User;
 import com.smartmenu.common.user.db.repository.UserRepository;
-import com.smartmenu.common.user.enums.UserRoles;
 import com.smartmenu.common.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -71,7 +71,7 @@ public abstract class AbstractBaseService<
 		}
 	}
 
-	public ServiceResult<Entity> update(String token, Request request) {
+	public ServiceResult<Entity> update(String token, @NotNull Request request) {
 		Optional<Entity> entity = getRepository().findById(request.getId());
 		if (entity.isPresent()) {
 			try {
@@ -153,30 +153,10 @@ public abstract class AbstractBaseService<
 		return null;
 	}
 
-	public boolean isNotAdmin(String token) {
-		return !getUser(token).getRoles().contains(UserRoles.ADMIN.name());
-	}
-
-	public boolean isNotAdmin(User user) {
-		return !user.getRoles().contains(UserRoles.ADMIN.name());
-	}
-
 	public JwtUtil getJwtUtil() {
 		if (jwtUtil == null) {
 			jwtUtil = new JwtUtil();
 		}
 		return jwtUtil;
-	}
-
-	public ServiceResult<Entity> forbidden() {
-		return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
-	}
-
-	public ServiceResult<List<Entity>> forbiddenList() {
-		return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
-	}
-
-	public ServiceResult<Boolean> forbiddenBoolean() {
-		return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 	}
 }

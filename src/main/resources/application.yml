@@ -5,10 +5,11 @@ server:
 #    SQL: DEBUG
 #    type.descriptor.sql.BasicBinder: TRACE
 
-app:
-  baseCdnUrl: https://afiyyet.com:5002/
+
+---
 
 spring:
+  profiles: prod
   datasource:
     password: 2vMNPU49Ep47HtYn
     username: afiyyet
@@ -51,6 +52,58 @@ mail:
     auth: true
     starttls:
       enabled: true
+
+app:
+  baseCdnUrl: https://afiyyet.com:5002/
+---
+
+spring:
+  profiles: test
+  datasource:
+    password: jw8s0F4
+    username: smartmenu
+    url: jdbc:postgresql://127.0.0.1:5432/smartmenu
+    driverClassName: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+sftp:
+  host: 31.220.55.12
+  port: 2222
+  user: smartmenu
+  password: smartmenu
+  remote:
+    directory:
+      upload: cdn/
+      download: ~/
+  local:
+    directory:
+      download: /Downloads/
+      upload: /smartmenu/cdn/
+
+
+mail:
+  host: smtp.gmail.com
+  protocol: smtp
+  port: 587
+  username: aaaaaaa
+  password: aaaaaaa
+  debug: true
+  smtp:
+    auth: true
+    starttls:
+      enabled: true
+
+app:
+  baseCdnUrl: http://31.220.55.12:5000/
 ---
 
 spring:
@@ -84,6 +137,20 @@ sftp:
     directory:
       download: /Users/ilyas/Downloads/
       upload: /Users/ilyas/Desktop/projects/smartmenu/cdn/
+
+
+
+mail:
+  host: smtp.gmail.com
+  protocol: smtp
+  port: 587
+  username: aaaaaaa
+  password: aaaaaaa
+  debug: true
+  smtp:
+    auth: true
+    starttls:
+      enabled: true
 
 app:
   baseCdnUrl: http://localhost:5000/
