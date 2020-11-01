@@ -15,9 +15,9 @@ import javax.persistence.*;
 
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "comments")
+@EqualsAndHashCode(callSuper = true)
 public class Comment extends AbstractBaseEntity {
 
 	private static final long serialVersionUID = 2818358983516690819L;

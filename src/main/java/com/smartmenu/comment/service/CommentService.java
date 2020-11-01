@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -69,7 +68,7 @@ public class CommentService extends AbstractBaseService<CommentRequest, Comment,
 				return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 			}
 			List<Comment> entityList = getRepository().findAllByBrand(getUser(token).getBrand());
-			entityList = entityList.stream().sorted(Comparator.comparing(Comment::getCreatedDate, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
+			entityList.sort(Comparator.comparing(Comment::getCreatedDate, Comparator.nullsLast(Comparator.naturalOrder())));
 			return new ServiceResult<>(entityList, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
