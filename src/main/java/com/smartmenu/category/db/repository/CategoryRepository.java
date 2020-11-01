@@ -14,5 +14,4 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends BaseRepository<Category> {
 	List<Category> findAllByBrandId(Long brandId);
-	Category findTopByBrandIdAndName(Long brandId, String name);
 }

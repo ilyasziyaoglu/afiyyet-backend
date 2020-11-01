@@ -15,7 +15,6 @@ import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -118,13 +117,5 @@ public class User extends AbstractBaseEntity implements UserDetails {
 	@Override
 	public String getPassword() {
 		return password;
-	}
-
-	public List<String> getRoles() {
-		return Arrays.asList(roles.split(","));
-	}
-
-	public void setRoles(List<String> roles) {
-		this.roles = String.join(",", roles);
 	}
 }

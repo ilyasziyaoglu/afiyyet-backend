@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -24,7 +23,7 @@ public class UserResponse extends BaseResponse {
 	private String email;
 	private String phone;
 	private String addresses;
-	private List<String> roles;
+	private String roles;
 	private Gender gender;
 	private Date birthdate;
 	private String country;
