@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +48,9 @@ public class MenuService {
 			}
 			List<Product> campaigns = categoryRepository.findTopByBrandIdAndName(brand.getId(), KAMPANYALAR).getProducts();
 			campaigns.sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
+			campaigns = campaigns.stream()
+					.filter(c -> ZonedDateTime.now().isAfter(c.getStartDate()) && ZonedDateTime.now().isBefore(c.getExpireDate()))
+					.collect(Collectors.toList());
 			List<Product> menus = categoryRepository.findTopByBrandIdAndName(brand.getId(), MENULER).getProducts();
 			menus.sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
 			return new ServiceResult<>(new Menu(categories, campaigns, menus, brand), HttpStatus.OK);
