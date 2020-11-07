@@ -7,6 +7,7 @@ import com.smartmenu.menu.mapper.MenuMapper;
 import com.smartmenu.menu.model.Menu;
 import com.smartmenu.menu.service.MenuService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,7 @@ public class MenuController {
 	final private MenuService service;
 	final private MenuMapper menuMapper;
 
+	@Cacheable("menu_by_brand")
 	@GetMapping("/{brandUniqueName}")
 	public ResponseEntity<MenuResponse> getMenu(@PathVariable(name = "brandUniqueName") String brandUniqueName) {
 		ServiceResult<Menu> serviceResult = service.getMenu(brandUniqueName);
