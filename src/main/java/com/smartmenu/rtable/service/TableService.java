@@ -6,9 +6,9 @@ import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
 import com.smartmenu.rtable.db.entity.RTable;
-import com.smartmenu.rtable.db.repository.RTableRepository;
-import com.smartmenu.rtable.mapper.RTableMapper;
-import com.smartmenu.rtable.mapper.RTableUpdateMapper;
+import com.smartmenu.rtable.db.repository.TableRepository;
+import com.smartmenu.rtable.mapper.TableMapper;
+import com.smartmenu.rtable.mapper.TableUpdateMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,23 +24,23 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class RTableService extends AbstractBaseService<RTableRequest, RTable, RTableResponse, RTableMapper> {
-	final private RTableRepository repository;
-	final private RTableMapper mapper;
-	final private RTableUpdateMapper updateMapper;
+public class TableService extends AbstractBaseService<RTableRequest, RTable, RTableResponse, TableMapper> {
+	final private TableRepository repository;
+	final private TableMapper mapper;
+	final private TableUpdateMapper updateMapper;
 
 	@Override
-	public RTableRepository getRepository() {
+	public TableRepository getRepository() {
 		return repository;
 	}
 
 	@Override
-	public RTableMapper getMapper() {
+	public TableMapper getMapper() {
 		return mapper;
 	}
 
 	@Override
-	public RTableUpdateMapper getUpdateMapper() {
+	public TableUpdateMapper getUpdateMapper() {
 		return updateMapper;
 	}
 

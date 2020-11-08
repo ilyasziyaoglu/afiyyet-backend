@@ -163,6 +163,14 @@ public abstract class AbstractBaseService<
 		return !user.getRoles().contains(UserRoles.ADMIN.name());
 	}
 
+	public boolean isManager(String token) {
+		return !getUser(token).getRoles().contains(UserRoles.MANAGER.name());
+	}
+
+	public boolean isManager(User user) {
+		return !user.getRoles().contains(UserRoles.MANAGER.name());
+	}
+
 	public JwtUtil getJwtUtil() {
 		if (jwtUtil == null) {
 			jwtUtil = new JwtUtil();

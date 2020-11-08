@@ -1,8 +1,8 @@
 package com.smartmenu.common.basemodel.mapper;
 
+import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
 import com.smartmenu.common.basemodel.request.BaseRequest;
 import com.smartmenu.common.basemodel.response.BaseResponse;
-import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
 
 import java.util.List;
 

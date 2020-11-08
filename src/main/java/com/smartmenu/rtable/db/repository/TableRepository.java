@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface RTableRepository extends BaseRepository<RTable> {
+public interface TableRepository extends BaseRepository<RTable> {
 }

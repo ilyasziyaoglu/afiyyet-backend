@@ -12,5 +12,5 @@ import org.mapstruct.Mapper;
  */
 
 @Mapper(componentModel = "spring")
-public interface RTableMapper extends BaseMapper<RTableRequest, RTable, RTableResponse> {
+public interface TableMapper extends BaseMapper<RTableRequest, RTable, RTableResponse> {
 }

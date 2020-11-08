@@ -4,8 +4,8 @@ import com.smartmenu.client.rtable.RTableRequest;
 import com.smartmenu.client.rtable.RTableResponse;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;
 import com.smartmenu.rtable.db.entity.RTable;
-import com.smartmenu.rtable.mapper.RTableMapper;
-import com.smartmenu.rtable.service.RTableService;
+import com.smartmenu.rtable.mapper.TableMapper;
+import com.smartmenu.rtable.service.TableService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,21 +15,21 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
-@RequestMapping(value = "/rtable")
-public class RTableController extends AbstractBaseController<RTableRequest, RTable, RTableResponse, RTableMapper, RTableService> {
-	private RTableService service;
-	private RTableMapper mapper;
+@RequestMapping(value = "/table")
+public class TableController extends AbstractBaseController<RTableRequest, RTable, RTableResponse, TableMapper, TableService> {
+	private TableService service;
+	private TableMapper mapper;
 
-	public RTableController(final RTableService service, final RTableMapper mapper) {
+	public TableController(final TableService service, final TableMapper mapper) {
 		this.service = service;
 		this.mapper = mapper;
 	}
 
-	public RTableService getService() {
+	public TableService getService() {
 		return service;
 	}
 
-	public RTableMapper getMapper() {
+	public TableMapper getMapper() {
 		return mapper;
 	}
 }

@@ -16,7 +16,7 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "rtables")
+@Table(name = "tables")
 @EqualsAndHashCode(callSuper = true)
 public class RTable extends AbstractBaseEntity {
 

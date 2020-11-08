@@ -6,5 +6,5 @@ package com.smartmenu.common.user.enums;
  */
 
 public enum UserRoles {
-	ADMIN, USER
+	ADMIN, MANAGER, USER
 }

@@ -3,11 +3,12 @@ package com.smartmenu.order.controller;
 import com.smartmenu.client.order.OrderRequest;
 import com.smartmenu.client.order.OrderResponse;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;
+import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.order.db.entity.Order;
 import com.smartmenu.order.mapper.OrderMapper;
 import com.smartmenu.order.service.OrderService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -32,4 +33,11 @@ public class OrderController extends AbstractBaseController<OrderRequest, Order,
 	public OrderMapper getMapper() {
 		return mapper;
 	}
+
+	@GetMapping("/cancel/{id}")
+	public ResponseEntity<Boolean> cancelOrder(@RequestHeader(HEADER_TOKEN) String token, @PathVariable("id") Long id) {
+		ServiceResult<Boolean> serviceResult = service.cancel(token, id);
+		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	}
+
 }

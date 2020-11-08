@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class RTableUpdateMapper implements BaseUpdateMapper<RTableRequest, RTable> {
+public class TableUpdateMapper implements BaseUpdateMapper<RTableRequest, RTable> {
 
 	final private BrandMapper brandMapper;
 
