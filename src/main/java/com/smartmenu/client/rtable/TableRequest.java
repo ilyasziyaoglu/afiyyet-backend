@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class RTableRequest extends BaseRequest {
+public class TableRequest extends BaseRequest {
 	private BrandRequest brand;
 	private OrderRequest order;
 	private String name;

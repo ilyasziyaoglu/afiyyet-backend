@@ -48,7 +48,7 @@ public class OrderItem extends AbstractBaseEntity {
 	private Integer amount;
 
 	@Column(name = "portion")
-	private Boolean portion;
+	private Double portion;
 
 	@Column(name = "comment")
 	private String comment;

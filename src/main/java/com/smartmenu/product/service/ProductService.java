@@ -9,6 +9,7 @@ import com.smartmenu.client.product.ProductResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
+import com.smartmenu.common.utils.PriceUtils;
 import com.smartmenu.product.db.entity.Product;
 import com.smartmenu.product.db.repository.ProductRepository;
 import com.smartmenu.product.enums.ProductType;
@@ -19,8 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,6 +35,7 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 	final private ProductMapper mapper;
 	final private ProductUpdateMapper updateMapper;
 	final private CategoryRepository categoryRepository;
+	final private PriceUtils priceUtils;
 
 	@Override
 	public ProductRepository getRepository() {
@@ -168,11 +168,7 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 			User user = getUser(token);
 			categoryRepository.findAllByBrandId(user.getBrand().getId()).forEach(category -> {
 				category.getProducts().forEach(product -> {
-					if (dto.isPercent()) {
-						product.setPrice(updatePriceByPercent(product.getPrice(), dto.getAmount()));
-					} else {
-						product.setPrice(product.getPrice().add(BigDecimal.valueOf(dto.getAmount())));
-					}
+					product.setPrice(priceUtils.applyDiscount(product.getPrice(), dto.getAmount(), dto.isPercent()));
 					repository.save(product);
 				});
 			});
@@ -181,18 +177,5 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 			e.printStackTrace();
 			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
-	}
-
-	private BigDecimal updatePriceByPercent(BigDecimal price, Double percent) {
-		BigDecimal newPrice = price.multiply(BigDecimal.valueOf(1 + percent/100));
-		BigDecimal diff = newPrice.remainder(BigDecimal.ONE);
-		if (diff.compareTo(BigDecimal.valueOf(0.25)) < 0) {
-			newPrice = newPrice.setScale(0, RoundingMode.FLOOR);
-		} else if (diff.compareTo(BigDecimal.valueOf(0.25)) >= 0 && diff.compareTo(BigDecimal.valueOf(0.75)) < 0) {
-			newPrice = newPrice.setScale(0, RoundingMode.FLOOR).add(BigDecimal.valueOf(0.5));
-		} else {
-			newPrice = newPrice.setScale(0, RoundingMode.CEILING);
-		}
-		return newPrice;
 	}
 }

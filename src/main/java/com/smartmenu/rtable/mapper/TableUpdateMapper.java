@@ -1,7 +1,7 @@
 package com.smartmenu.rtable.mapper;
 
 import com.smartmenu.brand.mapper.BrandMapper;
-import com.smartmenu.client.rtable.RTableRequest;
+import com.smartmenu.client.rtable.TableRequest;
 import com.smartmenu.common.basemodel.mapper.BaseUpdateMapper;
 import com.smartmenu.rtable.db.entity.RTable;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TableUpdateMapper implements BaseUpdateMapper<RTableRequest, RTable> {
+public class TableUpdateMapper implements BaseUpdateMapper<TableRequest, RTable> {
 
 	final private BrandMapper brandMapper;
 
 	@Override
-	public RTable toEntityForUpdate(RTableRequest request, RTable entity) {
+	public RTable toEntityForUpdate(TableRequest request, RTable entity) {
 		if (entity == null) {
 			entity = new RTable();
 		}

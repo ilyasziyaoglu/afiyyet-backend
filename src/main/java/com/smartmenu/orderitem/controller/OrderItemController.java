@@ -35,6 +35,12 @@ public class OrderItemController extends AbstractBaseController<OrderItemRequest
 		return mapper;
 	}
 
+	@PostMapping("/update-from-menu")
+	public ResponseEntity<OrderItemResponse> updateFromMenu(@RequestBody OrderItemRequest request) {
+		ServiceResult<OrderItem> serviceResult = service.updateFromMenu(request);
+		return new ResponseEntity<>(mapper.toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
+	}
+
 	@PostMapping("/cancel-from-menu")
 	public ResponseEntity<Boolean> cancelOrder(@RequestBody OrderItemCancelRequest request) {
 		ServiceResult<Boolean> serviceResult = service.cancelFromMenu(request);

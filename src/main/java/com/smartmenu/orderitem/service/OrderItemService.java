@@ -51,6 +51,7 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 	public ServiceResult<OrderItem> save(OrderItemRequest request) {
 		try {
 			OrderItem entityToSave = getMapper().toEntity(request);
+			entityToSave.setState(OrderItemState.WAITING_FOR_TABLE);
 			OrderItem entity = repository.save(entityToSave);
 			return new ServiceResult<>(entity, HttpStatus.CREATED);
 		} catch (Exception e) {
@@ -59,19 +60,40 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 		}
 	}
 
+	public ServiceResult<OrderItem> updateFromMenu(OrderItemRequest request) {
+		try {
+			OrderItem entity = repository.getOne(request.getId());
+			if (!OrderItemState.WAITING_FOR_TABLE.equals(entity.getState())) {
+				return forbidden();
+			}
+			return updateInternal(entity, request);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
+		}
+	}
+
 	@Override
 	public ServiceResult<OrderItem> update(String token, OrderItemRequest request) {
 		try {
 			User user = getUser(token);
 			OrderItem entity = repository.getOne(request.getId());
-			if (!OrderItemState.WAITING_FOR_TABLE.equals(entity.getState()) && !isNotAdmin(user) && !entity.getOrder().getBrand().getId().equals(user.getBrand().getId())) {
+			if (!isNotAdmin(user) && !entity.getOrder().getBrand().getId().equals(user.getBrand().getId())) {
 				return forbidden();
 			}
+			return updateInternal(entity, request);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
+		}
+	}
 
-			entity.setComment(request.getComment());
-			entity.setAmount(request.getAmount());
-			entity.setPortion(request.getPortion());
-			return new ServiceResult<>(repository.save(entity), HttpStatus.OK);
+	public ServiceResult<OrderItem> updateInternal(OrderItem orderItem, OrderItemRequest request) {
+		try {
+			orderItem.setComment(request.getComment());
+			orderItem.setAmount(request.getAmount());
+			orderItem.setPortion(request.getPortion());
+			return new ServiceResult<>(repository.save(orderItem), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());

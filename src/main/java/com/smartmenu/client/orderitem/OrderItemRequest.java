@@ -21,7 +21,7 @@ public class OrderItemRequest extends BaseRequest {
 	private ProductRequest product;
 	private BigDecimal totalPrice;
 	private Integer amount;
-	private Boolean portion;
+	private Double portion;
 	private String comment;
 	private OrderItemState state;
 	private String cancelReason;

@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ public class Order extends AbstractBaseEntity {
 
 	@JsonManagedReference
 	@OneToMany(mappedBy="order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private List<OrderItem> orderitems;
+	private List<OrderItem> orderitems = new ArrayList<>();
 
 	@Override
 	public Long getId() {

@@ -1,7 +1,7 @@
 package com.smartmenu.rtable.mapper;
 
-import com.smartmenu.client.rtable.RTableRequest;
-import com.smartmenu.client.rtable.RTableResponse;
+import com.smartmenu.client.rtable.TableRequest;
+import com.smartmenu.client.rtable.TableResponse;
 import com.smartmenu.common.basemodel.mapper.BaseMapper;
 import com.smartmenu.rtable.db.entity.RTable;
 import org.mapstruct.Mapper;
@@ -12,5 +12,5 @@ import org.mapstruct.Mapper;
  */
 
 @Mapper(componentModel = "spring")
-public interface TableMapper extends BaseMapper<RTableRequest, RTable, RTableResponse> {
+public interface TableMapper extends BaseMapper<TableRequest, RTable, TableResponse> {
 }

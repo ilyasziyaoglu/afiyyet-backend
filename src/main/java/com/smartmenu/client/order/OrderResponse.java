@@ -2,7 +2,7 @@ package com.smartmenu.client.order;
 
 import com.smartmenu.client.brand.BrandResponse;
 import com.smartmenu.client.orderitem.OrderItemResponse;
-import com.smartmenu.client.rtable.RTableResponse;
+import com.smartmenu.client.rtable.TableResponse;
 import com.smartmenu.common.basemodel.response.BaseResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,7 +18,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class OrderResponse extends BaseResponse {
-	private RTableResponse table;
+	private TableResponse table;
 	private BrandResponse brand;
 	private BigDecimal totalPrice;
 	private List<OrderItemResponse> orderitems;

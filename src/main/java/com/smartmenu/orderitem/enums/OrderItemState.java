@@ -6,5 +6,5 @@ package com.smartmenu.orderitem.enums;
  */
 
 public enum OrderItemState {
-	WAITING_FOR_TABLE, PREPARING, SERVED, CANCELLED;
+	WAITING_FOR_TABLE, PREPARING, SERVED, COMPLETED, CANCELLED;
 }
