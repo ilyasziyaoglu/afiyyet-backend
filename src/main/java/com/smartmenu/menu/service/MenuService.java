@@ -46,12 +46,12 @@ public class MenuService {
 			for (Category category : categories) {
 				category.getProducts().sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
 			}
-			List<Product> campaigns = categoryRepository.findTopByBrandIdAndName(brand.getId(), KAMPANYALAR).getProducts();
+			List<Product> campaigns = categoryRepository.findAllByBrandIdAndName(brand.getId(), KAMPANYALAR).getProducts();
 			campaigns.sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
 			campaigns = campaigns.stream()
 					.filter(c -> ZonedDateTime.now().isAfter(c.getStartDate()) && ZonedDateTime.now().isBefore(c.getExpireDate()))
 					.collect(Collectors.toList());
-			List<Product> menus = categoryRepository.findTopByBrandIdAndName(brand.getId(), MENULER).getProducts();
+			List<Product> menus = categoryRepository.findAllByBrandIdAndName(brand.getId(), MENULER).getProducts();
 			menus.sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
 			return new ServiceResult<>(new Menu(categories, campaigns, menus, brand), HttpStatus.OK);
 		} catch (Exception e) {
