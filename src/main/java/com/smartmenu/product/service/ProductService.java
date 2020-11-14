@@ -79,9 +79,9 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		if (ProductType.PRODUCT.equals(request.getType())) {
 			return categoryRepository.getOne(request.getCategory().getId());
 		} else if (ProductType.CAMPAIGN.equals(request.getType())) {
-			return categoryRepository.findTopByBrandIdAndName(user.getBrand().getId(), KAMPANYALAR);
+			return categoryRepository.findAllByBrandIdAndName(user.getBrand().getId(), KAMPANYALAR);
 		} else if (ProductType.MENU.equals(request.getType())) {
-			return categoryRepository.findTopByBrandIdAndName(user.getBrand().getId(), MENULER);
+			return categoryRepository.findAllByBrandIdAndName(user.getBrand().getId(), MENULER);
 		}
 		return null;
 	}
