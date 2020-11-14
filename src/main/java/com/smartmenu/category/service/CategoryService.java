@@ -136,7 +136,7 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 
 	public ServiceResult<List<Product>> getCategoryByBrandAndName(String token, String name) {
 		try {
-			Category campaigns = repository.findTopByBrandIdAndName(getUser(token).getBrand().getId(), name);
+			Category campaigns = repository.findAllByBrandIdAndName(getUser(token).getBrand().getId(), name);
 			campaigns.getProducts().sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
 			return new ServiceResult<>(campaigns.getProducts(), HttpStatus.OK);
 		} catch (Exception e) {
