@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -28,5 +29,5 @@ public class UserRequest extends BaseRequest {
 	private String country;
 	private Date date;
 	private String addresses;
-	private String roles;
+	private List<String> roles;
 }

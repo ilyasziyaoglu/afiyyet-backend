@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
@@ -17,6 +18,7 @@ import java.time.ZonedDateTime;
  */
 
 @Data
+@MappedSuperclass
 public abstract class AbstractBaseEntity implements Serializable {
     private static final long serialVersionUID = 6204877037070575919L;
 
@@ -33,7 +35,7 @@ public abstract class AbstractBaseEntity implements Serializable {
     }
 
     @CreatedDate
-    @Column(name = "created_date", nullable = false, updatable = false)
+    @Column(name = "created_date", updatable = false)
     private ZonedDateTime createdDate = ZonedDateTime.now();
 
     @LastModifiedDate
