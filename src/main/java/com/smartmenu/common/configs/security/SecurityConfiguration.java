@@ -1,7 +1,7 @@
 package com.smartmenu.common.configs.security;
 
-import com.smartmenu.common.webfilters.JwtRequestFilter;
 import com.smartmenu.common.user.service.UserService;
+import com.smartmenu.common.webfilters.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

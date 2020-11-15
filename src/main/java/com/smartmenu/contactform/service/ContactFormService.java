@@ -14,7 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -44,7 +47,7 @@ public class ContactFormService extends AbstractBaseService<ContactFormRequest, 
 		return updateMapper;
 	}
 
-	public ServiceResult<ContactForm> save(ContactFormRequest request) {
+	public ServiceResult<ContactFormResponse> insert(ContactFormRequest request) {
 		try {
 			ContactForm entity = getRepository().save(getMapper().toEntity(request));
 			Set<String> toMailSet = new HashSet<>();
@@ -68,10 +71,10 @@ public class ContactFormService extends AbstractBaseService<ContactFormRequest, 
 				throwable.printStackTrace();
 			}
 
-			return new ServiceResult<>(entity, HttpStatus.CREATED);
+			return new ServiceResult<>(mapper.toResponse(entity), HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 }

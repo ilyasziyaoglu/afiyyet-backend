@@ -1,7 +1,7 @@
 package com.smartmenu.common.webfilters;
 
-import com.smartmenu.common.utils.JwtUtil;
 import com.smartmenu.common.user.service.UserService;
+import com.smartmenu.common.utils.JwtUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

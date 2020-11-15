@@ -1,9 +1,8 @@
 package com.smartmenu.contactform.mapper;
 
-import com.smartmenu.brand.mapper.BrandMapper;
 import com.smartmenu.client.contactform.ContactFormRequest;
-import com.smartmenu.contactform.db.entity.ContactForm;
 import com.smartmenu.common.basemodel.mapper.BaseUpdateMapper;
+import com.smartmenu.contactform.db.entity.ContactForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
