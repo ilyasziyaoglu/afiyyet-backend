@@ -11,12 +11,17 @@ public class ServiceResult<T> {
     private T value;
     private HttpStatus httpStatus = HttpStatus.OK;
     private String message = "";
+    private Throwable e;
 
     public ServiceResult() {
     }
 
     public ServiceResult(T value) {
         this.value = value;
+    }
+
+    public ServiceResult(Throwable e) {
+        this.e = e;
     }
 
     public ServiceResult(HttpStatus httpStatus) {

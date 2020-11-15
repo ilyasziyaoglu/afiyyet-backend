@@ -7,7 +7,6 @@ import com.smartmenu.client.reservation.ReservationRequest;
 import com.smartmenu.client.reservation.ReservationResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
-import com.smartmenu.common.user.db.entity.User;
 import com.smartmenu.reservation.db.entity.Reservation;
 import com.smartmenu.reservation.db.repository.ReservationRepository;
 import com.smartmenu.reservation.mapper.ReservationMapper;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -49,7 +47,7 @@ public class ReservationService extends AbstractBaseService<ReservationRequest, 
 		return updateMapper;
 	}
 
-	public ServiceResult<Boolean> save(ReservationRequest dto) {
+	public ServiceResult<Boolean> insert(ReservationRequest dto) {
 		Brand brand = brandRepository.getOne(dto.getBrand().getId());
 		try {
 			if (!brand.getFeatures().contains(FeatureType.RESERVATIONS)) {
@@ -61,43 +59,21 @@ public class ReservationService extends AbstractBaseService<ReservationRequest, 
 			return new ServiceResult<>(true, HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
-	public ServiceResult<List<Reservation>> getReservationsByBrand(String token) {
+	public ServiceResult<List<ReservationResponse>> getReservationsByBrand(String token) {
 		try {
 			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.ORDERING)) {
 				return forbiddenList();
 			}
 			List<Reservation> entityList = getRepository().findAllByBrandAndReservationDateAfter(getUser(token).getBrand(), ZonedDateTime.now());
 			entityList.sort(Comparator.comparing(Reservation::getReservationDate, Comparator.nullsLast(Comparator.naturalOrder())));
-			return new ServiceResult<>(entityList, HttpStatus.OK);
+			return new ServiceResult<>(mapper.toResponse(entityList));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return new ServiceResult<>(e);
 		}
-	}
-
-	@Override
-	public ServiceResult<Boolean> delete(String token, Long id) {
-		User user = getUser(token);
-		Reservation entity = repository.getOne(id);
-		if (!isNotAdmin(user) && !entity.getBrand().getId().equals(user.getBrand().getId())) {
-			return forbiddenBoolean();
-		}
-		return super.delete(token, id);
-	}
-
-	@Override
-	public ServiceResult<Boolean> deleteAll(String token, Set<Long> ids) {
-		User user = getUser(token);
-		List<Reservation> entityList = repository.findAllById(ids);
-		for (Reservation entity : entityList) {
-			if (isNotAdmin(user) && !entity.getBrand().getId().equals(user.getBrand().getId())) {
-				return forbiddenBoolean();
-			}
-		}
-		return super.deleteAll(token, ids);
 	}
 }

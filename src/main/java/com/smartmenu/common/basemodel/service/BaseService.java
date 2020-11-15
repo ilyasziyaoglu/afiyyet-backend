@@ -13,5 +13,4 @@ import com.smartmenu.common.basemodel.request.BaseRequest;
 public abstract class BaseService<Request extends BaseRequest, Entity extends AbstractBaseEntity, Repository extends BaseRepository<Entity>, UpdateMapper extends BaseUpdateMapper<Request, Entity>> {
 	public abstract Repository getRepository();
 	public abstract UpdateMapper getUpdateMapper();
-
 }

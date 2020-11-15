@@ -60,7 +60,7 @@ public class AuthController {
 
 		String token = jwtUtil.generateToken(userDetails);
 
-		return ResponseEntity.ok(new LoginResponse(token, userMapper.toResponse(serviceResult.getValue())));
+		return ResponseEntity.ok(new ServiceResult<>(new LoginResponse(token, userMapper.toResponse(serviceResult.getValue()))));
 	}
 
 	@PostMapping("/register")
@@ -91,7 +91,7 @@ public class AuthController {
 
 			String token = jwtUtil.generateToken(userDetails);
 
-			return ResponseEntity.ok(new LoginResponse(token, userMapper.toResponse(userSave)));
+			return ResponseEntity.ok(new ServiceResult<>(new LoginResponse(token, userMapper.toResponse(userSave))));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

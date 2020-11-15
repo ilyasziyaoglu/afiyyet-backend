@@ -4,9 +4,8 @@ import com.smartmenu.client.reservation.ReservationRequest;
 import com.smartmenu.client.reservation.ReservationResponse;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;
 import com.smartmenu.common.basemodel.service.ServiceResult;
-import com.smartmenu.reservation.db.entity.Reservation;
-import com.smartmenu.reservation.mapper.ReservationMapper;
 import com.smartmenu.reservation.service.ReservationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,32 +18,26 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/reservation")
-public class ReservationController extends AbstractBaseController<ReservationRequest, Reservation, ReservationResponse, ReservationMapper, ReservationService> {
+public class ReservationController extends AbstractBaseController {
 	private ReservationService service;
-	private ReservationMapper mapper;
 
-	public ReservationController(final ReservationService service, final ReservationMapper mapper) {
+	public ReservationController(final ReservationService service) {
 		this.service = service;
-		this.mapper = mapper;
 	}
 
 	public ReservationService getService() {
 		return service;
 	}
 
-	public ReservationMapper getMapper() {
-		return mapper;
-	}
-
 	@GetMapping("/get-reservations-by-brand")
-	public ResponseEntity<List<Reservation>> getReservationsByBrand(@RequestHeader(HEADER_TOKEN) String token) {
-		ServiceResult<List<Reservation>> serviceResult = getService().getReservationsByBrand(token);
-		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	public ResponseEntity<ServiceResult<List<ReservationResponse>>> getReservationsByBrand(@RequestHeader(HEADER_TOKEN) String token) {
+		ServiceResult<List<ReservationResponse>> serviceResult = getService().getReservationsByBrand(token);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
 	@PostMapping("/reserve")
-	public ResponseEntity<Boolean> insert(@RequestBody ReservationRequest request) {
-		ServiceResult<Boolean> serviceResult = getService().save(request);
-		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	public ResponseEntity<ServiceResult<Boolean>> insert(@RequestBody ReservationRequest request) {
+		ServiceResult<Boolean> serviceResult = getService().insert(request);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 }

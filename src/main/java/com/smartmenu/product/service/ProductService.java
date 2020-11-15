@@ -20,7 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -52,7 +55,16 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		return updateMapper;
 	}
 
-	public ServiceResult<Product> save(String token, ProductRequest request) {
+	public ServiceResult<ProductResponse> get(Long id) {
+		try {
+			return new ServiceResult<>(mapper.toResponse(repository.getOne(id)));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ServiceResult<>(e);
+		}
+	}
+
+	public ServiceResult<ProductResponse> insert(String token, ProductRequest request) {
 		try {
 			User user = getUser(token);
 			Category category = getCategoryByType(request, user);
@@ -68,10 +80,10 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 			entityToSave.setLikes(0);
 			entityToSave.setCategory(category);
 			Product entity = getRepository().save(entityToSave);
-			return new ServiceResult<>(entity, HttpStatus.CREATED);
+			return new ServiceResult<>(mapper.toResponse(entity), HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
@@ -86,8 +98,7 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 		return null;
 	}
 
-	@Override
-	public ServiceResult<Product> update(String token, @NotNull ProductRequest request) {
+	public ServiceResult<ProductResponse> update(String token, @NotNull ProductRequest request) {
 		try {
 			User user = getUser(token);
 			Category category = getCategoryByType(request, user);
@@ -100,46 +111,40 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 			Optional<Product> entity = getRepository().findById(request.getId());
 			if (entity.isPresent()) {
 				Product newEntity = getUpdateMapper().toEntityForUpdate(request, entity.get());
-				return new ServiceResult<>(repository.save(newEntity), HttpStatus.OK);
+				return new ServiceResult<>(mapper.toResponse(repository.save(newEntity)));
 			} else {
 				return new ServiceResult<>(HttpStatus.NOT_FOUND, "Entity not found to update update with the given id: " + request.getId());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
-	@Override
 	public ServiceResult<Boolean> delete(String token, Long id) {
-		User user = getUser(token);
-		Product entity = repository.getOne(id);
-		if (!isNotAdmin(user) && !entity.getCategory().getBrandId().equals(user.getBrand().getId())) {
-			return forbiddenBoolean();
-		}
-		return super.delete(token, id);
-	}
-
-	@Override
-	public ServiceResult<Boolean> deleteAll(String token, Set<Long> ids) {
-		User user = getUser(token);
-		List<Product> entityList = repository.findAllById(ids);
-		for (Product entity : entityList) {
-			if (isNotAdmin(user) && !entity.getCategory().getBrandId().equals(user.getBrand().getId())) {
+		try {
+			User user = getUser(token);
+			Product entity = repository.getOne(id);
+			if (!isNotAdmin(user) && !entity.getCategory().getBrandId().equals(user.getBrand().getId())) {
 				return forbiddenBoolean();
 			}
+			repository.delete(entity);
+			return new ServiceResult<>(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ServiceResult<>(e);
 		}
-		return super.deleteAll(token, ids);
 	}
+		}
 
-	public ServiceResult<List<Product>> getProductsByCategory(String token, Long categoryId) {
+	public ServiceResult<List<ProductResponse>> getProductsByCategory(String token, Long categoryId) {
 		try {
 			List<Product> entityList = getRepository().findAllByCategoryId(categoryId);
 			entityList = entityList.stream().sorted(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
-			return new ServiceResult<>(entityList, HttpStatus.OK);
+			return new ServiceResult<>(mapper.toResponse(entityList));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
@@ -156,10 +161,10 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 					getRepository().save(prodduct);
 				}
 			}
-			return new ServiceResult<>(true, HttpStatus.OK);
+			return new ServiceResult<>(true);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
@@ -172,10 +177,10 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 					repository.save(product);
 				});
 			});
-			return new ServiceResult<>(true, HttpStatus.OK);
+			return new ServiceResult<>(true);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
