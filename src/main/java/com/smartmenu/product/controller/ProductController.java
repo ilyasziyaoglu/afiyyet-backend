@@ -46,6 +46,12 @@ public class ProductController extends AbstractBaseController<ProductRequest, Pr
 		return new ResponseEntity<>(getMapper().toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
 	}
 
+	@GetMapping("/list")
+	public ResponseEntity<List<ProductResponse>> getProductListByBrand(@RequestHeader(HEADER_TOKEN) String token) {
+		ServiceResult<List<Product>> serviceResult = getService().getProductListByBrand(token);
+		return new ResponseEntity<>(getMapper().toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
+	}
+
 	@PostMapping("/arrange-products")
 	public ResponseEntity<Boolean> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody Map<Long, Integer> dto) {
 		ServiceResult<Boolean> serviceResult = getService().arrangeProducts(token, dto);

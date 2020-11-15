@@ -178,4 +178,14 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
+
+	public ServiceResult<List<Product>> getProductListByBrand(String token) {
+		try {
+			List<Product> entityList = repository.findAllProductsByBrandId(getUser(token).getBrand().getId());
+			return new ServiceResult<>(entityList, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+		}
+	}
 }
