@@ -9,7 +9,6 @@ import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
 import com.smartmenu.common.utils.PriceUtils;
 import com.smartmenu.order.db.entity.Order;
-import com.smartmenu.order.db.repository.OrderRepository;
 import com.smartmenu.order.service.OrderService;
 import com.smartmenu.orderitem.db.entity.OrderItem;
 import com.smartmenu.orderitem.enums.OrderItemState;
@@ -25,7 +24,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -39,7 +37,6 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 	final private TableMapper mapper;
 	final private TableUpdateMapper updateMapper;
 	final private PriceUtils priceUtils;
-	final private OrderRepository orderRepository;
 	final private OrderService orderService;
 
 	@Override
@@ -57,36 +54,28 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 		return updateMapper;
 	}
 
-	@Override
-	public ServiceResult<RTable> get(String token, Long id) {
+	public ServiceResult<TableResponse> get(Long id) {
 		try {
-			User user = getUser(token);
-			RTable entity = getRepository().getOne(id);
-			if (isNotAdmin(user) && !user.getBrand().getId().equals(entity.getBrand().getId())) {
-				return forbidden();
-			}
-			return new ServiceResult<>(entity, HttpStatus.OK);
+			return new ServiceResult<>(mapper.toResponse(repository.getOne(id)));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
-	@Override
-	public ServiceResult<RTable> save(String token, TableRequest request) {
+	public ServiceResult<TableResponse> insert(String token, TableRequest request) {
 		try {
 			RTable entityToSave = getMapper().toEntity(request);
 			entityToSave.setBrand(getUser(token).getBrand());
 			RTable entity = repository.save(entityToSave);
-			return new ServiceResult<>(entity, HttpStatus.CREATED);
+			return new ServiceResult<>(mapper.toResponse(entity), HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
-	@Override
-	public ServiceResult<RTable> update(String token, TableRequest request) {
+	public ServiceResult<TableResponse> update(String token, TableRequest request) {
 		try {
 			User user = getUser(token);
 			Optional<RTable> entity = getRepository().findById(request.getId());
@@ -95,44 +84,37 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 					return forbidden();
 				}
 				RTable newEntity = getUpdateMapper().toEntityForUpdate(request, entity.get());
-				return new ServiceResult<>(repository.save(newEntity), HttpStatus.OK);
+				return new ServiceResult<>(mapper.toResponse(repository.save(newEntity)));
 			} else {
 				return new ServiceResult<>(HttpStatus.NOT_FOUND, "Entity not found to update update with the given id: " + request.getId());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
-	@Override
 	public ServiceResult<Boolean> delete(String token, Long id) {
-		User user = getUser(token);
-		RTable entity = repository.getOne(id);
-		if (!isNotAdmin(user) && !entity.getBrand().getId().equals(user.getBrand().getId())) {
-			return forbiddenBoolean();
-		}
-		return super.delete(token, id);
-	}
-
-	@Override
-	public ServiceResult<Boolean> deleteAll(String token, Set<Long> ids) {
-		User user = getUser(token);
-		List<RTable> entityList = repository.findAllById(ids);
-		for (RTable entity : entityList) {
-			if (isNotAdmin(user) && !entity.getBrand().getId().equals(user.getBrand().getId())) {
+		try {
+			User user = getUser(token);
+			RTable entity = repository.getOne(id);
+			if (!isNotAdmin(user) && !entity.getBrand().getId().equals(user.getBrand().getId())) {
 				return forbiddenBoolean();
 			}
-		}
-		return super.deleteAll(token, ids);
-	}
-
-	public ServiceResult<List<RTable>> getTablesByBrand(String token) {
-		try {
-			return new ServiceResult<>(repository.findAllByBrandId(getUser(token).getBrand().getId()), HttpStatus.OK);
+			repository.delete(entity);
+			return new ServiceResult<>(true);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entities can not get tables. Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
+		}
+	}
+
+	public ServiceResult<List<TableResponse>> getTablesByBrand(String token) {
+		try {
+			return new ServiceResult<>(mapper.toResponse(repository.findAllByBrandId(getUser(token).getBrand().getId())));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ServiceResult<>(e);
 		}
 	}
 
@@ -140,7 +122,8 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 		try {
 			return new ServiceResult<>(repository.findGroupNamesByBrandId(getUser(token).getBrand().getId()), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Group names can not get. Error message: " + e.getMessage());
+			e.printStackTrace();
+			return new ServiceResult<>(e);
 		}
 	}
 
@@ -163,7 +146,7 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
@@ -200,7 +183,7 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 }
