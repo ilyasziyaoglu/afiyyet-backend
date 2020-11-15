@@ -54,9 +54,9 @@ public class OrderController extends AbstractBaseController {
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<OrderResponse> save(@RequestBody OrderRequest request) {
-		ServiceResult<Order> serviceResult = service.save(request);
-		return new ResponseEntity<>(mapper.toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
+	public ResponseEntity<ServiceResult<OrderResponse>> save(@RequestBody OrderRequest request) {
+		ServiceResult<OrderResponse> serviceResult = service.insert(request);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
 	@GetMapping("/cancel/{id}")
