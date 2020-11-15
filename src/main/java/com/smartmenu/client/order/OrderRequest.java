@@ -2,7 +2,6 @@ package com.smartmenu.client.order;
 
 import com.smartmenu.client.brand.BrandRequest;
 import com.smartmenu.client.orderitem.OrderItemRequest;
-import com.smartmenu.client.rtable.TableRequest;
 import com.smartmenu.common.basemodel.request.BaseRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,7 +17,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class OrderRequest extends BaseRequest {
-	private TableRequest table;
+	private Long tableId;
 	private BrandRequest brand;
 	private BigDecimal totalPrice;
 	private List<OrderItemRequest> orderitems;

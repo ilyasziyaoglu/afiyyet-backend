@@ -24,8 +24,8 @@ public class RTable extends AbstractBaseEntity {
 
 	@Id
 	@Column(name = "id", nullable = false)
-	@SequenceGenerator(name = "rtables_id_gen", sequenceName = "rtables_id_seq", allocationSize = 1)
-	@GeneratedValue(generator = "rtables_id_gen", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "tables_id_gen", sequenceName = "tables_id_seq", allocationSize = 1)
+	@GeneratedValue(generator = "tables_id_gen", strategy = GenerationType.SEQUENCE)
 	private Long id;
 
 	@ManyToOne
@@ -43,7 +43,7 @@ public class RTable extends AbstractBaseEntity {
 	private String groupName;
 
 	@Column(name = "is_open")
-	private Boolean isOpen;
+	private Boolean isOpen = false;
 
 	@Override
 	public Long getId() {

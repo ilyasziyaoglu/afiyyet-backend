@@ -170,7 +170,7 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 
 			//TODO masa kapatildiginda order ve order itemler posife tasinacak
 			if (isAllCancelled(savedEntity.getOrder().getOrderitems())) {
-				RTable table = savedEntity.getOrder().getTable();
+				RTable table = tableRepository.getOne(savedEntity.getOrder().getTableId());
 				table.setIsOpen(false);
 				tableRepository.save(table);
 			}
