@@ -44,6 +44,12 @@ public class TableController extends AbstractBaseController<TableRequest, RTable
 		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
 	}
 
+	@GetMapping("get-group-names-by-brand")
+	public ResponseEntity<List<String>> getGroupNamesByBrand(@RequestHeader(HEADER_TOKEN) String token) {
+		ServiceResult<List<String>> serviceResult = getService().getGroupNamesByBrand(token);
+		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	}
+
 	@PostMapping("close")
 	public ResponseEntity<Boolean> close(@RequestHeader(HEADER_TOKEN) String token, @RequestBody TableCloseRequest request) {
 		ServiceResult<Boolean> serviceResult = getService().close(token, request);

@@ -68,7 +68,9 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 				});
 				savedOrder = repository.save(orderInDb);
 			} else {
-				savedOrder = repository.save(getMapper().toEntity(request));
+				Order entityToSave = getMapper().toEntity(request);
+				entityToSave.setBrand(table.getBrand());
+				savedOrder = repository.save(entityToSave);
 			}
 
 			table.setIsOpen(true);

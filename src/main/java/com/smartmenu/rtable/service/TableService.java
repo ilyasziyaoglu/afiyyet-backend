@@ -76,6 +76,7 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 	public ServiceResult<RTable> save(String token, TableRequest request) {
 		try {
 			RTable entityToSave = getMapper().toEntity(request);
+			entityToSave.setBrand(getUser(token).getBrand());
 			RTable entity = repository.save(entityToSave);
 			return new ServiceResult<>(entity, HttpStatus.CREATED);
 		} catch (Exception e) {
@@ -131,7 +132,15 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 			return new ServiceResult<>(repository.findAllByBrandId(getUser(token).getBrand().getId()), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not get tables. Error message: " + e.getMessage());
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entities can not get tables. Error message: " + e.getMessage());
+		}
+	}
+
+	public ServiceResult<List<String>> getGroupNamesByBrand(String token) {
+		try {
+			return new ServiceResult<>(repository.findGroupNamesByBrandId(getUser(token).getBrand().getId()), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Group names can not get. Error message: " + e.getMessage());
 		}
 	}
 
