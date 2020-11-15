@@ -5,9 +5,8 @@ import com.smartmenu.client.product.ProductRequest;
 import com.smartmenu.client.product.ProductResponse;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;
 import com.smartmenu.common.basemodel.service.ServiceResult;
-import com.smartmenu.product.db.entity.Product;
-import com.smartmenu.product.mapper.ProductMapper;
 import com.smartmenu.product.service.ProductService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,28 +21,45 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/product")
-public class ProductController extends AbstractBaseController<ProductRequest, Product, ProductResponse, ProductMapper,
-		ProductService> {
+public class ProductController extends AbstractBaseController {
 	private ProductService service;
-	private ProductMapper mapper;
 
-	public ProductController(final ProductService service, final ProductMapper mapper) {
+	public ProductController(final ProductService service) {
 		this.service = service;
-		this.mapper = mapper;
 	}
 
 	public ProductService getService() {
 		return service;
 	}
 
-	public ProductMapper getMapper() {
-		return mapper;
+	@GetMapping(GUEST + "/{id}")
+	public ResponseEntity<ServiceResult<ProductResponse>> get(@PathVariable Long id) {
+		ServiceResult<ProductResponse> serviceResult = service.get(id);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
+	}
+
+	@PostMapping
+	public ResponseEntity<ServiceResult<ProductResponse>> save(@RequestHeader(HEADER_TOKEN) String token, @RequestBody ProductRequest request) {
+		ServiceResult<ProductResponse> serviceResult = service.insert(token, request);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
+	}
+
+	@PutMapping
+	public ResponseEntity<ServiceResult<ProductResponse>> update(@RequestHeader(HEADER_TOKEN) String token, @RequestBody ProductRequest request) {
+		ServiceResult<ProductResponse> serviceResult = service.update(token, request);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<ServiceResult<Boolean>> delete(@RequestHeader(HEADER_TOKEN) String token, @Valid @PathVariable Long id) {
+		ServiceResult<Boolean> serviceResult = service.delete(token, id);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
 	@GetMapping("/get-products-by-category/{categoryId}")
-	public ResponseEntity<List<ProductResponse>> getProductsByCategory(@RequestHeader(HEADER_TOKEN) String token, @Valid @PathVariable Long categoryId) {
-		ServiceResult<List<Product>> serviceResult = getService().getProductsByCategory(token, categoryId);
-		return new ResponseEntity<>(getMapper().toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
+	public ResponseEntity<ServiceResult<List<ProductResponse>>> getProductsByCategory(@RequestHeader(HEADER_TOKEN) String token, @Valid @PathVariable Long categoryId) {
+		ServiceResult<List<ProductResponse>> serviceResult = getService().getProductsByCategory(token, categoryId);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
 	@GetMapping("/list")
@@ -53,14 +69,14 @@ public class ProductController extends AbstractBaseController<ProductRequest, Pr
 	}
 
 	@PostMapping("/arrange-products")
-	public ResponseEntity<Boolean> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody Map<Long, Integer> dto) {
+	public ResponseEntity<ServiceResult<Boolean>> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody Map<Long, Integer> dto) {
 		ServiceResult<Boolean> serviceResult = getService().arrangeProducts(token, dto);
-		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
 	@PostMapping("/bulk-price-update")
-	public ResponseEntity<Boolean> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody BulkPriceUpdateRequest dto) {
+	public ResponseEntity<ServiceResult<Boolean>> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody BulkPriceUpdateRequest dto) {
 		ServiceResult<Boolean> serviceResult = getService().bulkPriceUpdate(token, dto);
-		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 }

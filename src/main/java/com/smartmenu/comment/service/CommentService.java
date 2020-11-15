@@ -58,21 +58,21 @@ public class CommentService extends AbstractBaseService<CommentRequest, Comment,
 			return new ServiceResult<>(true, HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(false, HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
-	public ServiceResult<List<Comment>> getCommentsByBrand(String token) {
+	public ServiceResult<List<CommentResponse>> getCommentsByBrand(String token) {
 		try {
 			if (!getUser(token).getBrand().getFeatures().contains(FeatureType.FEEDBACKS)) {
 				return forbiddenList();
 			}
 			List<Comment> entityList = getRepository().findAllByBrand(getUser(token).getBrand());
 			entityList.sort(Comparator.comparing(Comment::getCreatedDate, Comparator.nullsLast(Comparator.naturalOrder())));
-			return new ServiceResult<>(entityList, HttpStatus.OK);
+			return new ServiceResult<>(mapper.toResponse(entityList));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 }

@@ -24,7 +24,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -46,68 +45,6 @@ public abstract class AbstractBaseService<
 	private UserRepository userRepository;
 
 	public abstract Mapper getMapper();
-
-	public ServiceResult<Entity> get(String token, Long id) {
-		Optional<Entity> entity = getRepository().findById(id);
-		return entity.map(value -> new ServiceResult<>(value, HttpStatus.OK))
-				.orElseGet(() -> new ServiceResult<>(HttpStatus.NOT_FOUND, "Entity can not found by the given id: " + id));
-	}
-
-	public ServiceResult<Boolean> delete(String token, Long id) {
-		try {
-			getRepository().deleteById(id);
-			return new ServiceResult<>(true, HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ServiceResult<>(false, HttpStatus.NOT_MODIFIED, "Entity can not delete by the given id: " + id + ". Error message: " + e.getMessage());
-		}
-	}
-
-	public ServiceResult<Boolean> deleteAll(String token, Set<Long> ids) {
-		try {
-			ids.forEach(id -> getRepository().deleteById(id));
-			return new ServiceResult<>(true, HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ServiceResult<>(false, HttpStatus.NOT_MODIFIED, "Entities can not delete by the given ids: " + ids + ". Error message: " + e.getMessage());
-		}
-	}
-
-	public ServiceResult<Entity> update(String token, Request request) {
-		Optional<Entity> entity = getRepository().findById(request.getId());
-		if (entity.isPresent()) {
-			try {
-				Entity newEntity = getUpdateMapper().toEntityForUpdate(request, entity.get());
-				getRepository().save(newEntity);
-				return new ServiceResult<>(newEntity, HttpStatus.OK);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
-			}
-		} else {
-			return new ServiceResult<>(HttpStatus.NOT_FOUND, "Entity not found to update update with the given id: " + request.getId());
-		}
-	}
-
-	public ServiceResult<Entity> save(String token, Request request) {
-		try {
-			Entity entity = getRepository().save(getMapper().toEntity(request));
-			return new ServiceResult<>(entity, HttpStatus.CREATED);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
-		}
-	}
-
-	public ServiceResult<List<Entity>> getAll(String token) {
-		try {
-			Optional<List<Entity>> entityList = Optional.of(getRepository().findAll());
-			return new ServiceResult<>(entityList.get(), HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-		}
-	}
 
 	protected <T> ServiceResult<Page<Entity>> filter(Specification<Entity> specifications, PageDto<T> page) {
 		try {
@@ -178,11 +115,11 @@ public abstract class AbstractBaseService<
 		return jwtUtil;
 	}
 
-	public ServiceResult<Entity> forbidden() {
+	public ServiceResult<Response> forbidden() {
 		return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 	}
 
-	public ServiceResult<List<Entity>> forbiddenList() {
+	public ServiceResult<List<Response>> forbiddenList() {
 		return new ServiceResult<>(HttpStatus.FORBIDDEN, "Entity can not save. Error message: Required privilege not defined!");
 	}
 

@@ -1,16 +1,16 @@
 package com.smartmenu.category.controller;
 
-import com.smartmenu.category.db.entity.Category;
-import com.smartmenu.category.mapper.CategoryMapper;
 import com.smartmenu.category.service.CategoryService;
 import com.smartmenu.client.category.CategoryRequest;
 import com.smartmenu.client.category.CategoryResponse;
+import com.smartmenu.client.product.ProductResponse;
 import com.smartmenu.common.basemodel.controller.AbstractBaseController;
 import com.smartmenu.common.basemodel.service.ServiceResult;
-import com.smartmenu.product.db.entity.Product;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -21,44 +21,62 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/category")
-public class CategoryController extends AbstractBaseController<CategoryRequest, Category, CategoryResponse, CategoryMapper, CategoryService> {
+public class CategoryController extends AbstractBaseController {
 	private CategoryService service;
-	private CategoryMapper mapper;
 
-	public CategoryController(final CategoryService service, final CategoryMapper mapper) {
+	public CategoryController(final CategoryService service) {
 		this.service = service;
-		this.mapper = mapper;
 	}
 
 	public CategoryService getService() {
 		return service;
 	}
 
-	public CategoryMapper getMapper() {
-		return mapper;
+	@GetMapping(GUEST + "/{id}")
+	public ResponseEntity<ServiceResult<CategoryResponse>> get(@PathVariable Long id) {
+		ServiceResult<CategoryResponse> serviceResult = service.get(id);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
+	}
+
+	@PostMapping
+	public ResponseEntity<ServiceResult<CategoryResponse>> save(@RequestHeader(HEADER_TOKEN) String token, @RequestBody CategoryRequest request) {
+		ServiceResult<CategoryResponse> serviceResult = service.insert(token, request);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
+	}
+
+	@PutMapping
+	public ResponseEntity<ServiceResult<CategoryResponse>> update(@RequestHeader(HEADER_TOKEN) String token, @RequestBody CategoryRequest request) {
+		ServiceResult<CategoryResponse> serviceResult = service.update(token, request);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<ServiceResult<Boolean>> delete(@RequestHeader(HEADER_TOKEN) String token, @Valid @PathVariable Long id) {
+		ServiceResult<Boolean> serviceResult = service.delete(token, id);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
 	@PostMapping("/arrange-categories")
-	public ResponseEntity<Boolean> arrangeCategories(@RequestHeader(HEADER_TOKEN) String token, @RequestBody Map<Long, Integer> dto) {
+	public ResponseEntity<ServiceResult<Boolean>> arrangeCategories(@RequestHeader(HEADER_TOKEN) String token, @RequestBody Map<Long, Integer> dto) {
 		ServiceResult<Boolean> serviceResult = getService().arrangeCategories(token, dto);
-		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
 	@GetMapping("/get-categories-by-brand")
-	public ResponseEntity<List<Category>> getCategoriesByBrand(@RequestHeader(HEADER_TOKEN) String token) {
-		ServiceResult<List<Category>> serviceResult = getService().getCategoriesByBrand(token);
-		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	public ResponseEntity<ServiceResult<List<CategoryResponse>>> getCategoriesByBrand(@RequestHeader(HEADER_TOKEN) String token) {
+		ServiceResult<List<CategoryResponse>> serviceResult = service.getCategoriesByBrand(token);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
 	@GetMapping("/get-campaigns-by-brand")
-	public ResponseEntity<List<Product>> getCampaignsByBrand(@RequestHeader(HEADER_TOKEN) String token) {
-		ServiceResult<List<Product>> serviceResult = getService().getCategoryByBrandAndName(token, KAMPANYALAR);
-		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	public ResponseEntity<ServiceResult<List<ProductResponse>>> getCampaignsByBrand(@RequestHeader(HEADER_TOKEN) String token) {
+		ServiceResult<List<ProductResponse>> serviceResult = service.getCategoryByBrandAndName(token, KAMPANYALAR);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
 	@GetMapping("/get-menus-by-brand")
-	public ResponseEntity<List<Product>> getMenusByBrand(@RequestHeader(HEADER_TOKEN) String token) {
-		ServiceResult<List<Product>> serviceResult = getService().getCategoryByBrandAndName(token, MENULER);
-		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+	public ResponseEntity<ServiceResult<List<ProductResponse>>> getMenusByBrand(@RequestHeader(HEADER_TOKEN) String token) {
+		ServiceResult<List<ProductResponse>> serviceResult = service.getCategoryByBrandAndName(token, MENULER);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 }
