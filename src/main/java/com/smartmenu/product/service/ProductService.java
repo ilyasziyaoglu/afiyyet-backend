@@ -135,7 +135,6 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 			return new ServiceResult<>(e);
 		}
 	}
-		}
 
 	public ServiceResult<List<ProductResponse>> getProductsByCategory(String token, Long categoryId) {
 		try {
