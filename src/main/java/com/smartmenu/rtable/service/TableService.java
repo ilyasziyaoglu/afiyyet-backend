@@ -180,7 +180,7 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 			source.setIsOpen(false);
 			target.setIsOpen(true);
 			if (target.getOrder() == null) {
-				sourceOrder.setTable(target);
+				sourceOrder.setTableId(target.getId());
 				source.setOrder(null);
 				target.setOrder(sourceOrder);
 				repository.save(source);

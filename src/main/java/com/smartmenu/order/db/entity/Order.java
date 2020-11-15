@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smartmenu.brand.db.entity.Brand;
 import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
 import com.smartmenu.orderitem.db.entity.OrderItem;
-import com.smartmenu.rtable.db.entity.RTable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -34,9 +33,8 @@ public class Order extends AbstractBaseEntity {
 	@GeneratedValue(generator = "orders_id_gen", strategy = GenerationType.SEQUENCE)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "table_id")
-	private RTable table;
+	@Column(name = "table_id")
+	private Long tableId;
 
 	@ManyToOne
 	@JoinColumn(name = "brand_id")

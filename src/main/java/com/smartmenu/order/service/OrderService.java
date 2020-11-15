@@ -12,7 +12,7 @@ import com.smartmenu.order.mapper.OrderUpdateMapper;
 import com.smartmenu.orderitem.db.entity.OrderItem;
 import com.smartmenu.orderitem.db.repository.OrderItemRepository;
 import com.smartmenu.orderitem.enums.OrderItemState;
-import com.smartmenu.orderitem.service.OrderItemService;
+import com.smartmenu.orderitem.mapper.OrderItemMapper;
 import com.smartmenu.rtable.db.entity.RTable;
 import com.smartmenu.rtable.db.repository.TableRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +35,8 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 	final private OrderMapper mapper;
 	final private OrderUpdateMapper updateMapper;
 	final private TableRepository tableRepository;
-	final private OrderItemService orderItemService;
 	final private OrderItemRepository orderItemRepository;
+	final private OrderItemMapper orderItemMapper;
 
 	@Override
 	public OrderRepository getRepository() {
@@ -56,25 +56,29 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 	public ServiceResult<Order> save(OrderRequest request) {
 		try {
 			Order savedOrder;
-			RTable table = tableRepository.getOne(request.getTable().getId());
+			RTable table = tableRepository.getOne(request.getTableId());
 
 			if (table.getIsOpen()) {
 				Order orderInDb = repository.getOne(table.getOrder().getId());
 				request.getOrderitems().forEach(orderItemRequest -> {
-					ServiceResult<OrderItem> orderItemServiceResult = orderItemService.save(orderItemRequest);
-					if (orderItemServiceResult.isSuccess()) {
-						orderInDb.getOrderitems().add(orderItemServiceResult.getValue());
-					}
+					OrderItem orderItem = orderItemMapper.toEntity(orderItemRequest);
+					orderItem.setOrder(orderInDb);
+					orderInDb.getOrderitems().add(orderItemRepository.save(orderItem));
 				});
 				savedOrder = repository.save(orderInDb);
 			} else {
 				Order entityToSave = getMapper().toEntity(request);
 				entityToSave.setBrand(table.getBrand());
+				entityToSave.setTableId(table.getId());
+				entityToSave.getOrderitems().forEach(orderItem -> orderItem.setOrder(entityToSave));
 				savedOrder = repository.save(entityToSave);
+				table.setOrder(savedOrder);
 			}
 
 			table.setIsOpen(true);
 			tableRepository.save(table);
+			savedOrder.getOrderitems().forEach(orderItem -> orderItem.setOrder(null));
+
 
 			return new ServiceResult<>(savedOrder, HttpStatus.CREATED);
 		} catch (Exception e) {
@@ -142,7 +146,7 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 
 			//TODO masa kapatildiginda order ve order itemler posife tasinacak
 			if (order.getOrderitems().size() == 0) {
-				RTable table = order.getTable();
+				RTable table = tableRepository.getOne(order.getTableId());
 				table.setIsOpen(false);
 				tableRepository.save(table);
 			}

@@ -34,6 +34,12 @@ public class OrderController extends AbstractBaseController<OrderRequest, Order,
 		return mapper;
 	}
 
+	@PostMapping("/create")
+	public ResponseEntity<OrderResponse> save(@RequestBody OrderRequest request) {
+		ServiceResult<Order> serviceResult = service.save(request);
+		return new ResponseEntity<>(mapper.toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
+	}
+
 	@GetMapping("/cancel/{id}")
 	public ResponseEntity<Boolean> cancelOrder(@RequestHeader(HEADER_TOKEN) String token, @PathVariable("id") Long id) {
 		ServiceResult<Boolean> serviceResult = service.cancel(token, id);
