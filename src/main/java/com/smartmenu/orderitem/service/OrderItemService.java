@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -48,19 +47,28 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 		return updateMapper;
 	}
 
-	public ServiceResult<OrderItem> save(OrderItemRequest request) {
+	public ServiceResult<OrderItemResponse> get(Long id) {
+		try {
+			return new ServiceResult<>(mapper.toResponse(repository.getOne(id)));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ServiceResult<>(e);
+		}
+	}
+
+	public ServiceResult<OrderItemResponse> insert(OrderItemRequest request) {
 		try {
 			OrderItem entityToSave = getMapper().toEntity(request);
 			entityToSave.setState(OrderItemState.WAITING_FOR_TABLE);
 			OrderItem entity = repository.save(entityToSave);
-			return new ServiceResult<>(entity, HttpStatus.CREATED);
+			return new ServiceResult<>(mapper.toResponse(entity), HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, "Entity can not save. Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
-	public ServiceResult<OrderItem> updateFromMenu(OrderItemRequest request) {
+	public ServiceResult<OrderItemResponse> updateFromMenu(OrderItemRequest request) {
 		try {
 			OrderItem entity = repository.getOne(request.getId());
 			if (!OrderItemState.WAITING_FOR_TABLE.equals(entity.getState())) {
@@ -69,12 +77,11 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 			return updateInternal(entity, request);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
-	@Override
-	public ServiceResult<OrderItem> update(String token, OrderItemRequest request) {
+	public ServiceResult<OrderItemResponse> update(String token, OrderItemRequest request) {
 		try {
 			User user = getUser(token);
 			OrderItem entity = repository.getOne(request.getId());
@@ -84,42 +91,35 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 			return updateInternal(entity, request);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
-	public ServiceResult<OrderItem> updateInternal(OrderItem orderItem, OrderItemRequest request) {
+	public ServiceResult<OrderItemResponse> updateInternal(OrderItem orderItem, OrderItemRequest request) {
 		try {
 			orderItem.setComment(request.getComment());
 			orderItem.setAmount(request.getAmount());
 			orderItem.setPortion(request.getPortion());
-			return new ServiceResult<>(repository.save(orderItem), HttpStatus.OK);
+			return new ServiceResult<>(mapper.toResponse(repository.save(orderItem)), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not update with the given id: " + request.getId() + ". Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
-	@Override
 	public ServiceResult<Boolean> delete(String token, Long id) {
-		User user = getUser(token);
-		OrderItem entity = repository.getOne(id);
-		if (!isNotAdmin(user) && !entity.getOrder().getBrand().getId().equals(user.getBrand().getId())) {
-			return forbiddenBoolean();
-		}
-		return super.delete(token, id);
-	}
-
-	@Override
-	public ServiceResult<Boolean> deleteAll(String token, Set<Long> ids) {
-		User user = getUser(token);
-		List<OrderItem> entityList = repository.findAllById(ids);
-		for (OrderItem entity : entityList) {
-			if (isNotAdmin(user) && !entity.getOrder().getBrand().getId().equals(user.getBrand().getId())) {
+		try {
+			User user = getUser(token);
+			OrderItem entity = repository.getOne(id);
+			if (!isNotAdmin(user) && !entity.getOrder().getBrand().getId().equals(user.getBrand().getId())) {
 				return forbiddenBoolean();
 			}
+			repository.delete(entity);
+			return new ServiceResult<>(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ServiceResult<>(e);
 		}
-		return super.deleteAll(token, ids);
 	}
 
 	public ServiceResult<Boolean> cancelFromAdminPanel(String token, OrderItemCancelRequest request) {
@@ -133,7 +133,7 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 			return cancel(entity, request);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not cancel with the given id: " + request.getId() + ". Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
@@ -146,7 +146,7 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 			return cancel(entity, request);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not cancel with the given id: " + request.getId() + ". Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 
@@ -178,7 +178,7 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.NOT_MODIFIED, "Entity can not cancel with the given id: " + request.getId() + ". Error message: " + e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 

@@ -177,20 +177,20 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 					repository.save(product);
 				});
 			});
-			return new ServiceResult<>(true);
+			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ServiceResult<>(e);
 		}
 	}
 
-	public ServiceResult<List<Product>> getProductListByBrand(String token) {
+	public ServiceResult<List<ProductResponse>> getProductListByBrand(String token) {
 		try {
 			List<Product> entityList = repository.findAllProductsByBrandId(getUser(token).getBrand().getId());
-			return new ServiceResult<>(entityList, HttpStatus.OK);
+			return new ServiceResult<>(mapper.toResponse(entityList), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ServiceResult<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+			return new ServiceResult<>(e);
 		}
 	}
 }

@@ -63,20 +63,20 @@ public class ProductController extends AbstractBaseController {
 	}
 
 	@GetMapping("/list")
-	public ResponseEntity<List<ProductResponse>> getProductListByBrand(@RequestHeader(HEADER_TOKEN) String token) {
-		ServiceResult<List<Product>> serviceResult = getService().getProductListByBrand(token);
-		return new ResponseEntity<>(getMapper().toResponse(serviceResult.getValue()), serviceResult.getHttpStatus());
+	public ResponseEntity<ServiceResult<List<ProductResponse>>> getProductListByBrand(@RequestHeader(HEADER_TOKEN) String token) {
+		ServiceResult<List<ProductResponse>> serviceResult = service.getProductListByBrand(token);
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
 	@PostMapping("/arrange-products")
 	public ResponseEntity<ServiceResult<Boolean>> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody Map<Long, Integer> dto) {
-		ServiceResult<Boolean> serviceResult = getService().arrangeProducts(token, dto);
+		ServiceResult<Boolean> serviceResult = service.arrangeProducts(token, dto);
 		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
 	@PostMapping("/bulk-price-update")
 	public ResponseEntity<ServiceResult<Boolean>> arrangeProducts(@RequestHeader(HEADER_TOKEN) String token, @RequestBody BulkPriceUpdateRequest dto) {
-		ServiceResult<Boolean> serviceResult = getService().bulkPriceUpdate(token, dto);
+		ServiceResult<Boolean> serviceResult = service.bulkPriceUpdate(token, dto);
 		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 }
