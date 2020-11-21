@@ -43,7 +43,7 @@ public class RTable extends AbstractBaseEntity {
 	private String groupName;
 
 	@Column(name = "is_open")
-	private Boolean isOpen = false;
+	private Boolean isOpen;
 
 	@Override
 	public Long getId() {
