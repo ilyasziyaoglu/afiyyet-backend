@@ -136,7 +136,7 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 			}
 
 			BigDecimal totalPrice = new BigDecimal(0);
-			for (OrderItem orderItem : entity.getOrder().getOrderitems()) {
+			for (OrderItem orderItem : entity.getOrder().getOrderItems()) {
 				orderItem.setState(OrderItemState.COMPLETED);
 				totalPrice = totalPrice.add(orderItem.getTotalPrice());
 			}
@@ -170,11 +170,11 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 			} else {
 				Order targetOrder = target.getOrder();
 				List<OrderItem> transferItems = new ArrayList<>();
-				sourceOrder.getOrderitems().forEach(orderItem -> {
-					orderItem.setOrder(targetOrder);
+				sourceOrder.getOrderItems().forEach(orderItem -> {
+					orderItem.setOrderId(targetOrder.getId());
 					transferItems.add(orderItem);
 				});
-				targetOrder.getOrderitems().addAll(transferItems);
+				targetOrder.getOrderItems().addAll(transferItems);
 				orderService.cancel(token, sourceOrder.getId());
 			}
 

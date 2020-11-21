@@ -20,5 +20,5 @@ public class OrderResponse extends BaseResponse {
 	private Long tableId;
 	private BrandResponse brand;
 	private BigDecimal totalPrice;
-	private List<OrderItemResponse> orderitems;
+	private List<OrderItemResponse> orderItems;
 }

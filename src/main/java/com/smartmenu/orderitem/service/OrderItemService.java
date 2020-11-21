@@ -6,6 +6,8 @@ import com.smartmenu.client.orderitem.OrderItemResponse;
 import com.smartmenu.common.basemodel.service.AbstractBaseService;
 import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
+import com.smartmenu.order.db.entity.Order;
+import com.smartmenu.order.db.repository.OrderRepository;
 import com.smartmenu.orderitem.db.entity.OrderItem;
 import com.smartmenu.orderitem.db.repository.OrderItemRepository;
 import com.smartmenu.orderitem.enums.OrderItemState;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -31,6 +34,7 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 	final private OrderItemMapper mapper;
 	final private OrderItemUpdateMapper updateMapper;
 	final private TableRepository tableRepository;
+	final private OrderRepository orderRepository;
 
 	@Override
 	public OrderItemRepository getRepository() {
@@ -59,13 +63,24 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 	public ServiceResult<OrderItemResponse> insert(OrderItemRequest request) {
 		try {
 			OrderItem entityToSave = getMapper().toEntity(request);
-			entityToSave.setState(OrderItemState.WAITING_FOR_TABLE);
+			entityToSave.setState(OrderItemState.PREPARING);
 			OrderItem entity = repository.save(entityToSave);
 			return new ServiceResult<>(mapper.toResponse(entity), HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ServiceResult<>(e);
 		}
+	}
+
+	public List<OrderItem> insertAll(List<OrderItem> orderItems) {
+		orderItems.forEach(orderItem -> {
+			orderItem.setState(OrderItemState.PREPARING);
+			orderItem.setTotalPrice(
+					orderItem.getProduct().getPrice()
+					.multiply(BigDecimal.valueOf(orderItem.getPortion()))
+					.multiply(BigDecimal.valueOf(orderItem.getAmount())));
+		});
+		return orderItems;
 	}
 
 	public ServiceResult<OrderItemResponse> updateFromMenu(OrderItemRequest request) {
@@ -85,7 +100,8 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 		try {
 			User user = getUser(token);
 			OrderItem entity = repository.getOne(request.getId());
-			if (!isNotAdmin(user) && !entity.getOrder().getBrand().getId().equals(user.getBrand().getId())) {
+			Order order = orderRepository.getOne(entity.getOrderId());
+			if (!isNotAdmin(user) && !order.getBrand().getId().equals(user.getBrand().getId())) {
 				return forbidden();
 			}
 			return updateInternal(entity, request);
@@ -111,7 +127,8 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 		try {
 			User user = getUser(token);
 			OrderItem entity = repository.getOne(id);
-			if (!isNotAdmin(user) && !entity.getOrder().getBrand().getId().equals(user.getBrand().getId())) {
+			Order order = orderRepository.getOne(entity.getOrderId());
+			if (!isNotAdmin(user) && !order.getBrand().getId().equals(user.getBrand().getId())) {
 				return forbiddenBoolean();
 			}
 			repository.delete(entity);
@@ -126,8 +143,8 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 		try {
 			User user = getUser(token);
 			OrderItem entity = repository.getOne(request.getId());
-
-			if (!OrderItemState.WAITING_FOR_TABLE.equals(entity.getState()) && isNotAdmin(user) && isManager(user) && !user.getBrand().getId().equals(entity.getOrder().getId())) {
+			Order order = orderRepository.getOne(entity.getOrderId());
+			if (!OrderItemState.WAITING_FOR_TABLE.equals(entity.getState()) && isNotAdmin(user) && isManager(user) && !user.getBrand().getId().equals(order.getBrand().getId())) {
 				return forbiddenBoolean();
 			}
 			return cancel(entity, request);
@@ -169,8 +186,10 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 			OrderItem savedEntity =  repository.save(entity);
 
 			//TODO masa kapatildiginda order ve order itemler posife tasinacak
-			if (isAllCancelled(savedEntity.getOrder().getOrderitems())) {
-				RTable table = tableRepository.getOne(savedEntity.getOrder().getTableId());
+
+			Order order = orderRepository.getOne(savedEntity.getOrderId());
+			if (isAllCancelled(order.getOrderItems())) {
+				RTable table = tableRepository.getOne(order.getTableId());
 				table.setIsOpen(false);
 				tableRepository.save(table);
 			}
