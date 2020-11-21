@@ -74,7 +74,9 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 				savedOrder = repository.getOne(table.getOrder().getId());
 				List<OrderItem> orderItems = orderItemMapper.toEntity(request.getOrderItems());
 				for (OrderItem orderItem : orderItems) { orderItem.setOrderId(savedOrder.getId()); }
-				savedOrder.getOrderItems().addAll(orderItemService.insertAll(orderItems));
+				orderItemService.updateTotalPrice(orderItems);
+				orderItemService.setInitialState(orderItems);
+				savedOrder.getOrderItems().addAll(orderItems);
 				updateTotalPrice(savedOrder);
 				savedOrder = repository.save(savedOrder);
 			} else {
@@ -83,11 +85,13 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 
 				entityToSave.setBrand(table.getBrand());
 				entityToSave.setTableId(table.getId());
+				orderItemService.updateTotalPrice(orderItems);
+				orderItemService.setInitialState(orderItems);
 				updateTotalPrice(entityToSave);
 				entityToSave.setOrderItems(null);
 				savedOrder = repository.save(entityToSave);
 				for (OrderItem orderItem : orderItems) { orderItem.setOrderId(savedOrder.getId()); }
-				savedOrder.setOrderItems(orderItemService.insertAll(orderItems));
+				savedOrder.setOrderItems(orderItems);
 				table.setOrder(savedOrder);
 			}
 

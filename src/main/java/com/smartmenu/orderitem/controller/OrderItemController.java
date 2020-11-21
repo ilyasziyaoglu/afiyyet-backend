@@ -61,14 +61,14 @@ public class OrderItemController extends AbstractBaseController {
 	}
 
 	@PostMapping("/cancel-from-menu")
-	public ResponseEntity<Boolean> cancelOrder(@RequestBody OrderItemCancelRequest request) {
+	public ResponseEntity<ServiceResult<Boolean>> cancelOrder(@RequestBody OrderItemCancelRequest request) {
 		ServiceResult<Boolean> serviceResult = service.cancelFromMenu(request);
-		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
 	@PostMapping("/cancel-from-admin")
-	public ResponseEntity<Boolean> cancelOrder(@RequestHeader(HEADER_TOKEN) String token, @RequestBody OrderItemCancelRequest request) {
+	public ResponseEntity<ServiceResult<Boolean>> cancelOrder(@RequestHeader(HEADER_TOKEN) String token, @RequestBody OrderItemCancelRequest request) {
 		ServiceResult<Boolean> serviceResult = service.cancelFromAdminPanel(token, request);
-		return new ResponseEntity<>(serviceResult.getValue(), serviceResult.getHttpStatus());
+		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 }
