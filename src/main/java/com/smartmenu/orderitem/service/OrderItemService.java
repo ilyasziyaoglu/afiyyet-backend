@@ -16,6 +16,7 @@ import com.smartmenu.orderitem.mapper.OrderItemUpdateMapper;
 import com.smartmenu.rtable.db.entity.RTable;
 import com.smartmenu.rtable.db.repository.TableRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -72,15 +73,17 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 		}
 	}
 
-	public List<OrderItem> insertAll(List<OrderItem> orderItems) {
+	public void updateTotalPrice(List<OrderItem> orderItems) {
 		orderItems.forEach(orderItem -> {
-			orderItem.setState(OrderItemState.PREPARING);
 			orderItem.setTotalPrice(
 					orderItem.getProduct().getPrice()
 					.multiply(BigDecimal.valueOf(orderItem.getPortion()))
 					.multiply(BigDecimal.valueOf(orderItem.getAmount())));
 		});
-		return orderItems;
+	}
+
+	public void setInitialState(List<OrderItem> orderItems) {
+		orderItems.forEach(orderItem -> orderItem.setState(OrderItemState.PREPARING));
 	}
 
 	public ServiceResult<OrderItemResponse> updateFromMenu(OrderItemRequest request) {
@@ -178,7 +181,7 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 			}
 
 			entity.setAmount(entity.getAmount() - request.getCancelAmount());
-			if (!entity.getCancelReason().isEmpty()) {
+			if (StringUtils.isNotEmpty(entity.getCancelReason())) {
 				entity.setCancelReason(entity.getCancelReason() + ", " + request.getCancelReason());
 			} else {
 				entity.setCancelReason(request.getCancelReason());
