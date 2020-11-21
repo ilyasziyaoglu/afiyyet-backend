@@ -1,6 +1,5 @@
 package com.smartmenu.client.orderitem;
 
-import com.smartmenu.client.order.OrderResponse;
 import com.smartmenu.client.product.ProductResponse;
 import com.smartmenu.common.basemodel.response.BaseResponse;
 import com.smartmenu.orderitem.enums.OrderItemState;
@@ -17,7 +16,7 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class OrderItemResponse extends BaseResponse {
-	private OrderResponse order;
+	private Long orderId;
 	private ProductResponse product;
 	private BigDecimal totalPrice;
 	private Integer amount;

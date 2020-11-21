@@ -1,9 +1,7 @@
 package com.smartmenu.orderitem.db.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
-import com.smartmenu.order.db.entity.Order;
 import com.smartmenu.orderitem.enums.OrderItemState;
 import com.smartmenu.product.db.entity.Product;
 import lombok.Data;
@@ -32,10 +30,8 @@ public class OrderItem extends AbstractBaseEntity {
 	@GeneratedValue(generator = "orderitems_id_gen", strategy = GenerationType.SEQUENCE)
 	private Long id;
 
-	@JsonBackReference
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "order_id", nullable = false)
-	private Order order;
+	@Column(name = "order_id", nullable = false)
+	private Long orderId;
 
 	@OneToOne
 	@JoinColumn(name = "product_id")

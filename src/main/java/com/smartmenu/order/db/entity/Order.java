@@ -1,7 +1,6 @@
 package com.smartmenu.order.db.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smartmenu.brand.db.entity.Brand;
 import com.smartmenu.common.basemodel.db.entity.AbstractBaseEntity;
 import com.smartmenu.orderitem.db.entity.OrderItem;
@@ -10,7 +9,6 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,9 +41,8 @@ public class Order extends AbstractBaseEntity {
 	@Column(name = "total_price")
 	private BigDecimal totalPrice;
 
-	@JsonManagedReference
-	@OneToMany(mappedBy="order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private List<OrderItem> orderitems = new ArrayList<>();
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<OrderItem> orderItems;
 
 	@Override
 	public Long getId() {

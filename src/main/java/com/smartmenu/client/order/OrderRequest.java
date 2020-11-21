@@ -20,5 +20,5 @@ public class OrderRequest extends BaseRequest {
 	private Long tableId;
 	private BrandRequest brand;
 	private BigDecimal totalPrice;
-	private List<OrderItemRequest> orderitems;
+	private List<OrderItemRequest> orderItems;
 }
