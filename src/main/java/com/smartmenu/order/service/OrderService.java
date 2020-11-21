@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -104,6 +105,7 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 		order.setTotalPrice(order.getOrderItems()
 				.stream()
 				.map(OrderItem::getTotalPrice)
+				.filter(Objects::nonNull)
 				.reduce(BigDecimal.ZERO, BigDecimal::add));
 	}
 

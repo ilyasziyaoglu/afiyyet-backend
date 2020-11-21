@@ -67,6 +67,7 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 		try {
 			RTable entityToSave = getMapper().toEntity(request);
 			entityToSave.setBrand(getUser(token).getBrand());
+			entityToSave.setIsOpen(false);
 			RTable entity = repository.save(entityToSave);
 			return new ServiceResult<>(mapper.toResponse(entity), HttpStatus.CREATED);
 		} catch (Exception e) {
