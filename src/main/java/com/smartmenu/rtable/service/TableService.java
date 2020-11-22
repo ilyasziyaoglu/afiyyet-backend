@@ -9,6 +9,7 @@ import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
 import com.smartmenu.common.utils.PriceUtils;
 import com.smartmenu.order.db.entity.Order;
+import com.smartmenu.order.db.repository.OrderRepository;
 import com.smartmenu.order.service.OrderService;
 import com.smartmenu.orderitem.db.entity.OrderItem;
 import com.smartmenu.orderitem.enums.OrderItemState;
@@ -38,6 +39,7 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 	final private TableUpdateMapper updateMapper;
 	final private PriceUtils priceUtils;
 	final private OrderService orderService;
+	final private OrderRepository orderRepository;
 
 	@Override
 	public TableRepository getRepository() {
@@ -143,6 +145,8 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 			}
 			entity.setIsOpen(false);
 			entity.getOrder().setTotalPrice(priceUtils.applyDiscount(totalPrice, request.getDiscountAmount(), request.getIsPercent()));
+			orderRepository.save(entity.getOrder());
+			entity.setOrder(null);
 			repository.save(entity);
 			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {

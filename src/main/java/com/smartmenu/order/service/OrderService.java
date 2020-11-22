@@ -9,6 +9,7 @@ import com.smartmenu.order.db.entity.Order;
 import com.smartmenu.order.db.repository.OrderRepository;
 import com.smartmenu.order.mapper.OrderMapper;
 import com.smartmenu.order.mapper.OrderUpdateMapper;
+import com.smartmenu.order.utils.OrderUtils;
 import com.smartmenu.orderitem.db.entity.OrderItem;
 import com.smartmenu.orderitem.db.repository.OrderItemRepository;
 import com.smartmenu.orderitem.enums.OrderItemState;
@@ -20,10 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -40,6 +39,7 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 	final private OrderItemRepository orderItemRepository;
 	final private OrderItemMapper orderItemMapper;
 	final private OrderItemService orderItemService;
+	final private OrderUtils orderUtils;
 
 	@Override
 	public OrderRepository getRepository() {
@@ -77,7 +77,7 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 				orderItemService.updateTotalPrice(orderItems);
 				orderItemService.setInitialState(orderItems);
 				savedOrder.getOrderItems().addAll(orderItems);
-				updateTotalPrice(savedOrder);
+				orderUtils.updateTotalPrice(savedOrder);
 				savedOrder = repository.save(savedOrder);
 			} else {
 				Order entityToSave = getMapper().toEntity(request);
@@ -87,7 +87,7 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 				entityToSave.setTableId(table.getId());
 				orderItemService.updateTotalPrice(orderItems);
 				orderItemService.setInitialState(orderItems);
-				updateTotalPrice(entityToSave);
+				orderUtils.updateTotalPrice(entityToSave);
 				entityToSave.setOrderItems(null);
 				savedOrder = repository.save(entityToSave);
 				for (OrderItem orderItem : orderItems) { orderItem.setOrderId(savedOrder.getId()); }
@@ -103,14 +103,6 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 			e.printStackTrace();
 			return new ServiceResult<>(e);
 		}
-	}
-
-	private void updateTotalPrice(Order order) {
-		order.setTotalPrice(order.getOrderItems()
-				.stream()
-				.map(OrderItem::getTotalPrice)
-				.filter(Objects::nonNull)
-				.reduce(BigDecimal.ZERO, BigDecimal::add));
 	}
 
 	public ServiceResult<OrderResponse> update(String token, OrderRequest request) {
