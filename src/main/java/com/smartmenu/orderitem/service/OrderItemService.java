@@ -8,6 +8,7 @@ import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
 import com.smartmenu.order.db.entity.Order;
 import com.smartmenu.order.db.repository.OrderRepository;
+import com.smartmenu.order.utils.OrderUtils;
 import com.smartmenu.orderitem.db.entity.OrderItem;
 import com.smartmenu.orderitem.db.repository.OrderItemRepository;
 import com.smartmenu.orderitem.enums.OrderItemState;
@@ -36,6 +37,7 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 	final private OrderItemUpdateMapper updateMapper;
 	final private TableRepository tableRepository;
 	final private OrderRepository orderRepository;
+	final private OrderUtils orderUtils;
 
 	@Override
 	public OrderItemRepository getRepository() {
@@ -74,12 +76,10 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 	}
 
 	public void updateTotalPrice(List<OrderItem> orderItems) {
-		orderItems.forEach(orderItem -> {
-			orderItem.setTotalPrice(
-					orderItem.getProduct().getPrice()
-					.multiply(BigDecimal.valueOf(orderItem.getPortion()))
-					.multiply(BigDecimal.valueOf(orderItem.getAmount())));
-		});
+		orderItems.forEach(orderItem -> orderItem.setTotalPrice(
+				orderItem.getProduct().getPrice()
+				.multiply(BigDecimal.valueOf(orderItem.getPortion()))
+				.multiply(BigDecimal.valueOf(orderItem.getAmount()))));
 	}
 
 	public void setInitialState(List<OrderItem> orderItems) {
@@ -88,11 +88,12 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 
 	public ServiceResult<OrderItemResponse> updateFromMenu(OrderItemRequest request) {
 		try {
-			OrderItem entity = repository.getOne(request.getId());
-			if (!OrderItemState.WAITING_FOR_TABLE.equals(entity.getState())) {
+			OrderItem orderItem = repository.getOne(request.getId());
+			if (!OrderItemState.WAITING_FOR_TABLE.equals(orderItem.getState())) {
 				return forbidden();
 			}
-			return updateInternal(entity, request);
+			updateInternal(orderItem, request);
+			return new ServiceResult<>(mapper.toResponse(orderItem), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ServiceResult<>(e);
@@ -102,28 +103,32 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 	public ServiceResult<OrderItemResponse> update(String token, OrderItemRequest request) {
 		try {
 			User user = getUser(token);
-			OrderItem entity = repository.getOne(request.getId());
-			Order order = orderRepository.getOne(entity.getOrderId());
+			Order order = orderRepository.getOne(request.getOrderId());
 			if (!isNotAdmin(user) && !order.getBrand().getId().equals(user.getBrand().getId())) {
 				return forbidden();
 			}
-			return updateInternal(entity, request);
+			OrderItem orderItem = order.getOrderItems().stream().filter(orderItem1 -> orderItem1.getId().equals(request.getId())).findFirst().orElse(null);
+			if (orderItem != null) {
+				updateInternal(orderItem, request);
+				orderUtils.updateTotalPrice(order);
+				orderRepository.save(order);
+				return new ServiceResult<>(mapper.toResponse(orderItem), HttpStatus.OK);
+			} else {
+				return new ServiceResult<>(HttpStatus.NOT_FOUND);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ServiceResult<>(e);
 		}
 	}
 
-	public ServiceResult<OrderItemResponse> updateInternal(OrderItem orderItem, OrderItemRequest request) {
-		try {
+	public void updateInternal(OrderItem orderItem, OrderItemRequest request) {
 			orderItem.setComment(request.getComment());
 			orderItem.setAmount(request.getAmount());
 			orderItem.setPortion(request.getPortion());
-			return new ServiceResult<>(mapper.toResponse(repository.save(orderItem)), HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ServiceResult<>(e);
-		}
+			orderItem.setTotalPrice(orderItem.getProduct().getPrice()
+					.multiply(BigDecimal.valueOf(orderItem.getPortion()))
+					.multiply(BigDecimal.valueOf(orderItem.getAmount())));
 	}
 
 	public ServiceResult<Boolean> delete(String token, Long id) {

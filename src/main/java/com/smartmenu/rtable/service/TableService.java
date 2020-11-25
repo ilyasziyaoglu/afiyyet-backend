@@ -9,6 +9,7 @@ import com.smartmenu.common.basemodel.service.ServiceResult;
 import com.smartmenu.common.user.db.entity.User;
 import com.smartmenu.common.utils.PriceUtils;
 import com.smartmenu.order.db.entity.Order;
+import com.smartmenu.order.db.repository.OrderRepository;
 import com.smartmenu.order.service.OrderService;
 import com.smartmenu.orderitem.db.entity.OrderItem;
 import com.smartmenu.orderitem.enums.OrderItemState;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +40,7 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 	final private TableUpdateMapper updateMapper;
 	final private PriceUtils priceUtils;
 	final private OrderService orderService;
+	final private OrderRepository orderRepository;
 
 	@Override
 	public TableRepository getRepository() {
@@ -143,6 +146,8 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 			}
 			entity.setIsOpen(false);
 			entity.getOrder().setTotalPrice(priceUtils.applyDiscount(totalPrice, request.getDiscountAmount(), request.getIsPercent()));
+			orderRepository.save(entity.getOrder());
+			entity.setOrder(null);
 			repository.save(entity);
 			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
@@ -168,19 +173,18 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 				source.setOrder(null);
 				target.setOrder(sourceOrder);
 				repository.save(source);
+				repository.save(target);
 			} else {
-				Order targetOrder = target.getOrder();
 				List<OrderItem> transferItems = new ArrayList<>();
 				sourceOrder.getOrderItems().forEach(orderItem -> {
-					orderItem.setOrderId(targetOrder.getId());
+					orderItem.setOrderId(target.getOrder().getId());
 					transferItems.add(orderItem);
 				});
-				targetOrder.getOrderItems().addAll(transferItems);
-				orderService.cancel(token, sourceOrder.getId());
+				target.getOrder().getOrderItems().addAll(transferItems);
+				sourceOrder.setOrderItems(Collections.emptyList());
+				repository.save(source);
+				repository.save(target);
 			}
-
-			repository.save(target);
-
 			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
