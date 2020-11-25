@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -172,19 +173,18 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 				source.setOrder(null);
 				target.setOrder(sourceOrder);
 				repository.save(source);
+				repository.save(target);
 			} else {
-				Order targetOrder = target.getOrder();
 				List<OrderItem> transferItems = new ArrayList<>();
 				sourceOrder.getOrderItems().forEach(orderItem -> {
-					orderItem.setOrderId(targetOrder.getId());
+					orderItem.setOrderId(target.getOrder().getId());
 					transferItems.add(orderItem);
 				});
-				targetOrder.getOrderItems().addAll(transferItems);
-				orderService.cancel(token, sourceOrder.getId());
+				target.getOrder().getOrderItems().addAll(transferItems);
+				sourceOrder.setOrderItems(Collections.emptyList());
+				repository.save(source);
+				repository.save(target);
 			}
-
-			repository.save(target);
-
 			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
