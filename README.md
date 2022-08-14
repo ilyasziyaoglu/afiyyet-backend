@@ -1,1 +1,1 @@
-# smartmenu-backend
+# afiyyet-backend

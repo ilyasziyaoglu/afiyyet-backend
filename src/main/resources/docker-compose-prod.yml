@@ -13,10 +13,10 @@ services:
   sftp:
     image: atmoz/sftp
     volumes:
-    - /smartmenu/cdn:/home/smartmenu/cdn
+    - /afiyyet/cdn:/home/afiyyet/cdn
     ports:
       - "2222:22"
-    command: smartmenu:smartmenu:1001
+    command: afiyyet:afiyyet:1001
 
 #  adminer:
 #    image: adminer

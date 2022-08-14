@@ -109,11 +109,12 @@ app:
 spring:
   profiles: ilyas
   datasource:
-    password: andrimbavy123
+    password: 0ZBZuRt4
     username: postgres
-    url: jdbc:postgresql://localhost:5432/smartmenu
+    url: jdbc:postgresql://localhost:5432/afiyyet
     driverClassName: org.postgresql.Driver
   jpa:
+    generate-ddl: true
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -127,8 +128,8 @@ spring:
 sftp:
   host: localhost
   port: 2222
-  user: smartmenu
-  password: smartmenu
+  user: afiyyet
+  password: afiyyet
   remote:
     directory:
       upload: cdn/
@@ -136,7 +137,7 @@ sftp:
   local:
     directory:
       download: /Users/ilyas/Downloads/
-      upload: /Users/ilyas/Desktop/projects/smartmenu/cdn/
+      upload: /Users/ilyas/Desktop/personal_projects/afiyyet/cdn/
 
 
 
@@ -153,4 +154,4 @@ mail:
       enabled: true
 
 app:
-  baseCdnUrl: http://localhost:5000/
+  baseCdnUrl: http://localhost:8001/
