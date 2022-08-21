@@ -1,0 +1,18 @@
+
+mvn clean install -DskipTests
+mvn -Pprod jib:dockerBuild
+docker save -o target/backend.tar backend
+rsync -azP -C target/backend.tar root@afiyyet.com:/home/hpserver1/afiyyet/
+ssh root@afiyyet.com
+cd /home/hpserver1/afiyyet/
+docker stop afiyyet_backend_1
+docker rm afiyyet_backend_1
+docker rmi backend
+docker load -i backend.tar
+docker-compose -f app.yml up -d
+docker logs -f afiyyet_backend_1
+
+
+
+
+python2 -m SimpleHTTPServer 8001

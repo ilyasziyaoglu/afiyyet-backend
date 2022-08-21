@@ -1,2 +1,2 @@
-docker exec -i afiyyet-backend-db-1 /bin/bash -c "PGPASSWORD=0ZBZuRt4 pg_dump --username postgres afiyyet" > /Users/ilyas/Desktop/personal_projects/afiyyet/dummy-data/dump/dump.sql
-docker exec -i afiyyet-backend-db-1 /bin/bash -c "PGPASSWORD=0ZBZuRt4 psql --username postgres afiyyet" < /Users/ilyas/Desktop/personal_projects/afiyyet/dummy-data/dump/dump.sql
+docker exec -i docker_afiyyet-db_1 /bin/bash -c "PGPASSWORD=2vMNPU49Ep47HtYn pg_dump --username afiyyet afiyyet" > /Users/ilyas/Desktop/personal_projects/afiyyet/dummy-data/dump/dump.sql
+docker exec -i docker_afiyyet-db_1 /bin/bash -c "PGPASSWORD=2vMNPU49Ep47HtYn psql --username afiyyet afiyyet" < /Users/ilyas/Desktop/personal_projects/afiyyet/dummy-data/dump/dump.sql

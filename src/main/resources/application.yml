@@ -13,7 +13,7 @@ spring:
   datasource:
     password: 2vMNPU49Ep47HtYn
     username: afiyyet
-    url: jdbc:postgresql://127.0.0.1:5432/afiyyet
+    url: jdbc:postgresql://afiyyet.com:5432/afiyyet
     driverClassName: org.postgresql.Driver
   jpa:
     hibernate:
@@ -29,16 +29,16 @@ spring:
 sftp:
   host: https://afiyyet.com
   port: 2222
-  user: smartmenu
-  password: smartmenu
+  user: afiyyet
+  password: afiyyet
   remote:
     directory:
       upload: cdn/
       download: ~/
   local:
     directory:
-      download: /Downloads/
-      upload: /home/afiyyet/smartmenu/cdn/
+      download: /home/hpserver1/downloads/
+      upload: /home/hpserver1/afiyyet/cdn/
 
 
 mail:
@@ -54,63 +54,14 @@ mail:
       enabled: true
 
 app:
-  baseCdnUrl: https://afiyyet.com:5002/
----
-
-spring:
-  profiles: test
-  datasource:
-    password: jw8s0F4
-    username: smartmenu
-    url: jdbc:postgresql://127.0.0.1:5432/smartmenu
-    driverClassName: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    properties:
-      hibernate:
-        format_sql: true
-  jackson:
-    serialization:
-      fail-on-empty-beans: false
-
-sftp:
-  host: 31.220.55.12
-  port: 2222
-  user: smartmenu
-  password: smartmenu
-  remote:
-    directory:
-      upload: cdn/
-      download: ~/
-  local:
-    directory:
-      download: /Downloads/
-      upload: /smartmenu/cdn/
-
-
-mail:
-  host: smtp.gmail.com
-  protocol: smtp
-  port: 587
-  username: aaaaaaa
-  password: aaaaaaa
-  debug: true
-  smtp:
-    auth: true
-    starttls:
-      enabled: true
-
-app:
-  baseCdnUrl: http://31.220.55.12:5000/
+  baseCdnUrl: https://afiyyet.com:8001/
 ---
 
 spring:
   profiles: ilyas
   datasource:
-    password: 0ZBZuRt4
-    username: postgres
+    password: 2vMNPU49Ep47HtYn
+    username: afiyyet
     url: jdbc:postgresql://localhost:5432/afiyyet
     driverClassName: org.postgresql.Driver
   jpa:

@@ -9,13 +9,14 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.afiyyet</groupId>
-    <artifactId>afiyyet</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>backend</artifactId>
+    <version>latest</version>
     <name>afiyyet</name>
     <description>Digital Restaurant Menu Project</description>
 
     <properties>
         <java.version>11</java.version>
+        <start-class>com.afiyyet.AfiyyetApplication</start-class>
     </properties>
 
     <dependencies>
@@ -159,6 +160,11 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.6.2</version>
             </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.1.4</version>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -183,5 +189,23 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <war.name>dev</war.name>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <war.name>prod</war.name>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>
