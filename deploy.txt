@@ -14,5 +14,5 @@ docker logs -f afiyyet_backend_1
 
 
 
-
-python2 -m SimpleHTTPServer 8001
+cd cdn
+python2 -m SimpleHTTPServer 8002

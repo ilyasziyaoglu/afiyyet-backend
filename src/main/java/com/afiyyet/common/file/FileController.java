@@ -2,7 +2,7 @@ package com.afiyyet.common.file;
 
 import com.afiyyet.client.file.FileResponse;
 import com.afiyyet.common.basemodel.service.ServiceResult;
-import com.afiyyet.common.service.SftpService;
+import com.afiyyet.common.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ import java.util.Set;
 @RestController
 @RequestMapping(value = "/file")
 public class FileController {
-	final private SftpService service;
+	final private FileService service;
 
 	@PostMapping(value = "/upload")
 	public ResponseEntity<ServiceResult<FileResponse>> uploadFile(@RequestParam("file0") MultipartFile file) {

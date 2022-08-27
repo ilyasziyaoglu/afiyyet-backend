@@ -155,7 +155,7 @@ public class Product extends AbstractBaseEntity {
 	}
 
 	public Integer getLikes() {
-		return likes;
+		return likes == null ? 0 : likes;
 	}
 
 	public void setLikes(Integer likes) {

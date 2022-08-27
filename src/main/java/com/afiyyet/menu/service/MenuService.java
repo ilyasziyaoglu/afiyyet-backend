@@ -13,6 +13,7 @@ import com.afiyyet.menu.model.Menu;
 import com.afiyyet.product.db.entity.Product;
 import com.afiyyet.product.db.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -71,7 +72,7 @@ public class MenuService {
 				return forbiddenBoolean();
 			}
 
-			if (dto.getLike()) {
+			if (BooleanUtils.isTrue(dto.getLike())) {
 				product.setLikes(product.getLikes() + 1);
 			} else if (product.getLikes() > 0) {
 				product.setLikes(product.getLikes() - 1);

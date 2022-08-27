@@ -18,6 +18,7 @@ import com.afiyyet.orderitem.service.OrderItemService;
 import com.afiyyet.rtable.db.entity.RTable;
 import com.afiyyet.rtable.db.repository.TableRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -70,7 +71,7 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 			Order savedOrder;
 			RTable table = tableRepository.getOne(request.getTableId());
 
-			if (table.getOpen()) {
+			if (BooleanUtils.isTrue(table.getOpen())) {
 				savedOrder = repository.getOne(table.getOrder().getId());
 				List<OrderItem> orderItems = orderItemMapper.toEntity(request.getOrderItems());
 				for (OrderItem orderItem : orderItems) { orderItem.setOrderId(savedOrder.getId()); }

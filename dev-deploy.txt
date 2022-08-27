@@ -1,6 +1,5 @@
 
 mvn clean install -DskipTests
 mvn -Pprod jib:dockerBuild
-docker-compose -f app.yml up -d
-docker logs -f afiyyet_backend_1
-
+docker-compose -f app_backend.yml up -d
+docker logs -f afiyyet-backend_backend_1

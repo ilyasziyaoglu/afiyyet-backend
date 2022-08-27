@@ -29,15 +29,13 @@ spring:
 sftp:
   host: https://afiyyet.com
   port: 2222
-  user: afiyyet
-  password: afiyyet
+  user: smartmenu
+  password: smartmenu
   remote:
     directory:
       upload: cdn/
-      download: ~/
   local:
     directory:
-      download: /home/hpserver1/downloads/
       upload: /home/hpserver1/afiyyet/cdn/
 
 
@@ -54,11 +52,60 @@ mail:
       enabled: true
 
 app:
-  baseCdnUrl: https://afiyyet.com:8001/
+  baseCdnUrl: https://afiyyet.com:8002/
 ---
 
 spring:
-  profiles: ilyas
+  profiles: test
+  datasource:
+    password: jw8s0F4
+    username: smartmenu
+    url: jdbc:postgresql://127.0.0.1:5432/smartmenu
+    driverClassName: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+sftp:
+  host: 31.220.55.12
+  port: 2222
+  user: smartmenu
+  password: smartmenu
+  remote:
+    directory:
+      upload: cdn/
+      download: ~/
+  local:
+    directory:
+      download: /Downloads/
+      upload: /smartmenu/cdn/
+
+
+mail:
+  host: smtp.gmail.com
+  protocol: smtp
+  port: 587
+  username: aaaaaaa
+  password: aaaaaaa
+  debug: true
+  smtp:
+    auth: true
+    starttls:
+      enabled: true
+
+app:
+  baseCdnUrl: http://31.220.55.12:8002/
+---
+
+spring:
+  profiles: dev
   datasource:
     password: 2vMNPU49Ep47HtYn
     username: afiyyet
@@ -84,11 +131,9 @@ sftp:
   remote:
     directory:
       upload: cdn/
-      download: ~/
   local:
     directory:
-      download: /Users/ilyas/Downloads/
-      upload: /Users/ilyas/Desktop/personal_projects/afiyyet/cdn/
+      upload: /tmp/afiyyet/cdn/
 
 
 
@@ -105,4 +150,4 @@ mail:
       enabled: true
 
 app:
-  baseCdnUrl: http://localhost:8001/
+  baseCdnUrl: http://localhost:8002/

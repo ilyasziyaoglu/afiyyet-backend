@@ -20,7 +20,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class SftpService {
+public class FileService {
 
     private final SftpConfig sftpConfig;
 
