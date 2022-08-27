@@ -36,7 +36,7 @@ sftp:
       upload: cdn/
   local:
     directory:
-      upload: /home/hpserver1/afiyyet/cdn/
+      upload: /tmp/afiyyet/cdn/
 
 
 mail:
@@ -133,7 +133,7 @@ sftp:
       upload: cdn/
   local:
     directory:
-      upload: /tmp/afiyyet/cdn/
+      upload: /Users/ilyas/Desktop/personal_projects/afiyyet/cdn/
 
 
 

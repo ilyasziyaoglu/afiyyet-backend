@@ -8,6 +8,8 @@ services:
       - MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED=true
     ports:
       - 8000:8000
+    volumes:
+      - /home/hpserver1/afiyyet/cdn/:/tmp/afiyyet/cdn/
 
   frontend:
     image: frontend:latest-amd64
