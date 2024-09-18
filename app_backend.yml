@@ -9,7 +9,7 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - /Users/ilyas/Desktop/personal_projects/afiyyet/cdn/:/tmp/afiyyet/cdn/
+      - C:/Users/pc/Desktop/Works/afiyyet/cdn/:/tmp/afiyyet/cdn/
 
   db:
     image: postgres:14.2

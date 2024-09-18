@@ -133,7 +133,7 @@ sftp:
       upload: cdn/
   local:
     directory:
-      upload: /Users/ilyas/Desktop/personal_projects/afiyyet/cdn/
+      upload: C:/Users/pc/Desktop/Works/afiyyet/cdn/
 
 
 

@@ -26,8 +26,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private BCryptPasswordEncoder passwordEncoder;
 
 	public SecurityConfiguration(
-			final UserService userService,
-			final JwtRequestFilter jwtRequestFilter
+		final UserService userService, final JwtRequestFilter jwtRequestFilter
 	) {
 		this.userService = userService;
 		this.jwtRequestFilter = jwtRequestFilter;
@@ -40,14 +39,42 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
-		http.cors().and().csrf().disable().authorizeRequests()
-				.antMatchers("/order/create", "/menu/**", "/contactform", "/reservation/reserve", "/comment/insert-comment", "/**/guest**", "/auth/**", "/webjars/**", "/swagger*/**", "/v2/api-docs/**").permitAll()
-				.antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-				.antMatchers("/admin/**").hasRole("ADMIN")
-				.and().authorizeRequests().anyRequest().authenticated()
-				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.cors()
+			.and()
+			.csrf()
+			.disable()
+			.authorizeRequests()
+			.antMatchers("/order/create",
+				"/menu/**",
+				"/contactform",
+				"/reservation/reserve",
+				"/comment/insert-comment",
+				"/**/guest**",
+				"/auth/**",
+				"/webjars/**",
+				"/swagger*/**",
+				"/v3/api-docs/**"
+			)
+			.permitAll()
+			.antMatchers("/user/**")
+			.hasAnyRole(
+				"USER",
+				"ADMIN"
+			)
+			.antMatchers("/admin/**")
+			.hasRole("ADMIN")
+			.and()
+			.authorizeRequests()
+			.anyRequest()
+			.authenticated()
+			.and()
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(
+			jwtRequestFilter,
+			UsernamePasswordAuthenticationFilter.class
+		);
 	}
 
 	@Override
