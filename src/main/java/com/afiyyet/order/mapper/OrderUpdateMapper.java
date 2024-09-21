@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OrderUpdateMapper implements BaseUpdateMapper<OrderRequest, Order> {
 
-	final private BrandMapper brandMapper;
+	private final BrandMapper brandMapper;
 
 	@Override
 	public Order toEntityForUpdate(OrderRequest request, Order entity) {

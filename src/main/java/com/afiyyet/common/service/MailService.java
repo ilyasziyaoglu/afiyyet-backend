@@ -25,14 +25,18 @@ import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
 public class MailService {
 
-	final private JavaMailSender mailSender;
+	private final JavaMailSender mailSender;
 	final protected MessageSource messageSource;
 
 	@PostConstruct

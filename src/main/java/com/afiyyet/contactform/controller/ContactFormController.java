@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping(value = "/contactform")
 public class ContactFormController {
-	final private ContactFormService service;
+	private final ContactFormService service;
 
 	@PostMapping
 	public ResponseEntity<ServiceResult<ContactFormResponse>> save(@RequestBody ContactFormRequest dto) {

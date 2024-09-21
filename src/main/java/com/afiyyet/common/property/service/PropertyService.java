@@ -18,9 +18,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class PropertyService extends AbstractBaseService<PropertyRequest, Property, PropertyResponse, PropetyMapper> {
-    final private PropertyRepository repository;
-    final private PropetyMapper mapper;
-    final private PropertyUpdateMapper updateMapper;
+    private final PropertyRepository repository;
+    private final PropetyMapper mapper;
+    private final PropertyUpdateMapper updateMapper;
 
     @Override
     public PropertyRepository getRepository() {

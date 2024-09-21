@@ -5,7 +5,13 @@ import com.afiyyet.common.basemodel.service.ServiceResult;
 import com.afiyyet.common.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
@@ -19,7 +25,7 @@ import java.util.Set;
 @RestController
 @RequestMapping(value = "/file")
 public class FileController {
-	final private FileService service;
+	private final FileService service;
 
 	@PostMapping(value = "/upload")
 	public ResponseEntity<ServiceResult<FileResponse>> uploadFile(@RequestParam("file0") MultipartFile file) {

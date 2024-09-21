@@ -4,7 +4,18 @@ import com.afiyyet.brand.db.entity.Brand;
 import com.afiyyet.common.basemodel.db.entity.AbstractBaseEntity;
 import com.afiyyet.order.db.entity.Order;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -28,8 +39,7 @@ public class RTable extends AbstractBaseEntity {
 	@JoinColumn(name = "brand_id")
 	private Brand brand;
 
-	@OneToOne
-	@JoinColumn(name = "order_id")
+	@OneToOne(mappedBy = "table", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
 	private Order order;
 
 	@Column(name = "name", unique = true)

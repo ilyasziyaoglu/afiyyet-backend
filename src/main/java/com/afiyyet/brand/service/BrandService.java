@@ -25,10 +25,10 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class BrandService extends AbstractBaseService<BrandRequest, Brand, BrandResponse, BrandMapper> {
-	final private BrandRepository repository;
-	final private BrandMapper mapper;
-	final private BrandUpdateMapper updateMapper;
-	final private CategoryRepository categoryRepository;
+	private final BrandRepository repository;
+	private final BrandMapper mapper;
+	private final BrandUpdateMapper updateMapper;
+	private final CategoryRepository categoryRepository;
 
 	@Override
 	public BrandRepository getRepository() {

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserUpdateMapper implements BaseUpdateMapper<UserRequest, User> {
 
-	final private BrandMapper brandMapper;
+	private final BrandMapper brandMapper;
 
 	@Override
 	public User toEntityForUpdate(UserRequest request, User entity) {

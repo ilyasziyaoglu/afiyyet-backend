@@ -1,0 +1,9 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://www.ehcache.org/ehcache.xsd">
+
+    <cache name="menu_by_brand"
+           maxEntriesLocalHeap="100"
+           timeToLiveSeconds="30">
+    </cache>
+
+</config>

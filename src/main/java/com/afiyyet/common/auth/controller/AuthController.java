@@ -47,12 +47,12 @@ import java.util.Optional;
 @RequestMapping(value = "/auth")
 public class AuthController {
 
-	final private AuthenticationManager authenticationManager;
+	private final AuthenticationManager authenticationManager;
 	private BCryptPasswordEncoder passwordEncoder;
-	final private UserRepository userRepository;
-	final private UserService userService;
-	final private UserMapper userMapper;
-	final private JwtUtil jwtUtil;
+	private final UserRepository userRepository;
+	private final UserService userService;
+	private final UserMapper userMapper;
+	private final JwtUtil jwtUtil;
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest request) throws Exception {

@@ -11,6 +11,7 @@ import com.afiyyet.common.utils.PriceUtils;
 import com.afiyyet.order.db.entity.Order;
 import com.afiyyet.order.db.repository.OrderRepository;
 import com.afiyyet.order.service.OrderService;
+import com.afiyyet.order.utils.OrderUtils;
 import com.afiyyet.orderitem.db.entity.OrderItem;
 import com.afiyyet.orderitem.enums.OrderItemState;
 import com.afiyyet.rtable.db.entity.RTable;
@@ -22,8 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,12 +35,13 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class TableService extends AbstractBaseService<TableRequest, RTable, TableResponse, TableMapper> {
-	final private TableRepository repository;
-	final private TableMapper mapper;
-	final private TableUpdateMapper updateMapper;
-	final private PriceUtils priceUtils;
-	final private OrderService orderService;
-	final private OrderRepository orderRepository;
+	private final TableRepository repository;
+	private final TableMapper mapper;
+	private final TableUpdateMapper updateMapper;
+	private final PriceUtils priceUtils;
+	private final OrderService orderService;
+	private final OrderRepository orderRepository;
+	private final OrderUtils orderUtils;
 
 	@Override
 	public TableRepository getRepository() {
@@ -115,7 +116,10 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 
 	public ServiceResult<List<TableResponse>> getTablesByBrand(String token) {
 		try {
-			return new ServiceResult<>(mapper.toResponse(repository.findAllByBrandId(getUser(token).getBrand().getId())));
+			ServiceResult<List<TableResponse>> tables = new ServiceResult<>(mapper.toResponse(repository.findAllByBrandId(getUser(token).getBrand()
+				.getId())));
+			tables.getValue().sort(Comparator.comparing(TableResponse::getGroupName));
+			return tables;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ServiceResult<>(e);
@@ -169,21 +173,26 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 			source.setOpen(false);
 			target.setOpen(true);
 			if (target.getOrder() == null) {
-				sourceOrder.setTableId(target.getId());
 				source.setOrder(null);
+				sourceOrder.setTable(target);
 				target.setOrder(sourceOrder);
 				repository.save(source);
 				repository.save(target);
 			} else {
-				List<OrderItem> transferItems = new ArrayList<>();
 				sourceOrder.getOrderItems().forEach(orderItem -> {
-					orderItem.setOrderId(target.getOrder().getId());
-					transferItems.add(orderItem);
+					orderItem.setOrder(target.getOrder() );
+					target.getOrder().getOrderItems().add(orderItem);
 				});
-				target.getOrder().getOrderItems().addAll(transferItems);
-				sourceOrder.setOrderItems(Collections.emptyList());
-				repository.save(source);
+				orderUtils.updateTotalPrice(target.getOrder());
+
 				repository.save(target);
+				source.setOrder(null);
+				repository.save(source);
+
+				sourceOrder.setTotalPrice(BigDecimal.ZERO);
+				sourceOrder.setTable(null);
+				orderRepository.save(sourceOrder);
+
 			}
 			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {

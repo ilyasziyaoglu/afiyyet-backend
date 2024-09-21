@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ReservationUpdateMapper implements BaseUpdateMapper<ReservationRequest, Reservation> {
 
-	final private BrandMapper brandMapper;
+	private final BrandMapper brandMapper;
 
 	@Override
 	public Reservation toEntityForUpdate(ReservationRequest request, Reservation entity) {

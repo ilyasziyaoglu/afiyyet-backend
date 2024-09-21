@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CategoryUpdateMapper implements BaseUpdateMapper<CategoryRequest, Category> {
 
-	final private BrandMapper brandMapper;
+	private final BrandMapper brandMapper;
 
 	@Override
 	public Category toEntityForUpdate(CategoryRequest request, Category entity) {

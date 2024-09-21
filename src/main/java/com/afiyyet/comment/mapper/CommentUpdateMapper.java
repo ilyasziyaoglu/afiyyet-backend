@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CommentUpdateMapper implements BaseUpdateMapper<CommentRequest, Comment> {
 
-	final private BrandMapper brandMapper;
+	private final BrandMapper brandMapper;
 
 	@Override
 	public Comment toEntityForUpdate(CommentRequest request, Comment entity) {

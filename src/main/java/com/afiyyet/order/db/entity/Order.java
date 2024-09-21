@@ -4,9 +4,21 @@ package com.afiyyet.order.db.entity;
 import com.afiyyet.brand.db.entity.Brand;
 import com.afiyyet.common.basemodel.db.entity.AbstractBaseEntity;
 import com.afiyyet.orderitem.db.entity.OrderItem;
+import com.afiyyet.rtable.db.entity.RTable;
 import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -29,9 +41,9 @@ public class Order extends AbstractBaseEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orders_id_gen")
 	private Long id;
 
-	@ToString.Include
-	@Column(name = "table_id")
-	private Long tableId;
+	@OneToOne
+	@JoinColumn(name = "table_id")
+	private RTable table;
 
 	@ManyToOne
 	@JoinColumn(name = "brand_id")
@@ -41,7 +53,7 @@ public class Order extends AbstractBaseEntity {
 	@Column(name = "total_price")
 	private BigDecimal totalPrice;
 
-	@OneToMany(cascade = {CascadeType.ALL})
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<OrderItem> orderItems = new java.util.ArrayList<>();
 
 	@Override
@@ -53,12 +65,12 @@ public class Order extends AbstractBaseEntity {
 		this.id = id;
 	}
 
-	public Long getTableId() {
-		return tableId;
+	public RTable getTable() {
+		return table;
 	}
 
-	public void setTableId(Long tableId) {
-		this.tableId = tableId;
+	public void setTable(RTable table) {
+		this.table = table;
 	}
 
 	public Brand getBrand() {

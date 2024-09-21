@@ -22,6 +22,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,14 +34,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class OrderService extends AbstractBaseService<OrderRequest, Order, OrderResponse, OrderMapper> {
-	final private OrderRepository repository;
-	final private OrderMapper mapper;
-	final private OrderUpdateMapper updateMapper;
-	final private TableRepository tableRepository;
-	final private OrderItemRepository orderItemRepository;
-	final private OrderItemMapper orderItemMapper;
-	final private OrderItemService orderItemService;
-	final private OrderUtils orderUtils;
+	private final OrderRepository repository;
+	private final OrderMapper mapper;
+	private final OrderUpdateMapper updateMapper;
+	private final TableRepository tableRepository;
+	private final OrderItemRepository orderItemRepository;
+	private final OrderItemMapper orderItemMapper;
+	private final OrderItemService orderItemService;
+	private final OrderUtils orderUtils;
 
 	@Override
 	public OrderRepository getRepository() {
@@ -72,9 +73,9 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 			RTable table = tableRepository.getOne(request.getTableId());
 
 			if (BooleanUtils.isTrue(table.getOpen())) {
-				savedOrder = repository.getOne(table.getOrder().getId());
+				savedOrder = table.getOrder();
 				List<OrderItem> orderItems = orderItemMapper.toEntity(request.getOrderItems());
-				for (OrderItem orderItem : orderItems) { orderItem.setOrderId(savedOrder.getId()); }
+				for (OrderItem orderItem : orderItems) { orderItem.setOrder(savedOrder); }
 				orderItemService.updateTotalPrice(orderItems);
 				orderItemService.setInitialState(orderItems);
 				savedOrder.getOrderItems().addAll(orderItems);
@@ -85,13 +86,13 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 				List<OrderItem> orderItems = entityToSave.getOrderItems();
 
 				entityToSave.setBrand(table.getBrand());
-				entityToSave.setTableId(table.getId());
+				entityToSave.setTable(table);
 				orderItemService.updateTotalPrice(orderItems);
 				orderItemService.setInitialState(orderItems);
 				orderUtils.updateTotalPrice(entityToSave);
 				entityToSave.setOrderItems(null);
 				savedOrder = repository.save(entityToSave);
-				for (OrderItem orderItem : orderItems) { orderItem.setOrderId(savedOrder.getId()); }
+				for (OrderItem orderItem : orderItems) { orderItem.setOrder(savedOrder); }
 				savedOrder.setOrderItems(orderItems);
 				table.setOrder(savedOrder);
 			}
@@ -153,14 +154,15 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 				orderItemRepository.save(orderItem);
 				iterator.remove();
 			}
-			repository.save(order);
 
 			//TODO masa kapatildiginda order ve order itemler posife tasinacak
 			if (order.getOrderItems().size() == 0) {
-				RTable table = tableRepository.getOne(order.getTableId());
+				order.setTotalPrice(BigDecimal.ZERO);
+				RTable table = order.getTable();
 				table.setOpen(false);
 				tableRepository.save(table);
 			}
+			repository.save(order);
 
 			return new ServiceResult<>(true);
 		} catch (Exception e) {

@@ -27,10 +27,10 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class ContactFormService extends AbstractBaseService<ContactFormRequest, ContactForm, ContactFormResponse, ContactFormMapper> {
-	final private ContactFormRepository repository;
-	final private ContactFormMapper mapper;
-	final private ContactFormUpdateMapper updateMapper;
-	final private MailService mailService;
+	private final ContactFormRepository repository;
+	private final ContactFormMapper mapper;
+	private final ContactFormUpdateMapper updateMapper;
+	private final MailService mailService;
 
 	@Override
 	public ContactFormRepository getRepository() {

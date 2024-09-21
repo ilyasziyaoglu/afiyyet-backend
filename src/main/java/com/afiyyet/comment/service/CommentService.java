@@ -26,10 +26,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CommentService extends AbstractBaseService<CommentRequest, Comment, CommentResponse, CommentMapper> {
-	final private CommentRepository repository;
-	final private CommentMapper mapper;
-	final private CommentUpdateMapper updateMapper;
-	final private BrandRepository brandRepository;
+	private final CommentRepository repository;
+	private final CommentMapper mapper;
+	private final CommentUpdateMapper updateMapper;
+	private final BrandRepository brandRepository;
 
 	@Override
 	public CommentRepository getRepository() {

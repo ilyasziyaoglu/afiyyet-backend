@@ -8,6 +8,7 @@ import com.afiyyet.client.product.ProductRequest;
 import com.afiyyet.client.product.ProductResponse;
 import com.afiyyet.common.basemodel.service.AbstractBaseService;
 import com.afiyyet.common.basemodel.service.ServiceResult;
+import com.afiyyet.common.enums.Status;
 import com.afiyyet.common.user.db.entity.User;
 import com.afiyyet.common.utils.PriceUtils;
 import com.afiyyet.product.db.entity.Product;
@@ -16,6 +17,7 @@ import com.afiyyet.product.enums.ProductType;
 import com.afiyyet.product.mapper.ProductMapper;
 import com.afiyyet.product.mapper.ProductUpdateMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +36,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProductService extends AbstractBaseService<ProductRequest, Product, ProductResponse, ProductMapper> {
-	final private ProductRepository repository;
-	final private ProductMapper mapper;
-	final private ProductUpdateMapper updateMapper;
-	final private CategoryRepository categoryRepository;
-	final private PriceUtils priceUtils;
+	private final ProductRepository repository;
+	private final ProductMapper mapper;
+	private final ProductUpdateMapper updateMapper;
+	private final CategoryRepository categoryRepository;
+	private final PriceUtils priceUtils;
 
 	@Override
 	public ProductRepository getRepository() {
@@ -128,7 +130,13 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 			if (!isNotAdmin(user) && !entity.getCategory().getBrandId().equals(user.getBrand().getId())) {
 				return forbiddenBoolean();
 			}
-			repository.delete(entity);
+
+			try {
+				repository.delete(entity);
+			} catch (DataIntegrityViolationException e) {
+				entity.setStatus(Status.DEACTIVE);
+				repository.save(entity);
+			}
 			return new ServiceResult<>(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -138,7 +146,7 @@ public class ProductService extends AbstractBaseService<ProductRequest, Product,
 
 	public ServiceResult<List<ProductResponse>> getProductsByCategory(String token, Long categoryId) {
 		try {
-			List<Product> entityList = getRepository().findAllByCategoryId(categoryId);
+			List<Product> entityList = getRepository().findAllByCategoryId(categoryId).stream().filter(product -> product.getStatus() != Status.DEACTIVE).collect(Collectors.toList());
 			entityList = entityList.stream().sorted(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))).collect(Collectors.toList());
 			return new ServiceResult<>(mapper.toResponse(entityList));
 		} catch (Exception e) {

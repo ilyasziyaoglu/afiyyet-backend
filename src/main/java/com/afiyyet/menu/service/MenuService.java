@@ -22,6 +22,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.afiyyet.common.enums.Status.DEACTIVE;
+
 /**
  * @author Ilyas Ziyaoglu
  * @date 2020-04-18
@@ -31,10 +33,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MenuService {
 
-	final private MenuMapper mapper;
-	final private CategoryRepository categoryRepository;
-	final private BrandRepository brandRepository;
-	final private ProductRepository productRepository;
+	private final MenuMapper mapper;
+	private final CategoryRepository categoryRepository;
+	private final BrandRepository brandRepository;
+	private final ProductRepository productRepository;
 
 	public String KAMPANYALAR = "KAMPANYALAR";
 	public String MENULER = "MENÜLER";
@@ -48,15 +50,33 @@ public class MenuService {
 					.sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder())))
 					.collect(Collectors.toList());
 			for (Category category : categories) {
+				category.setProducts(category.getProducts().stream().filter(product -> product.getStatus() != DEACTIVE).collect(Collectors.toList()));
 				category.getProducts().sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
 			}
-			List<Product> campaigns = categoryRepository.findAllByBrandIdAndName(brand.getId(), KAMPANYALAR).getProducts();
-			campaigns.sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
+			List<Product> campaigns = categoryRepository.findAllByBrandIdAndName(
+					brand.getId(),
+					KAMPANYALAR
+				)
+				.getProducts()
+				.stream()
+				.filter(product -> product.getStatus() != DEACTIVE)
+				.sorted(Comparator.comparing(
+					Product::getOrder,
+					Comparator.nullsLast(Comparator.naturalOrder())
+				))
+				.collect(Collectors.toList());
 			campaigns = campaigns.stream()
 					.filter(c -> ZonedDateTime.now().isAfter(c.getStartDate()) && ZonedDateTime.now().isBefore(c.getExpireDate()))
 					.collect(Collectors.toList());
-			List<Product> menus = categoryRepository.findAllByBrandIdAndName(brand.getId(), MENULER).getProducts();
-			menus.sort(Comparator.comparing(Product::getOrder, Comparator.nullsLast(Comparator.naturalOrder())));
+			List<Product> menus = categoryRepository.findAllByBrandIdAndName(brand.getId(), MENULER)
+				.getProducts()
+				.stream()
+				.filter(product -> product.getStatus() != DEACTIVE)
+				.sorted(Comparator.comparing(
+					Product::getOrder,
+					Comparator.nullsLast(Comparator.naturalOrder())
+				))
+				.collect(Collectors.toList());
 			return new ServiceResult<>(mapper.toResponse(new Menu(categories, campaigns, menus, brand)));
 		} catch (Exception e) {
 			e.printStackTrace();

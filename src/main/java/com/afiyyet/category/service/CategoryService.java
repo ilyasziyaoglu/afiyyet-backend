@@ -14,6 +14,7 @@ import com.afiyyet.common.user.db.entity.User;
 import com.afiyyet.product.db.entity.Product;
 import com.afiyyet.product.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.afiyyet.common.enums.Status.DEACTIVE;
+
 /**
  * @author Ilyas Ziyaoglu
  * @date 2020-04-18
@@ -31,10 +34,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CategoryService extends AbstractBaseService<CategoryRequest, Category, CategoryResponse, CategoryMapper> {
-	final private CategoryRepository repository;
-	final private CategoryMapper mapper;
-	final private CategoryUpdateMapper updateMapper;
-	final private ProductMapper productMapper;
+	private final CategoryRepository repository;
+	private final CategoryMapper mapper;
+	private final CategoryUpdateMapper updateMapper;
+	private final ProductMapper productMapper;
 
 	@Override
 	public CategoryRepository getRepository() {
@@ -98,7 +101,12 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 			if (!isNotAdmin(user) && !entity.getBrandId().equals(user.getBrand().getId())) {
 				return forbiddenBoolean();
 			}
-			repository.delete(entity);
+			try {
+				repository.delete(entity);
+			} catch (DataIntegrityViolationException e) {
+				entity.setStatus(DEACTIVE);
+				repository.save(entity);
+			}
 			return new ServiceResult<>(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -131,8 +139,13 @@ public class CategoryService extends AbstractBaseService<CategoryRequest, Catego
 			List<Category> entityList = getRepository().findAllByBrandId(getUser(token).getBrand().getId());
 			entityList = entityList.stream()
 					.filter(category -> !KAMPANYALAR.equals(category.getName()) && !MENULER.equals(category.getName()))
+					.filter(category -> category.getStatus() != DEACTIVE)
 					.sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder())))
 					.collect(Collectors.toList());
+			entityList.forEach(category -> category.setProducts(category.getProducts()
+				.stream()
+				.filter(product -> product.getStatus() != DEACTIVE)
+				.collect(Collectors.toList())));
 			return new ServiceResult<>(mapper.toResponse(entityList));
 		} catch (Exception e) {
 			e.printStackTrace();

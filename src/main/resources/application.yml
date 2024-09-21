@@ -10,6 +10,9 @@ server:
 
 spring:
   profiles: prod
+  cache:
+    ehcache:
+      config: classpath:src/main/resources/ehcache.xml
   datasource:
     password: 2vMNPU49Ep47HtYn
     username: afiyyet
@@ -57,6 +60,9 @@ app:
 
 spring:
   profiles: test
+  cache:
+    ehcache:
+      config: classpath:src/main/resources/ehcache.xml
   datasource:
     password: jw8s0F4
     username: smartmenu
@@ -106,6 +112,9 @@ app:
 
 spring:
   profiles: dev
+  cache:
+    ehcache:
+      config: classpath:src/main/resources/ehcache.xml
   datasource:
     password: 2vMNPU49Ep47HtYn
     username: afiyyet

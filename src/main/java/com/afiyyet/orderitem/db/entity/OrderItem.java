@@ -2,10 +2,20 @@ package com.afiyyet.orderitem.db.entity;
 
 
 import com.afiyyet.common.basemodel.db.entity.AbstractBaseEntity;
+import com.afiyyet.order.db.entity.Order;
 import com.afiyyet.orderitem.enums.OrderItemState;
 import com.afiyyet.product.db.entity.Product;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 
 /**
@@ -26,8 +36,9 @@ public class OrderItem extends AbstractBaseEntity {
 	@GeneratedValue(generator = "orderitems_id_gen", strategy = GenerationType.SEQUENCE)
 	private Long id;
 
-	@Column(name = "order_id", nullable = false)
-	private Long orderId;
+	@ManyToOne
+	@JoinColumn(name = "order_id")
+	private Order order;
 
 	@OneToOne
 	@JoinColumn(name = "product_id")
@@ -60,12 +71,12 @@ public class OrderItem extends AbstractBaseEntity {
 		this.id = id;
 	}
 
-	public Long getOrderId() {
-		return orderId;
+	public Order getOrder() {
+		return order;
 	}
 
-	public void setOrderId(Long orderId) {
-		this.orderId = orderId;
+	public void setOrder(Order order) {
+		this.order = order;
 	}
 
 	public Product getProduct() {

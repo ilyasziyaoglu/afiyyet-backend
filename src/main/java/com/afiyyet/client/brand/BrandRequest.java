@@ -5,7 +5,9 @@ import com.afiyyet.common.basemodel.request.BaseRequest;
 import com.afiyyet.common.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Set;
 
@@ -14,6 +16,8 @@ import java.util.Set;
  * @date 2020-04-18
  */
 
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -25,43 +29,4 @@ public class BrandRequest extends BaseRequest {
 	private Status status;
 	private Set<FeatureType> features;
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getUniqueName() {
-		return uniqueName;
-	}
-
-	public void setUniqueName(String uniqueName) {
-		this.uniqueName = uniqueName;
-	}
-
-	public String getLogoImgUrl() {
-		return logoImgUrl;
-	}
-
-	public void setLogoImgUrl(String logoImgUrl) {
-		this.logoImgUrl = logoImgUrl;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-
-	public Set<FeatureType> getFeatures() {
-		return features;
-	}
-
-	public void setFeatures(Set<FeatureType> features) {
-		this.features = features;
-	}
 }

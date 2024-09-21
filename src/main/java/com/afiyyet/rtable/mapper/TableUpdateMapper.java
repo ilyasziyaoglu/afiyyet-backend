@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TableUpdateMapper implements BaseUpdateMapper<TableRequest, RTable> {
 
-	final private BrandMapper brandMapper;
+	private final BrandMapper brandMapper;
 
 	@Override
 	public RTable toEntityForUpdate(TableRequest request, RTable entity) {

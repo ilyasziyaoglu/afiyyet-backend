@@ -27,10 +27,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ReservationService extends AbstractBaseService<ReservationRequest, Reservation, ReservationResponse, ReservationMapper> {
-	final private ReservationRepository repository;
-	final private ReservationMapper mapper;
-	final private ReservationUpdateMapper updateMapper;
-	final private BrandRepository brandRepository;
+	private final ReservationRepository repository;
+	private final ReservationMapper mapper;
+	private final ReservationUpdateMapper updateMapper;
+	private final BrandRepository brandRepository;
 
 	@Override
 	public ReservationRepository getRepository() {

@@ -5,10 +5,14 @@ import com.afiyyet.client.menu.MenuResponse;
 import com.afiyyet.common.basemodel.service.ServiceResult;
 import com.afiyyet.menu.service.MenuService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -19,9 +23,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping(value = "/menu")
 public class MenuController {
-	final private MenuService service;
+	private final MenuService service;
 
-	@Cacheable("menu_by_brand")
+//	@Cacheable("menu_by_brand")
 	@GetMapping("/{brandUniqueName}")
 	public ResponseEntity<ServiceResult<MenuResponse>> getMenu(@PathVariable(name = "brandUniqueName") String brandUniqueName) {
 		ServiceResult<MenuResponse> serviceResult = service.getMenu(brandUniqueName);

@@ -32,12 +32,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class OrderItemService extends AbstractBaseService<OrderItemRequest, OrderItem, OrderItemResponse, OrderItemMapper> {
-	final private OrderItemRepository repository;
-	final private OrderItemMapper mapper;
-	final private OrderItemUpdateMapper updateMapper;
-	final private TableRepository tableRepository;
-	final private OrderRepository orderRepository;
-	final private OrderUtils orderUtils;
+	private final OrderItemRepository repository;
+	private final OrderItemMapper mapper;
+	private final OrderItemUpdateMapper updateMapper;
+	private final TableRepository tableRepository;
+	private final OrderRepository orderRepository;
+	private final OrderUtils orderUtils;
 
 	@Override
 	public OrderItemRepository getRepository() {
@@ -123,19 +123,25 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 	}
 
 	public void updateInternal(OrderItem orderItem, OrderItemRequest request) {
+		BigDecimal oldSubTotal = orderItem.getTotalPrice();
 			orderItem.setComment(request.getComment());
 			orderItem.setAmount(request.getAmount());
 			orderItem.setPortion(request.getPortion());
 			orderItem.setTotalPrice(orderItem.getProduct().getPrice()
 					.multiply(BigDecimal.valueOf(orderItem.getPortion()))
 					.multiply(BigDecimal.valueOf(orderItem.getAmount())));
+			repository.save(orderItem);
+			BigDecimal newSubTotal = orderItem.getTotalPrice();
+			Order order = orderItem.getOrder();
+			order.setTotalPrice(order.getTotalPrice().add(newSubTotal.subtract(oldSubTotal)));
+			orderRepository.save(order);
 	}
 
 	public ServiceResult<Boolean> delete(String token, Long id) {
 		try {
 			User user = getUser(token);
 			OrderItem entity = repository.getOne(id);
-			Order order = orderRepository.getOne(entity.getOrderId());
+			Order order = entity.getOrder();
 			if (!isNotAdmin(user) && !order.getBrand().getId().equals(user.getBrand().getId())) {
 				return forbiddenBoolean();
 			}
@@ -151,7 +157,7 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 		try {
 			User user = getUser(token);
 			OrderItem entity = repository.getOne(request.getId());
-			Order order = orderRepository.getOne(entity.getOrderId());
+			Order order = entity.getOrder();
 			if (!OrderItemState.WAITING_FOR_TABLE.equals(entity.getState()) && isNotAdmin(user) && isManager(user) && !user.getBrand().getId().equals(order.getBrand().getId())) {
 				return forbiddenBoolean();
 			}
@@ -195,9 +201,12 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 
 			//TODO masa kapatildiginda order ve order itemler posife tasinacak
 
-			Order order = orderRepository.getOne(savedEntity.getOrderId());
+			Order order = savedEntity.getOrder();
+			order.setTotalPrice(order.getTotalPrice().subtract(entity.getProduct().getPrice().multiply(BigDecimal.valueOf(request.getCancelAmount()))));
+			orderRepository.save(order);
+
 			if (isAllCancelled(order.getOrderItems())) {
-				RTable table = tableRepository.getOne(order.getTableId());
+				RTable table = order.getTable();
 				table.setOpen(false);
 				tableRepository.save(table);
 			}
