@@ -2,8 +2,13 @@ package com.afiyyet.common.property.db.entity;
 
 
 import com.afiyyet.common.basemodel.db.entity.AbstractBaseEntity;
-
-import javax.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 
 /**
  * @author Ilyas Ziyaoglu

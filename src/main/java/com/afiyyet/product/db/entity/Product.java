@@ -6,8 +6,18 @@ import com.afiyyet.common.basemodel.db.entity.AbstractBaseEntity;
 import com.afiyyet.common.enums.Status;
 import com.afiyyet.product.enums.ProductType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 

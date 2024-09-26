@@ -19,7 +19,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 	//TODO bunu canlida kompleks birsey ile degistirmelisin.
-	private final String SECRET_KEY = "secret";
+	private final String SECRET_KEY = "YJjDQgNWCMvPeTHBZRAxtVm4a8p9zhGXYJjDQgNWCMvPeTHBZRAxtVm4a8p9zhGX";
 
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
@@ -35,7 +35,7 @@ public class JwtUtil {
 	}
 
 	private Claims extractAllClaims(String token) {
-		return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+		return Jwts.parser().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
 	}
 
 	private Boolean isTokenExpired(String token) {

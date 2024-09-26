@@ -1,6 +1,8 @@
 package com.afiyyet.common.basemodel.db.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedBy;
@@ -8,8 +10,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 

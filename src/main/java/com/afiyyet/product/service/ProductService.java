@@ -16,12 +16,12 @@ import com.afiyyet.product.db.repository.ProductRepository;
 import com.afiyyet.product.enums.ProductType;
 import com.afiyyet.product.mapper.ProductMapper;
 import com.afiyyet.product.mapper.ProductUpdateMapper;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotNull;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
