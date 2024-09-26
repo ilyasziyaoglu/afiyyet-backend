@@ -8,7 +8,6 @@ import com.afiyyet.order.criteria.OrderCriteria;
 import com.afiyyet.order.service.OrderQueryService;
 import com.afiyyet.order.service.OrderService;
 import jakarta.validation.Valid;
-import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -24,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.util.List;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -91,13 +88,13 @@ public class OrderController extends AbstractBaseController {
 	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of orders in body.
 	 */
 	@GetMapping("/filter")
-	public ResponseEntity<List<OrderResponse>> getAllOrders(
+	public ResponseEntity<ServiceResult<Page<OrderResponse>>> getAllOrders(
 		OrderCriteria criteria,
-		@ParameterObject Pageable pageable
+		Pageable pageable
 	) {
 		Page<OrderResponse> page = orderQueryService.findByCriteria(criteria, pageable);
 		HttpHeaders headers = tech.jhipster.web.util.PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-		return ResponseEntity.ok().headers(headers).body(page.getContent());
+		return ResponseEntity.ok().headers(headers).body(new ServiceResult<>(page));
 	}
 
 }

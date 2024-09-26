@@ -1,6 +1,5 @@
 package com.afiyyet.order.criteria;
 
-import org.springdoc.api.annotations.ParameterObject;
 import tech.jhipster.service.Criteria;
 import tech.jhipster.service.filter.BigDecimalFilter;
 import tech.jhipster.service.filter.Filter;
@@ -12,15 +11,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Criteria class for the {@link com.mycompany.myapp.domain.Order} entity. This class is used
- * in {@link com.mycompany.myapp.web.rest.OrderResource} to receive all the possible filtering options from
+ * Criteria class for the {@link com.afiyyet.order.db.entity.Order} entity. This class is used
+ * in {@link com.afiyyet.order.controller.OrderController} to receive all the possible filtering options from
  * the Http GET request parameters.
  * For example the following could be a valid request:
  * {@code /orders?id.greaterThan=5&attr1.contains=something&attr2.specified=false}
  * As Spring is unable to properly convert the types, unless specific {@link Filter} class are used, we need to use
  * fix type specific filters.
  */
-@ParameterObject
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class OrderCriteria implements Serializable, Criteria {
 

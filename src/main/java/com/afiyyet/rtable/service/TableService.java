@@ -138,21 +138,22 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 	public ServiceResult<Boolean> close(String token, TableCloseRequest request) {
 		try {
 			User user = getUser(token);
-			RTable entity = repository.getOne(request.getId());
-			if (isNotAdmin(user) && !entity.getBrand().getId().equals(user.getBrand().getId())) {
+			RTable table = repository.getOne(request.getId());
+			if (isNotAdmin(user) && !table.getBrand().getId().equals(user.getBrand().getId())) {
 				return forbiddenBoolean();
 			}
 
 			BigDecimal totalPrice = new BigDecimal(0);
-			for (OrderItem orderItem : entity.getOrder().getOrderItems()) {
+			for (OrderItem orderItem : table.getOrder().getOrderItems()) {
 				orderItem.setState(OrderItemState.COMPLETED);
 				totalPrice = totalPrice.add(orderItem.getTotalPrice());
 			}
-			entity.setOpen(false);
-			entity.getOrder().setTotalPrice(priceUtils.applyDiscount(totalPrice, request.getDiscountAmount(), request.getPercent()));
-			orderRepository.save(entity.getOrder());
-			entity.setOrder(null);
-			repository.save(entity);
+			table.setOpen(false);
+			table.getOrder().setTotalPrice(priceUtils.applyDiscount(totalPrice, request.getDiscountAmount(), request.getPercent()));
+			table.getOrder().setTable(null);
+			orderRepository.save(table.getOrder());
+			table.setOrder(null);
+			repository.save(table);
 			return new ServiceResult<>(true, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();

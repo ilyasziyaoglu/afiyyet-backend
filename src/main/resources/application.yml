@@ -9,15 +9,16 @@ logging:
     root: INFO
     web: DEBUG
     org:
+      springdoc: DEBUG
       springframework:
         security: INFO
       hibernate:
         SQL: INFO
         type.descriptor.sql.BasicBinder: INFO
 
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
+springdoc.api-docs.path: /v3/api-docs
+springdoc.swagger-ui.path: /swagger-ui.html
+
 
 
 ---
