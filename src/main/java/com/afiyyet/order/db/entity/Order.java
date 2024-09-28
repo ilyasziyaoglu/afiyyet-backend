@@ -8,6 +8,7 @@ import com.afiyyet.rtable.db.entity.RTable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,6 +19,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.metamodel.StaticMetamodel;
+import lombok.Data;
 import lombok.ToString;
 
 import java.math.BigDecimal;
@@ -30,6 +32,7 @@ import java.util.List;
  */
 
 
+@Data
 @Entity
 @Table(name = "orders")
 @StaticMetamodel(value = Order.class)
@@ -56,47 +59,6 @@ public class Order extends AbstractBaseEntity {
 	@Column(name = "total_price")
 	private BigDecimal totalPrice;
 
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<OrderItem> orderItems = new ArrayList<>();
-
-	@Override
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public RTable getTable() {
-		return table;
-	}
-
-	public void setTable(RTable table) {
-		this.table = table;
-	}
-
-	public Brand getBrand() {
-		return brand;
-	}
-
-	public void setBrand(Brand brand) {
-		this.brand = brand;
-	}
-
-	public BigDecimal getTotalPrice() {
-		return totalPrice;
-	}
-
-	public void setTotalPrice(BigDecimal totalPrice) {
-		this.totalPrice = totalPrice;
-	}
-
-	public List<OrderItem> getOrderItems() {
-		return orderItems;
-	}
-
-	public void setOrderItems(List<OrderItem> orderItems) {
-		this.orderItems = orderItems;
-	}
 }

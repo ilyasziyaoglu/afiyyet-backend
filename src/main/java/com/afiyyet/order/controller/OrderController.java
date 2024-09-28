@@ -2,6 +2,7 @@ package com.afiyyet.order.controller;
 
 import com.afiyyet.client.order.OrderRequest;
 import com.afiyyet.client.order.OrderResponse;
+import com.afiyyet.client.order.OrderSummary;
 import com.afiyyet.common.basemodel.controller.AbstractBaseController;
 import com.afiyyet.common.basemodel.service.ServiceResult;
 import com.afiyyet.order.criteria.OrderCriteria;
@@ -10,7 +11,6 @@ import com.afiyyet.order.service.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -32,12 +34,16 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping(value = "/order")
 public class OrderController extends AbstractBaseController {
+	private final OrderService orderService;
 	private OrderService service;
 	private OrderQueryService orderQueryService;
 
-	public OrderController(final OrderService service, final OrderQueryService orderQueryService) {
+	public OrderController(final OrderService service, final OrderQueryService orderQueryService,
+		OrderService orderService
+	) {
 		this.service = service;
 		this.orderQueryService = orderQueryService;
+		this.orderService = orderService;
 	}
 
 	public OrderService getService() {
@@ -80,21 +86,41 @@ public class OrderController extends AbstractBaseController {
 		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
 
-	/**
-	 * {@code GET  /orders} : get all the orders.
-	 *
-	 * @param pageable the pagination information.
-	 * @param criteria the criteria which the requested entities should match.
-	 * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of orders in body.
-	 */
 	@GetMapping("/filter")
 	public ResponseEntity<ServiceResult<Page<OrderResponse>>> getAllOrders(
+		@RequestHeader(HEADER_TOKEN) String token,
 		OrderCriteria criteria,
 		Pageable pageable
 	) {
-		Page<OrderResponse> page = orderQueryService.findByCriteria(criteria, pageable);
-		HttpHeaders headers = tech.jhipster.web.util.PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-		return ResponseEntity.ok().headers(headers).body(new ServiceResult<>(page));
+		Page<OrderResponse> page = orderService.findByCriteria(token, criteria, pageable);
+		return ResponseEntity.ok().body(new ServiceResult<>(page));
+	}
+
+	@GetMapping("/summary")
+	public ResponseEntity<ServiceResult<OrderSummary>> summary(
+		@RequestHeader(HEADER_TOKEN) String token,
+		OrderCriteria criteria
+	) {
+		OrderSummary orderCountAndTotal = orderService.summary(token, criteria);
+		return ResponseEntity.ok().body(new ServiceResult<>(orderCountAndTotal));
+	}
+
+	@GetMapping("/round-per-table-per-hour")
+	public ResponseEntity<ServiceResult<Double>> roundPerTablePerHour(
+		@RequestHeader(HEADER_TOKEN) String token,
+		OrderCriteria criteria
+	) {
+		Double roundPerTablePerHour = orderService.roundPerTablePerHour(token, criteria);
+		return ResponseEntity.ok().body(new ServiceResult<>(roundPerTablePerHour));
+	}
+
+	@GetMapping("/hourly-distribution")
+	public ResponseEntity<ServiceResult<Map<Integer, List<Double>>>> hourlyDsitribution(
+		@RequestHeader(HEADER_TOKEN) String token,
+		OrderCriteria criteria
+	) {
+		Map<Integer, List<Double>> hourlyDsitribution = orderService.hourlyDsitribution(token, criteria);
+		return ResponseEntity.ok().body(new ServiceResult<>(hourlyDsitribution));
 	}
 
 }

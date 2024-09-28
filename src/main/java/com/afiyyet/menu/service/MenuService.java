@@ -47,6 +47,7 @@ public class MenuService {
 			List<Category> categories = categoryRepository.findAllByBrandId(brand.getId());
 			categories = categories.stream()
 					.filter(category -> !KAMPANYALAR.equals(category.getName()) && !MENULER.equals(category.getName()))
+					.filter(category -> category.getStatus() != DEACTIVE)
 					.sorted(Comparator.comparing(Category::getOrder, Comparator.nullsLast(Comparator.naturalOrder())))
 					.collect(Collectors.toList());
 			for (Category category : categories) {

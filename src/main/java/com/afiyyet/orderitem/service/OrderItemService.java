@@ -207,7 +207,7 @@ public class OrderItemService extends AbstractBaseService<OrderItemRequest, Orde
 
 			if (isAllCancelled(order.getOrderItems())) {
 				RTable table = order.getTable();
-				table.setOpen(false);
+				table.setIsOpen(false);
 				tableRepository.save(table);
 			}
 

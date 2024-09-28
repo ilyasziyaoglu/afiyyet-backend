@@ -155,7 +155,7 @@ public class AuthController {
 			RTable table = new RTable();
 			table.setBrand(brand);
 			table.setName("Table 1");
-			table.setOpen(false);
+			table.setIsOpen(false);
 			table.setGroupName("Salon");
 			tableRepository.save(table);
 

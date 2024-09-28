@@ -71,7 +71,7 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 		try {
 			RTable entityToSave = getMapper().toEntity(request);
 			entityToSave.setBrand(getUser(token).getBrand());
-			entityToSave.setOpen(false);
+			entityToSave.setIsOpen(false);
 			RTable entity = repository.save(entityToSave);
 			return new ServiceResult<>(mapper.toResponse(entity), HttpStatus.CREATED);
 		} catch (Exception e) {
@@ -148,7 +148,7 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 				orderItem.setState(OrderItemState.COMPLETED);
 				totalPrice = totalPrice.add(orderItem.getTotalPrice());
 			}
-			table.setOpen(false);
+			table.setIsOpen(false);
 			table.getOrder().setTotalPrice(priceUtils.applyDiscount(totalPrice, request.getDiscountAmount(), request.getPercent()));
 			table.getOrder().setTable(null);
 			orderRepository.save(table.getOrder());
@@ -171,8 +171,8 @@ public class TableService extends AbstractBaseService<TableRequest, RTable, Tabl
 			}
 
 			Order sourceOrder = source.getOrder();
-			source.setOpen(false);
-			target.setOpen(true);
+			source.setIsOpen(false);
+			target.setIsOpen(true);
 			if (target.getOrder() == null) {
 				source.setOrder(null);
 				sourceOrder.setTable(target);

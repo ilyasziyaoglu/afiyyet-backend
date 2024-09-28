@@ -17,6 +17,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -27,6 +28,7 @@ import java.time.ZonedDateTime;
  */
 
 
+@Data
 @Entity
 @Table(name = "products")
 public class Product extends AbstractBaseEntity {
@@ -72,7 +74,7 @@ public class Product extends AbstractBaseEntity {
 	private Integer likes = 0;
 
 	@Column(name = "order_value")
-	private Integer order;
+	private Integer order = Integer.MAX_VALUE;
 
 	@Column(name = "expire_date")
 	private ZonedDateTime expireDate;
@@ -82,125 +84,4 @@ public class Product extends AbstractBaseEntity {
 
 	@Column(name = "has_portion_options")
 	private Boolean hasPortionOption;
-
-	@Override
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getImgUrl() {
-		return imgUrl;
-	}
-
-	public void setImgUrl(String imgUrl) {
-		this.imgUrl = imgUrl;
-	}
-
-	public BigDecimal getPrice() {
-		return price;
-	}
-
-	public void setPrice(BigDecimal price) {
-		this.price = price;
-	}
-
-	public BigDecimal getFakePrice() {
-		return fakePrice;
-	}
-
-	public void setFakePrice(BigDecimal fakePrice) {
-		this.fakePrice = fakePrice;
-	}
-
-	public Category getCategory() {
-		return category;
-	}
-
-	public void setCategory(Category category) {
-		this.category = category;
-	}
-
-	public String getCategoryName() {
-		return categoryName;
-	}
-
-	public void setCategoryName(String categoryName) {
-		this.categoryName = categoryName;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public ProductType getType() {
-		return type;
-	}
-
-	public void setType(ProductType type) {
-		this.type = type;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-
-	public Integer getLikes() {
-		return likes == null ? 0 : likes;
-	}
-
-	public void setLikes(Integer likes) {
-		this.likes = likes;
-	}
-
-	public Integer getOrder() {
-		return order;
-	}
-
-	public void setOrder(Integer order) {
-		this.order = order;
-	}
-
-	public ZonedDateTime getExpireDate() {
-		return expireDate;
-	}
-
-	public void setExpireDate(ZonedDateTime expireDate) {
-		this.expireDate = expireDate;
-	}
-
-	public ZonedDateTime getStartDate() {
-		return startDate;
-	}
-
-	public void setStartDate(ZonedDateTime startDate) {
-		this.startDate = startDate;
-	}
-
-	public Boolean getHasPortionOption() {
-		return hasPortionOption;
-	}
-
-	public void setHasPortionOption(Boolean hasPortionOption) {
-		this.hasPortionOption = hasPortionOption;
-	}
 }

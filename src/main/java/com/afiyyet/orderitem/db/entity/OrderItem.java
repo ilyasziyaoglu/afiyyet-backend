@@ -7,14 +7,15 @@ import com.afiyyet.orderitem.enums.OrderItemState;
 import com.afiyyet.product.db.entity.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
@@ -24,6 +25,7 @@ import java.math.BigDecimal;
  */
 
 
+@Data
 @Entity
 @Table(name = "orderitems")
 public class OrderItem extends AbstractBaseEntity {
@@ -40,7 +42,7 @@ public class OrderItem extends AbstractBaseEntity {
 	@JoinColumn(name = "order_id")
 	private Order order;
 
-	@OneToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "product_id")
 	private Product product;
 
@@ -61,77 +63,4 @@ public class OrderItem extends AbstractBaseEntity {
 
 	@Column(name = "cancel_reason")
 	private String cancelReason;
-
-	@Override
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Order getOrder() {
-		return order;
-	}
-
-	public void setOrder(Order order) {
-		this.order = order;
-	}
-
-	public Product getProduct() {
-		return product;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
-	public BigDecimal getTotalPrice() {
-		return totalPrice;
-	}
-
-	public void setTotalPrice(BigDecimal totalPrice) {
-		this.totalPrice = totalPrice;
-	}
-
-	public Integer getAmount() {
-		return amount;
-	}
-
-	public void setAmount(Integer amount) {
-		this.amount = amount;
-	}
-
-	public Double getPortion() {
-		return portion;
-	}
-
-	public void setPortion(Double portion) {
-		this.portion = portion;
-	}
-
-	public String getComment() {
-		return comment;
-	}
-
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
-
-	public OrderItemState getState() {
-		return state;
-	}
-
-	public void setState(OrderItemState state) {
-		this.state = state;
-	}
-
-	public String getCancelReason() {
-		return cancelReason;
-	}
-
-	public void setCancelReason(String cancelReason) {
-		this.cancelReason = cancelReason;
-	}
 }

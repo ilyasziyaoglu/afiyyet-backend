@@ -4,6 +4,7 @@ import com.afiyyet.client.product.ProductRequest;
 import com.afiyyet.common.basemodel.request.BaseRequest;
 import com.afiyyet.orderitem.enums.OrderItemState;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
  */
 
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -27,68 +29,4 @@ public class OrderItemRequest extends BaseRequest {
 	private String comment;
 	private OrderItemState state;
 	private String cancelReason;
-
-	public Long getOrderId() {
-		return orderId;
-	}
-
-	public void setOrderId(Long orderId) {
-		this.orderId = orderId;
-	}
-
-	public ProductRequest getProduct() {
-		return product;
-	}
-
-	public void setProduct(ProductRequest product) {
-		this.product = product;
-	}
-
-	public BigDecimal getTotalPrice() {
-		return totalPrice;
-	}
-
-	public void setTotalPrice(BigDecimal totalPrice) {
-		this.totalPrice = totalPrice;
-	}
-
-	public Integer getAmount() {
-		return amount;
-	}
-
-	public void setAmount(Integer amount) {
-		this.amount = amount;
-	}
-
-	public Double getPortion() {
-		return portion;
-	}
-
-	public void setPortion(Double portion) {
-		this.portion = portion;
-	}
-
-	public String getComment() {
-		return comment;
-	}
-
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
-
-	public OrderItemState getState() {
-		return state;
-	}
-
-	public void setState(OrderItemState state) {
-		this.state = state;
-	}
-
-	public String getCancelReason() {
-		return cancelReason;
-	}
-
-	public void setCancelReason(String cancelReason) {
-		this.cancelReason = cancelReason;
-	}
 }

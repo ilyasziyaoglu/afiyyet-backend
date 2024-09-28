@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import lombok.Data;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -22,6 +23,7 @@ import jakarta.persistence.Table;
  */
 
 
+@Data
 @Entity
 @Table(name = "tables")
 public class RTable extends AbstractBaseEntity {
@@ -49,53 +51,4 @@ public class RTable extends AbstractBaseEntity {
 
 	@Column(name = "is_open")
 	private Boolean isOpen;
-
-	@Override
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Brand getBrand() {
-		return brand;
-	}
-
-	public void setBrand(Brand brand) {
-		this.brand = brand;
-	}
-
-	public Order getOrder() {
-		return order;
-	}
-
-	public void setOrder(Order order) {
-		this.order = order;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getGroupName() {
-		return groupName;
-	}
-
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
-	}
-
-	public Boolean getOpen() {
-		return isOpen;
-	}
-
-	public void setOpen(Boolean open) {
-		isOpen = open;
-	}
 }

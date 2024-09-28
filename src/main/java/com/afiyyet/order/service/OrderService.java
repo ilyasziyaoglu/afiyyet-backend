@@ -1,10 +1,15 @@
 package com.afiyyet.order.service;
 
+import com.afiyyet.brand.db.entity.Brand;
+import com.afiyyet.brand.service.BrandService;
 import com.afiyyet.client.order.OrderRequest;
 import com.afiyyet.client.order.OrderResponse;
+import com.afiyyet.client.order.OrderSummary;
+import com.afiyyet.client.product.ProductSummary;
 import com.afiyyet.common.basemodel.service.AbstractBaseService;
 import com.afiyyet.common.basemodel.service.ServiceResult;
 import com.afiyyet.common.user.db.entity.User;
+import com.afiyyet.order.criteria.OrderCriteria;
 import com.afiyyet.order.db.entity.Order;
 import com.afiyyet.order.db.repository.OrderRepository;
 import com.afiyyet.order.mapper.OrderMapper;
@@ -19,12 +24,24 @@ import com.afiyyet.rtable.db.entity.RTable;
 import com.afiyyet.rtable.db.repository.TableRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import tech.jhipster.service.filter.LongFilter;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Ilyas Ziyaoglu
@@ -42,6 +59,8 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 	private final OrderItemMapper orderItemMapper;
 	private final OrderItemService orderItemService;
 	private final OrderUtils orderUtils;
+	private final OrderQueryService orderQueryService;
+	private final BrandService brandService;
 
 	@Override
 	public OrderRepository getRepository() {
@@ -72,7 +91,7 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 			Order savedOrder;
 			RTable table = tableRepository.getOne(request.getTableId());
 
-			if (BooleanUtils.isTrue(table.getOpen())) {
+			if (BooleanUtils.isTrue(table.getIsOpen())) {
 				savedOrder = table.getOrder();
 				List<OrderItem> orderItems = orderItemMapper.toEntity(request.getOrderItems());
 				for (OrderItem orderItem : orderItems) { orderItem.setOrder(savedOrder); }
@@ -97,7 +116,7 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 				table.setOrder(savedOrder);
 			}
 
-			table.setOpen(true);
+			table.setIsOpen(true);
 			tableRepository.save(table);
 
 			return new ServiceResult<>(mapper.toResponse(savedOrder), HttpStatus.CREATED);
@@ -159,7 +178,7 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 			if (order.getOrderItems().size() == 0) {
 				order.setTotalPrice(BigDecimal.ZERO);
 				RTable table = order.getTable();
-				table.setOpen(false);
+				table.setIsOpen(false);
 				tableRepository.save(table);
 			}
 			repository.save(order);
@@ -169,5 +188,81 @@ public class OrderService extends AbstractBaseService<OrderRequest, Order, Order
 			e.printStackTrace();
 			return new ServiceResult<>(e);
 		}
+	}
+
+	public Page<OrderResponse> findByCriteria(String token, OrderCriteria criteria, Pageable pageable) {
+		LongFilter brandFilter = new LongFilter();
+		brandFilter.setEquals(getUser(token).getBrand().getId());
+		criteria.setBrandId(brandFilter);
+		return orderQueryService.findByCriteria(criteria, pageable);
+	}
+
+	public OrderSummary summary(String token, OrderCriteria criteria) {
+		Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "createdDate"));
+		Page<OrderResponse> orders = findByCriteria(token, criteria, pageable);
+		OrderSummary orderSummary = new OrderSummary();
+		if (orders.getTotalElements() == 0) {
+			return orderSummary;
+		}
+		orderSummary.setCount(orders.getTotalElements());
+		BigDecimal total = orders.getContent().stream().map(OrderResponse::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+		orderSummary.setTotal(total.doubleValue());
+		orderSummary.setMin(orders.getContent().stream().map(OrderResponse::getTotalPrice).min(Comparator.comparing(BigDecimal::doubleValue)).orElse(BigDecimal.ZERO).doubleValue());
+		orderSummary.setAvg(total.divide(BigDecimal.valueOf(orders.getTotalElements()), 2, RoundingMode.FLOOR).doubleValue());
+		orderSummary.setMax(orders.getContent().stream().map(OrderResponse::getTotalPrice).max(Comparator.comparing(BigDecimal::doubleValue)).orElse(BigDecimal.ZERO).doubleValue());
+
+		Map<String, ProductSummary> productSummaries = new HashMap<>();
+		orders.stream().flatMap(order -> order.getOrderItems().stream()).forEach(orderItem -> {
+			String productName = orderItem.getProduct().getName();
+			ProductSummary productSummary = productSummaries.get(productName);
+
+			if (Objects.isNull(productSummary)) {productSummary = new ProductSummary();}
+
+			productSummary.setName(productName);
+			productSummary.setCount(productSummary.getCount() + orderItem.getAmount() * orderItem.getPortion());
+			productSummary.setTotal(productSummary.getTotal() + orderItem.getTotalPrice().doubleValue());
+
+			productSummaries.put(
+				productName,
+				productSummary
+			);
+		});
+
+		orderSummary.setProductSummaries(productSummaries.values().stream().sorted(Comparator.comparingDouble(ProductSummary::getTotal).reversed()).toList());
+
+		return orderSummary;
+	}
+
+	public Double roundPerTablePerHour(String token, OrderCriteria criteria) {
+		Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+		Page<OrderResponse> orders = findByCriteria(token, criteria, pageable);
+		if (orders.getTotalElements() == 0) {
+			return 0.0;
+		}
+
+		Brand brand = getUser(token).getBrand();
+
+		return orders.getTotalElements() / (double) ((long) brand.getTableCount() * brand.getOpenDuration());
+	}
+
+	public Map<Integer, List<Double>> hourlyDsitribution(String token, OrderCriteria criteria) {
+		Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+		Page<OrderResponse> orders = findByCriteria(token, criteria, pageable);
+		if (orders.getTotalElements() == 0) {
+			return new HashMap<>();
+		}
+
+		return groupByHour(orders.getContent());
+	}
+
+	public Map<Integer, List<Double>> groupByHour(List<OrderResponse> siparisler) {
+		Map<Integer, List<Double>> grupluSiparisler = new HashMap<>();
+
+		for (OrderResponse order : siparisler) {
+			int hour = order.getCreatedDate().truncatedTo(ChronoUnit.HOURS).getHour();
+			grupluSiparisler.computeIfAbsent(hour, k -> new ArrayList<>()).add(order.getTotalPrice().doubleValue());
+		}
+
+		return grupluSiparisler;
 	}
 }

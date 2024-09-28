@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
@@ -25,7 +26,7 @@ import java.util.Set;
  * @date 2020-04-18
  */
 
-
+@Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -53,57 +54,14 @@ public class Brand extends AbstractBaseEntity {
 	@Column(name = "status")
 	private Status status;
 
+	@Column(name = "openDuration")
+	private Integer openDuration;
+
+	@Column(name = "tableCount")
+	private Integer tableCount;
+
 	@ElementCollection
 	@CollectionTable(name = "brand_features", joinColumns = @JoinColumn(name = "brand_id"))
 	@Column(name = "feature")
 	private Set<FeatureType> features = new HashSet<>();
-
-	@Override
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getUniqueName() {
-		return uniqueName;
-	}
-
-	public void setUniqueName(String uniqueName) {
-		this.uniqueName = uniqueName;
-	}
-
-	public String getLogoImgUrl() {
-		return logoImgUrl;
-	}
-
-	public void setLogoImgUrl(String logoImgUrl) {
-		this.logoImgUrl = logoImgUrl;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-
-	public Set<FeatureType> getFeatures() {
-		return features;
-	}
-
-	public void setFeatures(Set<FeatureType> features) {
-		this.features = features;
-	}
 }

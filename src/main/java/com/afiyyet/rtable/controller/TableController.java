@@ -87,4 +87,11 @@ public class TableController extends AbstractBaseController {
 		ServiceResult<Boolean> serviceResult = getService().transfer(token, request);
 		return new ResponseEntity<>(serviceResult, HttpStatus.OK);
 	}
+
+	@GetMapping("restaurant-occupation")
+	public ResponseEntity<ServiceResult<Double>> restaurantOccupation(@RequestHeader(HEADER_TOKEN) String token) {
+		ServiceResult<List<TableResponse>> serviceResult = getService().getTablesByBrand(token);
+		double result = serviceResult.getValue().stream().filter(TableResponse::getIsOpen).count() / (double) serviceResult.getValue().size();
+		return new ResponseEntity<>(new ServiceResult<>(Math.round(result*10000.0)/100.0), HttpStatus.OK);
+	}
 }
