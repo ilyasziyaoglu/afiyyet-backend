@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.afiyyet.common.enums.Status.DEACTIVE;
@@ -94,7 +95,11 @@ public class MenuService {
 			}
 
 			if (BooleanUtils.isTrue(dto.getLike())) {
-				product.setLikes(product.getLikes() + 1);
+				if (Objects.isNull(product.getLikes())) {
+					product.setLikes(1);
+				} else {
+					product.setLikes(product.getLikes() + 1);
+				}
 			} else if (product.getLikes() > 0) {
 				product.setLikes(product.getLikes() - 1);
 			}
